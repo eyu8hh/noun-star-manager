@@ -81,6 +81,7 @@ create table public.competition_teams (
   competition_id uuid not null references public.competitions(id) on delete cascade,
   team_id uuid references public.teams(id) on delete cascade,
   opponent_name text, manual_points integer not null default 0,
+  remaining_matches integer not null default 0 check (remaining_matches >= 0),
   played integer not null default 0 check (played >= 0),
   won integer not null default 0 check (won >= 0),
   drawn integer not null default 0 check (drawn >= 0),
