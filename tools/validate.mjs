@@ -29,7 +29,7 @@ const arStart = translations.indexOf("ar:{") + 4;
 const frStart = translations.indexOf("\nfr:{");
 assert.ok(arStart >= 4 && frStart > arStart, "Missing Arabic or French translation map");
 const arMap = translations.slice(arStart, frStart);
-const frMap = translations.slice(frStart + 4);
+const frMap = translations.slice(frStart + 5);
 const keys = (source) => new Set([...source.matchAll(/(?:^|,)([A-Za-z_$][\w$]*):/g)].map((m) => m[1]));
 const arKeys = keys(arMap);
 const frKeys = keys(frMap);
