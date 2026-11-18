@@ -404,7 +404,7 @@ do $$ declare t text; begin
   foreach t in array array[
     'clubs','teams','players','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
-    'training_attendance','injuries','absences','suspensions','settings'
+    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','settings'
   ] loop
     execute format('create policy nsm_owner_only on public.%I for all to authenticated using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()))',t);
   end loop;
