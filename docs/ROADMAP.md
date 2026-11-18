@@ -17,11 +17,11 @@
 ## Phase 2 — Club, team, and player management
 - [x] Clubs and multiple age-group teams (CRUD, linked deletion).
 - [x] Player CRUD, position, search, status, and team assignment. Player profile detail view and position-group filters remain pending.
-- [x] Current team assignment and basic transfer-history snapshots (career-stat snapshots still pending).
+- [x] Current team assignment and transfer-history snapshots of appearances, minutes, goals, assists, and cards; career-wide aggregation view remains pending.
 - [x] Injury and suspension records synchronize the player's availability state (live data verification pending).
 
 ## Phase 3 — Matches
-- [x] Fixture scheduling, match reports, score entry, and finish/reopen controls. Reversible downstream accounting remains pending.
+- [x] Fixture scheduling, match reports, score entry, and finish/reopen controls; reversible suspension accounting is implemented in SQL (live database test pending).
 - [x] Starter/substitute/not-selected lineups with player positions, shirt numbers, and minute fields.
 - [x] Manual goal, assist, card, substitution, and note events.
 - [x] Substitution events reconcile entry/exit minutes into the lineup; unused substitutes do not count as appearances, and statistics are scoped to finished matches.
@@ -50,7 +50,7 @@
 - [ ] Test match finish/reopen and suspension reversal.
 - [ ] Test Arabic/French switching and mobile layout at 400px.
 - [ ] Test tactical board pointer/touch dragging, arrows, stage navigation, custom drill CRUD, and multi-drill session linking in a real browser.
-- [ ] Verify backup/restore (including custom drills and session links) and two-device synchronization.
+- [ ] Verify backup/restore (including custom drills and session links) and two-device synchronization; focus/idle refresh is implemented but not yet live-tested.
 - [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the new training tables. Deployment and coach setup documentation remain pending.
 - [x] Restore and validate the markup for lineup, health, statistics, discipline, and settings screens.
 - [x] Extend CI checks to cover every referenced DOM ID, Arabic/French translation keys, and static database table references.
