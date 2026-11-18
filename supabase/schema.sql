@@ -409,7 +409,7 @@ do $$ declare t text; begin
   foreach t in array array[
     'clubs','teams','players','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
-    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','settings'
+    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
     execute format('create policy nsm_owner_only on public.%I for all to authenticated using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()))',t);
   end loop;
@@ -418,6 +418,7 @@ end $$;
 revoke all on function public.nsm_on_auth_user_created() from public,anon,authenticated;
 revoke all on function public.nsm_assert_related_owner() from public,anon,authenticated;
 revoke all on function public.nsm_touch_updated_at() from public,anon,authenticated;
+revoke all on function public.nsm_account_suspensions_for_match() from public,anon,authenticated;
 commit;
 
 -- Dashboard steps still required:
