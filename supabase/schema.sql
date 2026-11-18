@@ -157,7 +157,7 @@ create table public.training_session_drills (
   drill_id uuid references public.training_drills(id) on delete cascade,
   builtin_drill_key text,
   sort_order integer not null default 1 check (sort_order > 0),
-  check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
+  constraint training_session_drill_one_ref check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
 );
 
 create unique index training_session_drills_custom_unique on public.training_session_drills(session_id,drill_id) where drill_id is not null;
