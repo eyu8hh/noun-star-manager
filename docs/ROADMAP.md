@@ -28,7 +28,7 @@
 
 ## Phase 4 — Competitions and discipline
 - [x] Competition CRUD and team entries.
-- [ ] Standings from finished team matches and manual opponent points (target-position calculations remain pending).
+- [x] Standings from finished team matches and manually entered opponent points (target-position calculations remain pending).
 - [ ] Confirmed suspension workflow with reversible match accounting.
 - [ ] Yellow-card threshold configurable by the coach.
 
