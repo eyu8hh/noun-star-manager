@@ -22,8 +22,8 @@
 
 ## Phase 3 — Matches
 - [x] Fixture scheduling, match reports, score entry, and finish/reopen controls. Reversible downstream accounting remains pending.
-- [ ] Starter/substitute/not-selected lineups.
-- [x] Manual goal, assist, card, substitution, and note events. Lineup-linked event validation and automatic minute calculations remain pending.
+- [x] Starter/substitute/not-selected lineups with player positions, shirt numbers, and minute fields.
+- [x] Manual goal, assist, card, substitution, and note events; lineup-based minutes are calculated from entry/exit values when available. Automatic substitution-event reconciliation remains pending.
 - [ ] Manual player statistics when no lineup is entered.
 
 ## Phase 4 — Competitions and discipline
