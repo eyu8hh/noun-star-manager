@@ -81,6 +81,9 @@ assert.ok(script.includes("importDrillBankFile") && script.includes("downloadJso
 assert.ok(script.includes("builtInDrills.push(...extraOriginalDrills)"), "Expanded original drill bank is not registered");
 assert.ok(script.includes("clearCoachTeamData") && script.includes("insertDemoRow"), "Demo loader and safe team-data reset are missing");
 assert.ok(html.includes("@font-face") && html.includes("data:font/woff2;base64,"), "Cairo and Barlow fonts must be embedded in the single HTML file");
+assert.ok(html.includes('font-family:"Cairo"') && html.includes('font-family:"Barlow Condensed"'), "Both embedded font families must be declared");
+assert.ok(!/sb_secret_|service_role/i.test(html), "A secret or service-role key must never be embedded in the public HTML");
+assert.ok(!html.includes("fonts.googleapis.com") && !html.includes("fonts.gstatic.com"), "The single-file app must not depend on remote font requests");
 assert.ok(readFileSync(new URL("../LICENSES/Cairo-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Cairo font license is missing");
 assert.ok(readFileSync(new URL("../LICENSES/Barlow-Condensed-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Barlow Condensed font license is missing");
 assert.ok(schema.includes("selection_status in ('starter','substitute','not_selected','manual')"), "Schema must support manual match-stat rows");
