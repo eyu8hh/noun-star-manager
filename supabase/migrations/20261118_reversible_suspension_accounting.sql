@@ -99,11 +99,15 @@ before delete on public.matches
 for each row execute function public.nsm_account_suspensions_for_match();
 
 alter table public.suspension_match_log enable row level security;
-revoke all on table public.suspension_match_log from anon,authenticated;
-grant select on table public.suspension_match_log to authenticated;
+revoke all on table public.suspension_match_log from public,anon,authenticated;
+grant select,insert,update,delete on table public.suspension_match_log to authenticated;
 drop policy if exists nsm_suspension_log_read_own on public.suspension_match_log;
-create policy nsm_suspension_log_read_own on public.suspension_match_log
-for select to authenticated using (owner_id = (select auth.uid()));
+drop policy if exists nsm_owner_only on public.suspension_match_log;
+create policy nsm_owner_only on public.suspension_match_log for all to authenticated
+using (owner_id = (select auth.uid())) with check (owner_id = (select auth.uid()));
+drop trigger if exists nsm_suspension_log_refs on public.suspension_match_log;
+create trigger nsm_suspension_log_refs before insert or update on public.suspension_match_log
+for each row execute function public.nsm_assert_related_owner('suspensions','suspension_id','matches','match_id');
 revoke all on function public.nsm_account_suspensions_for_match() from public,anon,authenticated;
 
 commit;
