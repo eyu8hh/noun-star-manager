@@ -154,10 +154,14 @@ create table public.training_session_drills (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   session_id uuid not null references public.training_sessions(id) on delete cascade,
-  drill_id uuid not null references public.training_drills(id) on delete cascade,
+  drill_id uuid references public.training_drills(id) on delete cascade,
+  builtin_drill_key text,
   sort_order integer not null default 1 check (sort_order > 0),
-  unique(session_id,drill_id)
+  check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
 );
+
+create unique index training_session_drills_custom_unique on public.training_session_drills(session_id,drill_id) where drill_id is not null;
+create unique index training_session_drills_builtin_unique on public.training_session_drills(session_id,builtin_drill_key) where builtin_drill_key is not null;
 
 create table public.training_attendance (
   id uuid primary key default gen_random_uuid(),
