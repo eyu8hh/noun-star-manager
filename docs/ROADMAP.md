@@ -34,7 +34,7 @@
 
 ## Phase 5 — Training, health, and statistics
 - [x] Training sessions and attendance (per-player status; injured players default to injured rather than present).
-- [ ] Injury/recovery and dated absence records.
+- [x] Injury/recovery records and dated absences (basic CRUD; player status synchronization and archive refinements remain pending).
 - [ ] Player statistics table and Arabic-safe CSV export.
 
 ## Phase 6 — QA and handoff
