@@ -20,9 +20,10 @@ create table if not exists public.training_session_drills (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   session_id uuid not null references public.training_sessions(id) on delete cascade,
-  drill_id uuid not null references public.training_drills(id) on delete cascade,
+  drill_id uuid references public.training_drills(id) on delete cascade,
+  builtin_drill_key text,
   sort_order integer not null default 1 check (sort_order > 0),
-  unique(session_id,drill_id)
+  check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
 );
 drop trigger if exists nsm_training_drills_owner on public.training_drills;
 create trigger nsm_training_drills_owner before insert or update on public.training_drills
@@ -30,8 +31,19 @@ for each row execute function public.nsm_assert_related_owner();
 drop trigger if exists nsm_training_session_drills_refs on public.training_session_drills;
 create trigger nsm_training_session_drills_refs before insert or update on public.training_session_drills
 for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','training_drills','drill_id');
+alter table public.training_session_drills alter column drill_id drop not null;
+alter table public.training_session_drills add column if not exists builtin_drill_key text;
+do $ begin
+  if not exists (select 1 from pg_constraint where conname = 'training_session_drills_one_drill_check') then
+    alter table public.training_session_drills add constraint training_session_drills_one_drill_check check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null));
+  end if;
+end $;
+alter table public.training_session_drills drop constraint if exists training_session_drills_session_id_drill_id_key;
+create unique index if not exists training_session_drills_custom_unique on public.training_session_drills(session_id,drill_id) where drill_id is not null;
+create unique index if not exists training_session_drills_builtin_unique on public.training_session_drills(session_id,builtin_drill_key) where builtin_drill_key is not null;
 drop trigger if exists nsm_training_drills_touch on public.training_drills;
-create trigger nsm_training_drills_touch before update on public.training_drills
+drop trigger if exists nsm_touch on public.training_drills;
+create trigger nsm_touch before update on public.training_drills
 for each row execute function public.nsm_touch_updated_at();
 alter table public.training_drills enable row level security;
 alter table public.training_session_drills enable row level security;
