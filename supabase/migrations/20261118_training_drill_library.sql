@@ -23,7 +23,7 @@ create table if not exists public.training_session_drills (
   drill_id uuid references public.training_drills(id) on delete cascade,
   builtin_drill_key text,
   sort_order integer not null default 1 check (sort_order > 0),
-  check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
+  constraint training_session_drill_one_ref check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null))
 );
 drop trigger if exists nsm_training_drills_owner on public.training_drills;
 create trigger nsm_training_drills_owner before insert or update on public.training_drills
@@ -34,8 +34,8 @@ for each row execute function public.nsm_assert_related_owner('training_sessions
 alter table public.training_session_drills alter column drill_id drop not null;
 alter table public.training_session_drills add column if not exists builtin_drill_key text;
 do $ begin
-  if not exists (select 1 from pg_constraint where conname = 'training_session_drills_one_drill_check') then
-    alter table public.training_session_drills add constraint training_session_drills_one_drill_check check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null));
+  if not exists (select 1 from pg_constraint where conname = 'training_session_drill_one_ref') then
+    alter table public.training_session_drills add constraint training_session_drill_one_ref check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null));
   end if;
 end $;
 alter table public.training_session_drills drop constraint if exists training_session_drills_session_id_drill_id_key;
