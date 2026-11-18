@@ -55,7 +55,7 @@
 - [ ] Test tactical board pointer/touch dragging, arrows, stage navigation, custom drill CRUD, multi-drill session linking, and manual match-stat entry in a real browser.
 - [ ] Verify backup/restore (including custom drills and session links) and two-device synchronization; focus/idle refresh is implemented but not yet live-tested.
 - [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the training tables and suspension accounting ledger.
-- [x] Add an opt-in demo club/team dataset and a separately confirmed team-data reset that preserves coach login and preferences. Deployment and coach setup documentation remain pending.
+- [x] Add an opt-in demo club/team dataset and a separately confirmed team-data reset that preserves coach login and preferences. Supabase verification SQL, deployment documentation, and a manual GitHub Pages workflow are committed; Pages activation and live deployment remain pending.
 - [x] Restore and validate the markup for lineup, health, statistics, discipline, and settings screens.
 - [x] Embed licensed Cairo and Barlow Condensed WOFF2 subsets in the single HTML file and include their OFL license texts.
 - [x] Extend CI checks to cover every referenced DOM ID, duplicate IDs, Arabic/French translation keys, static database table references, and module-parent hierarchy.
