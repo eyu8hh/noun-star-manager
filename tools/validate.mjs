@@ -80,6 +80,9 @@ assert.ok(script.includes("animateTransform"), "Tactical stage playback should a
 assert.ok(script.includes("importDrillBankFile") && script.includes("downloadJsonFile"), "Drill bank JSON import/export is missing");
 assert.ok(script.includes("builtInDrills.push(...extraOriginalDrills)"), "Expanded original drill bank is not registered");
 assert.ok(script.includes("clearCoachTeamData") && script.includes("insertDemoRow"), "Demo loader and safe team-data reset are missing");
+assert.ok(html.includes("@font-face") && html.includes("data:font/woff2;base64,"), "Cairo and Barlow fonts must be embedded in the single HTML file");
+assert.ok(readFileSync(new URL("../LICENSES/Cairo-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Cairo font license is missing");
+assert.ok(readFileSync(new URL("../LICENSES/Barlow-Condensed-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Barlow Condensed font license is missing");
 assert.ok(schema.includes("selection_status in ('starter','substitute','not_selected','manual')"), "Schema must support manual match-stat rows");
 assert.ok(schema.includes("training_session_drills") && schema.includes("builtin_drill_key"), "Schema must support built-in and custom drills in session plans");
 const manualMigration = readFileSync(new URL("../supabase/migrations/20261118_manual_match_stats.sql", import.meta.url), "utf8");
