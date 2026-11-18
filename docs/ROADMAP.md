@@ -29,7 +29,8 @@
 
 ## Phase 4 — Competitions and discipline
 - [x] Competition CRUD and team entries.
-- [x] Standings from finished team matches and manually entered opponent points (target-position calculations remain pending).
+- [x] Standings from finished team matches and manually entered opponent points.
+- [x] Target-position feasibility estimate using the team's recorded remaining fixtures and maximum attainable points; clearly labels the result as mathematical feasibility, not a probability.
 - [x] Card threshold warnings and coach-confirmed suspension proposals.
 - [x] SQL ledger for idempotent suspension decrement on match finalization and exact reversal on reopening/deletion (implementation committed; live database test pending).
 - [x] Yellow-card threshold configurable by the coach.
