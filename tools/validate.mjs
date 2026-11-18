@@ -75,7 +75,7 @@ const drillStart = script.indexOf("const builtInDrills=[");
 const drillEnd = script.indexOf("function drillText", drillStart);
 assert.ok(drillStart >= 0 && drillEnd > drillStart, "Missing built-in training drill library");
 const drillSection = script.slice(drillStart, drillEnd);
-assert.equal([...drillSection.matchAll(/\{id:"/g)].length, 8, "Expected eight bundled original drills");
+assert.ok([...drillSection.matchAll(/\{id:"/g)].length >= 16, "Expected at least sixteen bundled original drills");
 assert.ok(script.includes("animateTransform"), "Tactical stage playback should animate player movement");
 assert.ok(schema.includes("selection_status in ('starter','substitute','not_selected','manual')"), "Schema must support manual match-stat rows");
 assert.ok(schema.includes("training_session_drills") && schema.includes("builtin_drill_key"), "Schema must support built-in and custom drills in session plans");
