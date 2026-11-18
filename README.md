@@ -39,12 +39,12 @@ Mobile-first football team management for a coach. Arabic RTL by default, with F
 
 
 ## Training centre
-- Eight original Arabic-first drills are bundled in the single HTML app: rondo 4v2, third-man combination, counter-pressing, build-up from the back, fast attacking transition, crossing/finishing, reaction speed, and compact defensive block.
+- Sixteen original bilingual Arabic/French drills are bundled in the single HTML app: rondo 4v2, third-man combination, counter-pressing, build-up from the back, fast attacking transition, crossing/finishing, reaction speed, and compact defensive block.
 - Each drill includes its objective, organisation, player count, age group, duration, equipment, coaching points, match application, progressive stages, and an SVG tactical board.
-- Coaches can place and drag player/defender/ball/cone markers, draw movement arrows, and step through explanations. Custom drills are stored in the coach-owned Supabase library after the training migration is applied.
+- Coaches can place and drag player/defender/ball/cone markers, draw movement arrows, and step through animated explanations. Coaches can create drills, copy a built-in drill into their own library, and import/export their personal drill bank as JSON. Custom drills are stored in the coach-owned Supabase library after the training migration is applied.
 - Training sessions can be linked to multiple drills through training_session_drills.
 - External learning references: [FIFA Training Centre — Grassroots](https://www.fifatrainingcentre.com/en/practice/grassroots.php), [FIFA Training Centre — Talent Development](https://www.fifatrainingcentre.com/en/practice/talent_development.php), and [UEFA Grassroots Coaching](https://www.uefa.com/grassroots-coaching/). The app links to these sources rather than copying protected content.
-- The tactical board is an SVG diagram and stage navigator, not a full physics-based animation or video editor.
+- Settings include an opt-in demo dataset and a separately confirmed full team-data reset that preserves the coach login and preferences. The tactical board is an animated SVG stage navigator, not a full physics-based animation or video editor.
 
 ## Supabase bootstrap status
 `supabase/schema.sql` is the complete bootstrap schema for a fresh, dedicated Supabase project. It includes owner-scoped RLS, cross-owner reference checks, reversible suspension accounting, the private drill library, session-to-drill links, and manually tracked opponent fixtures. For a fresh project, review and apply this bootstrap once. For a project that already has the earlier base schema, review and apply the incremental migrations in order: `20261118_reversible_suspension_accounting.sql`, `20261118_manual_match_stats.sql`, `20261118_competition_manual_results.sql`, then `20261118_training_drill_library.sql`. Do not run the fresh bootstrap over an existing database. None of these SQL changes has been executed against the live Supabase project or validated by a live PostgreSQL run.
