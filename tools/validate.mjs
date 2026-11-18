@@ -6,11 +6,47 @@ const start = html.indexOf("<script>");
 const end = html.indexOf("</script>", start);
 assert.ok(start >= 0 && end > start, "Expected one inline application script");
 assert.equal(html.indexOf("<script>", start + 1), -1, "Expected exactly one inline application script");
-new Function(html.slice(start + 8, end));
+const script = html.slice(start + 8, end);
+new Function(script);
+
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
+const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule"]) {
-  assert.ok(ids.includes(id), "Missing required app section: " + id);
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel"]) {
+  assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
-console.log("NOUN STAR MANAGER: inline JavaScript syntax and core HTML checks passed.");
+const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
+const missingIds = [...referencedIds].filter((id) => !idSet.has(id));
+assert.deepEqual(missingIds, [], "Application references missing HTML IDs");
+
+const translationsStart = script.indexOf("const translations={");
+const translationsEnd = script.indexOf("\n};", translationsStart);
+assert.ok(translationsStart >= 0 && translationsEnd > translationsStart, "Missing Arabic/French translations");
+const translations = script.slice(translationsStart, translationsEnd);
+const arStart = translations.indexOf("ar:{") + 4;
+const frStart = translations.indexOf("\nfr:{");
+assert.ok(arStart >= 4 && frStart > arStart, "Missing Arabic or French translation map");
+const arMap = translations.slice(arStart, frStart);
+const frMap = translations.slice(frStart + 4);
+const keys = (source) => new Set([...source.matchAll(/(?:^|,)([A-Za-z_$][\\w$]*):/g)].map((m) => m[1]));
+const arKeys = keys(arMap);
+const frKeys = keys(frMap);
+const usedTranslations = new Set([
+  ...[...html.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]),
+  ...[...html.matchAll(/data-i18n-placeholder="([^"]+)"/g)].map((m) => m[1]),
+  ...[...script.matchAll(/tr\("([^"]+)"\)/g)].map((m) => m[1]),
+]);
+for (const key of usedTranslations) {
+  assert.ok(arKeys.has(key), "Missing Arabic translation: " + key);
+  assert.ok(frKeys.has(key), "Missing French translation: " + key);
+}
+
+const schema = readFileSync(new URL("../supabase/schema.sql", import.meta.url), "utf8");
+const schemaTables = new Set([...schema.matchAll(/create table(?: if not exists)? public\.([a-z_]+)/gi)].map((m) => m[1]));
+const referencedTables = new Set([...script.matchAll(/(?:selectRows|saveRow|deleteRow)\("([a-z_]+)"/g)].map((m) => m[1]));
+for (const table of referencedTables) {
+  assert.ok(schemaTables.has(table), "Application references a table missing from schema.sql: " + table);
+}
+
+console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
