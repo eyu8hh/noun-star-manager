@@ -15,20 +15,20 @@
 - [ ] Add safe local draft handling and JSON backup/restore.
 
 ## Phase 2 — Club, team, and player management
-- [ ] Clubs and multiple age-group teams.
-- [ ] Player CRUD, position groups, search, filters, and player profile.
-- [ ] Current team assignment and transfer history snapshots.
+- [x] Clubs and multiple age-group teams (CRUD, linked deletion).
+- [x] Player CRUD, position, search, status, and team assignment. Player profile detail view and position-group filters remain pending.
+- [x] Current team assignment and basic transfer-history snapshots (career-stat snapshots still pending).
 - [ ] Availability, injury, and suspension indicators.
 
 ## Phase 3 — Matches
-- [ ] Fixtures, match reports, and finalization/reopening.
+- [x] Fixture scheduling, match reports, score entry, and finish/reopen controls. Reversible downstream accounting remains pending.
 - [ ] Starter/substitute/not-selected lineups.
 - [ ] Goals, assists, cards, substitutions, and minute calculations.
 - [ ] Manual player statistics when no lineup is entered.
 
 ## Phase 4 — Competitions and discipline
-- [ ] Multiple competitions and opponent rows.
-- [ ] Standings and target-position calculations.
+- [x] Competition CRUD and team entries.
+- [ ] Standings from finished team matches and manual opponent points (target-position calculations remain pending).
 - [ ] Confirmed suspension workflow with reversible match accounting.
 - [ ] Yellow-card threshold configurable by the coach.
 
