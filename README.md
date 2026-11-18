@@ -42,4 +42,4 @@ After the schema is reviewed and applied:
 4. Verify authenticated access and anonymous denial before entering real player data.
 
 ## Delivery status
-The repository foundation and database draft are being prepared. The application UI, transactional match finalization, suspension decrement/reversal workflows, and automated tests are not yet implemented. These will be delivered in reviewed phases; no live deployment or database execution is claimed.
+The initial responsive application shell is now present in `index.html`, including the coach login screen, Arabic/French switching, dark/light theme, navigation shell, and dashboard count requests. The module screens are placeholders and the data-entry workflows are not implemented yet. Transactional match finalization, suspension decrement/reversal workflows, and automated tests are also pending. The publishable key is embedded in the client configuration; this key is intended for browser use and must be protected by correct RLS. No live deployment, database execution, or end-to-end authentication test is claimed.
