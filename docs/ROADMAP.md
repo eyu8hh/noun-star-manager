@@ -16,7 +16,8 @@
 
 ## Phase 2 — Club, team, and player management
 - [x] Clubs and multiple age-group teams (CRUD, linked deletion).
-- [x] Player CRUD, position, search, status, and team assignment. Player profile detail view and position-group filters remain pending.
+- [x] Player CRUD, position, search, status, and team assignment.
+- [x] Player career profile with appearances, minutes, goals, assists, cards, team-transfer snapshots, injury/absence history, and match-event log. Position-group filters remain pending.
 - [x] Current team assignment and transfer-history snapshots of appearances, minutes, goals, assists, and cards; career-wide aggregation view remains pending.
 - [x] Injury and suspension records synchronize the player's availability state (live data verification pending).
 
@@ -53,7 +54,7 @@
 - [ ] Verify backup/restore (including custom drills and session links) and two-device synchronization; focus/idle refresh is implemented but not yet live-tested.
 - [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the new training tables. Deployment and coach setup documentation remain pending.
 - [x] Restore and validate the markup for lineup, health, statistics, discipline, and settings screens.
-- [x] Extend CI checks to cover every referenced DOM ID, Arabic/French translation keys, and static database table references.
+- [x] Extend CI checks to cover every referenced DOM ID, duplicate IDs, Arabic/French translation keys, static database table references, and module-parent hierarchy.
 
 ## Acceptance rule
 A phase is not considered complete until its implementation is present in the repository and the relevant checks have actually been run. A schema draft or a code review is not evidence of a live Supabase test.
