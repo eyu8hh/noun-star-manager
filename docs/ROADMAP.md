@@ -8,9 +8,9 @@
 - [ ] Verify coach authentication, RLS isolation, and cross-device persistence.
 
 ## Phase 1 — Application shell
-- [ ] Build the single-file `index.html` shell and visual identity.
-- [ ] Add Arabic RTL / French LTR switching and responsive navigation.
-- [ ] Add Supabase client initialization using the publishable key only.
+- [x] Build the initial single-file `index.html` shell and visual identity (first implementation; module screens remain placeholders).
+- [x] Add Arabic RTL / French LTR switching and responsive navigation.
+- [x] Add direct Supabase Auth/REST initialization using the publishable key only (live connection not yet verified).
 - [ ] Add session handling, login, logout, loading, empty, and error states.
 - [ ] Add safe local draft handling and JSON backup/restore.
 
