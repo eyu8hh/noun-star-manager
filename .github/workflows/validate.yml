@@ -6,6 +6,11 @@ on:
       - "index.html"
       - "tools/validate.mjs"
       - ".github/workflows/validate.yml"
+      - ".github/workflows/deploy-pages.yml"
+      - "supabase/**"
+      - "LICENSES/**"
+      - "docs/**"
+      - "README.md"
   pull_request:
     paths:
       - "index.html"
