@@ -284,7 +284,7 @@ begin
 
   if tg_op = 'UPDATE' and old.status <> 'finished' and new.status = 'finished' then
     for rec in
-      select distinct s.id,s.owner_id,s.matches_remaining,s.status,s.confirmed_at
+      select s.id,s.owner_id,s.matches_remaining,s.status,s.confirmed_at
       from public.suspensions s
       join public.team_players tp
         on tp.player_id = s.player_id
