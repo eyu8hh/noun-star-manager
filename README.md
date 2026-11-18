@@ -8,7 +8,7 @@ Mobile-first football team management for a coach. Arabic RTL by default, with F
 - One manually created coach account; public sign-up must remain disabled.
 - JSON backup and restore.
 - Charcoal `#101116`, royal blue `#172D9B`, white `#FFFFFF`, ice grey `#DDE2EB`.
-- Cairo interface text and Barlow Condensed display numbers, embedded only when properly licensed font files are available.
+- Cairo interface text and Barlow Condensed display numbers are embedded as WOFF2 in the single HTML file; their SIL Open Font License notices are included under `LICENSES/`.
 - No unapproved features outside the agreed scope.
 
 ## Planned modules
@@ -21,6 +21,9 @@ Mobile-first football team management for a coach. Arabic RTL by default, with F
 7. Discipline and suspension tracking.
 8. Injuries, recovery, and absences.
 9. Settings, Arabic/French localization, and JSON backup/restore.
+
+## Embedded fonts and licensing
+The single-file app embeds Cairo Arabic/Latin (400 and 700) and Barlow Condensed Latin (600 and 700) as WOFF2 data. The original SIL Open Font License notices are included in `LICENSES/Cairo-OFL.txt` and `LICENSES/Barlow-Condensed-OFL.txt`.
 
 ## Structure
 ```
