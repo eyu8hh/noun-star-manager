@@ -13,12 +13,32 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "playerProfilePanel"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
 const missingIds = [...referencedIds].filter((id) => !idSet.has(id));
 assert.deepEqual(missingIds, [], "Application references missing HTML IDs");
+
+const parentById = new Map();
+const divStack = [];
+const divTags = /<div\b([^>]*)>|<\/div>/g;
+const htmlBeforeScript = html.slice(0, start);
+for (const match of htmlBeforeScript.matchAll(divTags)) {
+  if (match[0].startsWith("</")) {
+    divStack.pop();
+  } else {
+    const id = match[1].match(/\bid="([^"]+)"/)?.[1];
+    if (id) parentById.set(id, divStack.filter(Boolean).join(">"));
+    divStack.push(id || "");
+  }
+}
+assert.deepEqual(divStack, [], "Unbalanced application div structure");
+for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "settingsModule"]) {
+  assert.equal(parentById.get(id), "appView", id + " must be a sibling module under appView");
+}
+assert.equal(parentById.get("playerProfilePanel"), "appView>playersModule", "Player profile must be inside playersModule");
+assert.equal(parentById.get("lineupPanel"), "appView>matchesModule", "Lineup panel must be inside matchesModule");
 
 const translationsStart = script.indexOf("const translations");
 const translationsObjectStart = script.indexOf("{", translationsStart);
