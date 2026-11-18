@@ -23,24 +23,32 @@ declare
   rec record;
   inserted_id uuid;
   target_match_id uuid;
+  target_owner_id uuid;
 begin
-  target_match_id := case when tg_op = 'DELETE' then old.id else new.id end;
+  if tg_op = 'DELETE' then
+    target_match_id := old.id;
+    target_owner_id := old.owner_id;
+  else
+    target_match_id := new.id;
+    target_owner_id := new.owner_id;
+  end if;
 
-  if tg_op = 'DELETE' or (old.status = 'finished' and new.status <> 'finished') then
+  if tg_op = 'DELETE' or (tg_op = 'UPDATE' and old.status = 'finished' and new.status <> 'finished') then
     for rec in
-      select l.suspension_id,l.matches_before,l.status_before,l.confirmed_at_before
+      select l.suspension_id,l.owner_id
       from public.suspension_match_log l
-      where l.match_id = target_match_id
+      where l.match_id = target_match_id and l.owner_id = target_owner_id
       order by l.created_at desc
     loop
       update public.suspensions
-      set matches_remaining = rec.matches_before,
-          status = rec.status_before,
-          confirmed_at = rec.confirmed_at_before
+      set matches_remaining = matches_remaining + 1,
+          status = case when status = 'served' then 'active' else status end
       where id = rec.suspension_id
-        and owner_id = case when tg_op='DELETE' then old.owner_id else new.owner_id end;
+        and owner_id = rec.owner_id
+        and status in ('active','served');
     end loop;
-    delete from public.suspension_match_log where match_id = target_match_id;
+    delete from public.suspension_match_log
+    where match_id = target_match_id and owner_id = target_owner_id;
     if tg_op = 'DELETE' then return old; else return new; end if;
   end if;
 
