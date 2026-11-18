@@ -135,6 +135,30 @@ create table public.training_sessions (
   session_date timestamptz not null, title text, location text, notes text,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
+create table public.training_drills (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  title text not null check (length(trim(title)) > 0),
+  category text not null check (category in ('technical','tactical','physical','finishing','transition')),
+  age_group text, players_count integer not null default 8 check (players_count between 2 and 50),
+  duration_minutes integer not null default 12 check (duration_minutes between 1 and 240),
+  equipment text, objective_ar text not null, objective_fr text,
+  instructions_ar text not null, instructions_fr text,
+  coaching_points jsonb not null default '[]'::jsonb check (jsonb_typeof(coaching_points) = 'array'),
+  match_application_ar text, match_application_fr text,
+  stages jsonb not null default '[]'::jsonb check (jsonb_typeof(stages) = 'array'),
+  diagram jsonb not null default '{"marks":[]}'::jsonb check (jsonb_typeof(diagram) = 'object'),
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table public.training_session_drills (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  session_id uuid not null references public.training_sessions(id) on delete cascade,
+  drill_id uuid not null references public.training_drills(id) on delete cascade,
+  sort_order integer not null default 1 check (sort_order > 0),
+  unique(session_id,drill_id)
+);
+
 create table public.training_attendance (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
@@ -252,6 +276,10 @@ create trigger nsm_events_refs before insert or update on public.match_events
 for each row execute function public.nsm_assert_related_owner('matches','match_id','players','player_id','players','related_player_id');
 create trigger nsm_training_refs before insert or update on public.training_sessions
 for each row execute function public.nsm_assert_related_owner('teams','team_id');
+create trigger nsm_training_drills_owner before insert or update on public.training_drills
+for each row execute function public.nsm_assert_related_owner();
+create trigger nsm_training_session_drills_refs before insert or update on public.training_session_drills
+for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','training_drills','drill_id');
 create trigger nsm_attendance_refs before insert or update on public.training_attendance
 for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','players','player_id');
 create trigger nsm_injuries_refs before insert or update on public.injuries
@@ -353,7 +381,7 @@ revoke all on function public.nsm_account_suspensions_for_match() from public,an
 
 -- Updated-at triggers
 do $$ declare t text; begin
-  foreach t in array array['profiles','clubs','teams','players','competitions','matches','training_sessions','settings'] loop
+  foreach t in array array['profiles','clubs','teams','players','competitions','matches','training_sessions','training_drills','settings'] loop
     execute format('create trigger nsm_touch before update on public.%I for each row execute function public.nsm_touch_updated_at()',t);
   end loop;
 end $$;
@@ -363,7 +391,7 @@ do $$ declare t text; begin
   foreach t in array array[
     'profiles','clubs','teams','players','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
-    'training_attendance','injuries','absences','suspensions','settings'
+    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','settings'
   ] loop
     execute format('alter table public.%I enable row level security',t);
     execute format('revoke all on table public.%I from anon',t);
