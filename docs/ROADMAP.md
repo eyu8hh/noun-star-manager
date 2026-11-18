@@ -42,7 +42,7 @@
 - [ ] Test match finish/reopen and suspension reversal.
 - [ ] Test Arabic/French switching and mobile layout at 400px.
 - [ ] Verify backup/restore and two-device synchronization.
-- [ ] Document deployment and coach setup.
+- [x] Add coach profile settings and JSON backup/restore (merge-based restore). Deployment and coach setup documentation remain pending.
 
 ## Acceptance rule
 A phase is not considered complete until its implementation is present in the repository and the relevant checks have actually been run. A schema draft or a code review is not evidence of a live Supabase test.
