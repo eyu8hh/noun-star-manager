@@ -114,7 +114,6 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
 <div id="lineupPanel" class="editor hidden"><div class="module-toolbar"><h3 id="lineupTitle" data-i18n="lineup">تشكيلة المباراة</h3><div class="module-actions"><button class="primary-btn" id="saveLineup" data-i18n="saveLineup">حفظ التشكيلة</button><button class="secondary-btn" id="closeLineup" data-i18n="close">إغلاق</button></div></div><p class="table-sub">حدد الأساسيين والبدلاء، وسجّل دقائق الدخول والخروج. تُحسب الدقائق تلقائياً عند وجود أحداث تبديل.</p><div id="lineupRows"></div></div>
     <div class="section-head"><h3 data-i18n="matchSchedule">جدول المباريات</h3><span id="matchesCount">0</span></div><div id="matchesTable" class="data-table-wrap"></div>
   </div>
-  </div>
 
   <div id="statisticsModule" class="hidden">
     <div class="module-toolbar"><div><h3 data-i18n="statistics">الإحصائيات</h3><p data-i18n="statisticsIntro">أداء اللاعبين حسب أحداث المباريات والتشكيلات.</p></div><div class="module-actions"><select id="statsTeam" class="search-field"><option value="" data-i18n="allTeams">كل الفرق</option></select><button class="secondary-btn" id="exportStats" data-i18n="exportCsv">تصدير CSV</button></div></div>
@@ -140,6 +139,7 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
     <div class="module-toolbar"><div><h3 data-i18n="settings">الإعدادات</h3><p data-i18n="settingsIntro">إدارة حساب المدرب والنسخ الاحتياطي.</p></div></div>
     <div class="card"><h3 data-i18n="coachSettings">بيانات المدرب</h3><form id="settingsForm"><div class="form-grid"><div class="form-field"><label data-i18n="coachName">اسم المدرب</label><input id="settingsCoachName" maxlength="100"></div><div class="form-field"><label data-i18n="preferredLanguage">اللغة المفضلة</label><select id="settingsLanguage"><option value="ar">العربية</option><option value="fr">Français</option></select></div></div><div class="editor-footer"><button class="primary-btn" type="submit" data-i18n="saveSettings">حفظ الإعدادات</button></div></form></div>
     <div class="card" style="margin-top:14px"><h3 data-i18n="backupTitle">النسخ الاحتياطي</h3><p class="table-sub" data-i18n="backupDesc">صدّر نسخة JSON من بيانات حسابك أو استعد نسخة سابقة.</p><div class="module-actions"><button class="primary-btn" id="exportBackup" data-i18n="exportBackup">تنزيل نسخة احتياطية</button><button class="secondary-btn" id="chooseRestore" data-i18n="restoreBackup">استعادة نسخة</button><input id="restoreFile" type="file" accept="application/json,.json" class="hidden"></div><p id="backupMessage" class="table-sub" aria-live="polite"></p></div>
+  </div>
   </div>
 </section>
   </main>
