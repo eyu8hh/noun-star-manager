@@ -293,6 +293,8 @@ create trigger nsm_absences_refs before insert or update on public.absences
 for each row execute function public.nsm_assert_related_owner('players','player_id');
 create trigger nsm_suspensions_refs before insert or update on public.suspensions
 for each row execute function public.nsm_assert_related_owner('players','player_id','matches','incident_match_id');
+create trigger nsm_suspension_log_refs before insert or update on public.suspension_match_log
+for each row execute function public.nsm_assert_related_owner('suspensions','suspension_id','matches','match_id');
 
 -- Match finalization consumes one match from each active suspension belonging
 -- to a currently registered player of that team. Reversals increment the current
