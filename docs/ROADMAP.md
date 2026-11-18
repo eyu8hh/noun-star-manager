@@ -33,7 +33,7 @@
 - [ ] Yellow-card threshold configurable by the coach.
 
 ## Phase 5 — Training, health, and statistics
-- [ ] Training sessions and attendance.
+- [x] Training sessions and attendance (per-player status; injured players default to injured rather than present).
 - [ ] Injury/recovery and dated absence records.
 - [ ] Player statistics table and Arabic-safe CSV export.
 
