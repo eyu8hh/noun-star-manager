@@ -456,7 +456,7 @@ $("clearAllData").addEventListener("click",async()=>{
 });
 $("loadDemoData").addEventListener("click",async()=>{
  try{
-  const existing=await selectRows("clubs");if(existing.length){alert(lang==="ar"?"لمنع خلط البيانات، حمّل البيانات التجريبية بعد مسح بيانات الفريق أولا.":"Pour éviter de mélanger les données, effacez d’abord les données de l’équipe.");return}
+  const existing=await Promise.all(["clubs","teams","players","matches"].map(t=>selectRows(t)));if(existing.some(rows=>rows.length)){alert(lang==="ar"?"لمنع خلط البيانات، حمّل البيانات التجريبية بعد مسح بيانات الفريق أولا.":"Pour éviter de mélanger les données, effacez d’abord les données de l’équipe.");return}
   if(!confirm(lang==="ar"?"سيتم إنشاء نادٍ تجريبي وفريق U15 و12 لاعبا و4 مباريات وحصة تدريبية وبطولة وسجل إصابة وغياب. هل تتابع؟":"Un club de démonstration, une équipe U15, 12 joueurs, 4 matchs, une séance, une compétition, une blessure et une absence seront créés. Continuer ?"))return;
   const today=new Date().toISOString().slice(0,10),club=await insertDemoRow("clubs",{name:lang==="ar"?"نادي تجريبي — DEMO":"Club démo — DEMO",short_name:"DEMO",notes:"Données de démonstration — Demo data"});
   const team=await insertDemoRow("teams",{club_id:club.id,name:"U15",age_category:"U15",season:String(new Date().getFullYear())+"/"+(new Date().getFullYear()+1)});
