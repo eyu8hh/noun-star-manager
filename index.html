@@ -402,7 +402,7 @@ $("clubsTable").addEventListener("click",async e=>{const edit=e.target.closest("
 $("teamsTable").addEventListener("click",async e=>{const edit=e.target.closest("[data-edit-team]"),del=e.target.closest("[data-delete-team]");if(edit){const x=teamsData.find(a=>a.id===edit.dataset.editTeam);if(!x)return;editingTeam=x.id;$("teamName").value=x.name;$("teamClub").value=x.club_id;$("teamAge").value=x.age_category||"";$("teamSeason").value=x.season||"";$("teamEditorTitle").textContent=tr("edit")+" — "+x.name;openEditor("teamEditor")}if(del&&confirm(tr("confirmDeleteTeam"))){try{await deleteRow("teams",del.dataset.deleteTeam);await loadClubs();loadDashboard()}catch{alert(tr("saveError"))}}});
 $("addPlayerBtn").addEventListener("click",()=>{editingPlayer=null;$("playerForm").reset();$("playerEditorTitle").textContent=tr("addPlayer");renderPlayers();openEditor("playerEditor")});
 $("cancelPlayer").addEventListener("click",()=>{closeEditor("playerEditor");editingPlayer=null});
-$("playerSearch").addEventListener("input",renderPlayers);
+
 async function capturePlayerTeamSnapshot(playerId,teamId){
  const matches=await selectRows("matches","&team_id=eq."+teamId+"&status=eq.finished"),ids=new Set(matches.map(m=>m.id));
  const [lineups,events]=await Promise.all([selectRows("match_lineups","&player_id=eq."+playerId),selectRows("match_events")]);
