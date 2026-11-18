@@ -112,7 +112,8 @@ assert.ok(schema.includes("nsm_suspension_log_refs"), "Suspension ledger needs a
 assert.ok(schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension accounting trigger must not be directly executable");
 const verifySql = readFileSync(new URL("../supabase/verify.sql", import.meta.url), "utf8");
 assert.ok(verifySql.toLowerCase().includes("from pg_policies") && verifySql.toLowerCase().includes("rls_enabled"), "Read-only Supabase verification queries are missing");
-assert.ok(!/\\b(insert into|update public\\.|delete from|create table|alter table|drop table)\\b/i.test(verifySql), "Supabase verification script must remain read-only");
+const verifyLower = verifySql.toLowerCase();
+assert.ok(!["insert into","update public.","delete from","create table","alter table","drop table"].some(token => verifyLower.includes(token)), "Supabase verification script must remain read-only");
 const deployWorkflow = readFileSync(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
 assert.ok(deployWorkflow.includes("workflow_dispatch") && deployWorkflow.includes("actions/deploy-pages@v4"), "Manual GitHub Pages deployment workflow is missing");
 assert.ok(deployWorkflow.includes("pages: write") && deployWorkflow.includes("id-token: write"), "GitHub Pages deployment permissions are incomplete");
