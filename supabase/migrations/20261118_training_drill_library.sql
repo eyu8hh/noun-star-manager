@@ -33,11 +33,11 @@ create trigger nsm_training_session_drills_refs before insert or update on publi
 for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','training_drills','drill_id');
 alter table public.training_session_drills alter column drill_id drop not null;
 alter table public.training_session_drills add column if not exists builtin_drill_key text;
-do $ begin
-  if not exists (select 1 from pg_constraint where conname = 'training_session_drill_one_ref') then
+do $nsm$ begin
+  if not exists (select 1 from pg_constraint where conname = 'training_session_drill_one_ref' and conrelid = 'public.training_session_drills'::regclass) then
     alter table public.training_session_drills add constraint training_session_drill_one_ref check ((drill_id is not null and builtin_drill_key is null) or (drill_id is null and builtin_drill_key is not null));
   end if;
-end $;
+end $nsm$;
 alter table public.training_session_drills drop constraint if exists training_session_drills_session_id_drill_id_key;
 create unique index if not exists training_session_drills_custom_unique on public.training_session_drills(session_id,drill_id) where drill_id is not null;
 create unique index if not exists training_session_drills_builtin_unique on public.training_session_drills(session_id,builtin_drill_key) where builtin_drill_key is not null;
