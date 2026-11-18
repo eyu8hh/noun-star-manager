@@ -17,7 +17,7 @@
 ## Phase 2 — Club, team, and player management
 - [x] Clubs and multiple age-group teams (CRUD, linked deletion).
 - [x] Player CRUD, position, search, status, and team assignment.
-- [x] Player career profile with appearances, minutes, goals, assists, cards, team-transfer snapshots, injury/absence history, and match-event log. Position-group filters remain pending.
+- [x] Player career profile with appearances, minutes, goals, assists, cards, team-transfer snapshots, injury/absence history, and match-event log; player lists are grouped by position with team/position filters.
 - [x] Current team assignment and transfer-history snapshots of appearances, minutes, goals, assists, and cards; career-wide aggregation view remains pending.
 - [x] Injury and suspension records synchronize the player's availability state (live data verification pending).
 
