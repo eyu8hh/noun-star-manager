@@ -85,8 +85,13 @@ assert.ok(schema.includes("training_session_drills") && schema.includes("builtin
 const manualMigration = readFileSync(new URL("../supabase/migrations/20261118_manual_match_stats.sql", import.meta.url), "utf8");
 const drillMigration = readFileSync(new URL("../supabase/migrations/20261118_training_drill_library.sql", import.meta.url), "utf8");
 const competitionMigration = readFileSync(new URL("../supabase/migrations/20261118_competition_manual_results.sql", import.meta.url), "utf8");
+const suspensionMigration = readFileSync(new URL("../supabase/migrations/20261118_reversible_suspension_accounting.sql", import.meta.url), "utf8");
 assert.ok(manualMigration.includes("'manual'"), "Manual match-stat migration is missing");
 assert.ok(drillMigration.includes("training_drills") && drillMigration.includes("builtin_drill_key"), "Training drill migration is missing");
 assert.ok(competitionMigration.includes("remaining_matches"), "Competition migration is missing");
+assert.ok(schema.includes("'suspensions','suspension_match_log','settings'"), "Suspension ledger is missing from owner RLS policy list");
+assert.ok(schema.includes("nsm_suspension_log_refs") && schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension ledger ownership or trigger execution is not secured");
+assert.ok(suspensionMigration.includes("grant select,insert,update,delete on table public.suspension_match_log") && suspensionMigration.includes("nsm_suspension_log_refs"), "Suspension ledger migration is missing owner-scoped backup permissions");
+assert.ok(script.includes('"suspension_match_log"'), "Backup/restore must include the suspension ledger");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
