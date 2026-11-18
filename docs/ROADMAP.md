@@ -12,13 +12,13 @@
 - [x] Add Arabic RTL / French LTR switching and responsive navigation.
 - [x] Add direct Supabase Auth/REST initialization using the publishable key only (live connection not yet verified).
 - [x] Add coach login/logout, refresh-token session handling, loading, empty, and error states (live Auth verification pending).
-- [ ] Add safe local draft handling and JSON backup/restore.
+- [ ] Add safe local draft handling for unsaved forms; JSON backup/restore is implemented.
 
 ## Phase 2 — Club, team, and player management
 - [x] Clubs and multiple age-group teams (CRUD, linked deletion).
 - [x] Player CRUD, position, search, status, and team assignment.
 - [x] Player career profile with appearances, minutes, goals, assists, cards, team-transfer snapshots, injury/absence history, and match-event log; player lists are grouped by position with team/position filters.
-- [x] Current team assignment and transfer-history snapshots of appearances, minutes, goals, assists, and cards; career-wide aggregation view remains pending.
+- [x] Current team assignment and transfer-history snapshots of appearances, minutes, goals, assists, and cards; player profiles aggregate career totals across finished matches.
 - [x] Injury and suspension records synchronize the player's availability state (live data verification pending).
 
 ## Phase 3 — Matches
@@ -37,7 +37,7 @@
 - [x] Yellow-card threshold configurable by the coach.
 
 ## Phase 5 — Training, health, and statistics
-- [x] Training sessions and attendance (per-player status; injured players default to injured rather than present).
+- [x] Training sessions and attendance (per-player status; injured players default to injured rather than present; session list displays attendance rates).
 - [x] Original Arabic-first bilingual drill bank expanded to 16 illustrated drills across technical, tactical, transition, finishing, and physical categories.
 - [x] Copy a built-in drill into the coach’s own editable library; import/export the personal drill bank as validated JSON.
 - [x] Add official FIFA Training Centre and UEFA grassroots learning links without copying their protected drill text or artwork.
