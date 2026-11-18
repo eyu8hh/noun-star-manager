@@ -156,7 +156,7 @@ $("resultForm").addEventListener("submit",async e=>{e.preventDefault();if(!finis
 async function showModule(page){
  ["clubsModule","playersModule","matchesModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
  if(page==="clubs"){ $("modulePlaceholder").classList.add("hidden");$("clubsModule").classList.remove("hidden");try{await loadClubs()}catch{}}
- else if(page==="players"){ $("modulePlaceholder").classList.add("hidden");$("playersModule").classList.remove("hidden");try{await loadPlayers()}catch{}}
+ else if(page==="players"){ $("modulePlaceholder").classList.add("hidden");$("playersModule").classList.remove("hidden");try{await loadPlayers()}catch{}} else if(page==="matches"){ $("modulePlaceholder").classList.add("hidden");$("matchesModule").classList.remove("hidden");try{await loadMatches()}catch{}}
 }
 $("addClubBtn").addEventListener("click",()=>{resetClubForm();openEditor("clubEditor");$("clubName").focus()});
 $("cancelClub").addEventListener("click",()=>{closeEditor("clubEditor");resetClubForm()});
