@@ -30,6 +30,7 @@ Mobile-first football team management for a coach. Arabic RTL by default, with F
 │   ├── schema.sql
 │   └── migrations/
 │       ├── 20261118_reversible_suspension_accounting.sql
+│       ├── 20261118_manual_match_stats.sql
 │       ├── 20261118_competition_manual_results.sql
 │       └── 20261118_training_drill_library.sql
 └── docs/
@@ -46,7 +47,7 @@ Mobile-first football team management for a coach. Arabic RTL by default, with F
 - The tactical board is an SVG diagram and stage navigator, not a full physics-based animation or video editor.
 
 ## Supabase bootstrap status
-`supabase/schema.sql` is the complete bootstrap schema for a fresh, dedicated Supabase project. It includes owner-scoped RLS, cross-owner reference checks, reversible suspension accounting, the private drill library, session-to-drill links, and manually tracked opponent fixtures. For a fresh project, review and apply this bootstrap once. For a project that already has the earlier base schema, review and apply the incremental migrations in order: `20261118_reversible_suspension_accounting.sql`, `20261118_competition_manual_results.sql`, then `20261118_training_drill_library.sql`. Do not run the fresh bootstrap over an existing database. None of these SQL changes has been executed against the live Supabase project or validated by a live PostgreSQL run.
+`supabase/schema.sql` is the complete bootstrap schema for a fresh, dedicated Supabase project. It includes owner-scoped RLS, cross-owner reference checks, reversible suspension accounting, the private drill library, session-to-drill links, and manually tracked opponent fixtures. For a fresh project, review and apply this bootstrap once. For a project that already has the earlier base schema, review and apply the incremental migrations in order: `20261118_reversible_suspension_accounting.sql`, `20261118_manual_match_stats.sql`, `20261118_competition_manual_results.sql`, then `20261118_training_drill_library.sql`. Do not run the fresh bootstrap over an existing database. None of these SQL changes has been executed against the live Supabase project or validated by a live PostgreSQL run.
 
 After the schema is reviewed and applied:
 1. Disable public sign-ups in Supabase Authentication settings.
