@@ -57,6 +57,7 @@
 - [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the training tables and suspension accounting ledger.
 - [x] Add an opt-in demo club/team dataset and a separately confirmed team-data reset that preserves coach login and preferences. Deployment and coach setup documentation remain pending.
 - [x] Restore and validate the markup for lineup, health, statistics, discipline, and settings screens.
+- [x] Embed licensed Cairo and Barlow Condensed WOFF2 subsets in the single HTML file and include their OFL license texts.
 - [x] Extend CI checks to cover every referenced DOM ID, duplicate IDs, Arabic/French translation keys, static database table references, and module-parent hierarchy.
 
 ## Acceptance rule
