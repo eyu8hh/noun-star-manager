@@ -37,6 +37,11 @@
 
 ## Phase 5 — Training, health, and statistics
 - [x] Training sessions and attendance (per-player status; injured players default to injured rather than present).
+- [x] Original Arabic-first drill bank across technical, tactical, transition, finishing, and physical categories.
+- [x] Interactive SVG tactical board: add/drag players, defenders, ball and cones; draw movement arrows.
+- [x] Stage-by-stage drill explanation and guided playback.
+- [x] Coach-created drill form with diagram/stage data; custom cloud storage schema and migration committed (live persistence awaits migration).
+- [x] Link multiple drills to one training session (live persistence awaits migration).
 - [x] Injury/recovery records and dated absences (basic CRUD; player status synchronization and archive refinements remain pending).
 - [x] Player statistics table and UTF-8 CSV export (goals, assists, cards, appearances, and lineup minutes; career/team history aggregation remains pending).
 
@@ -44,6 +49,7 @@
 - [ ] Test core create/edit/delete workflows and related-record cleanup.
 - [ ] Test match finish/reopen and suspension reversal.
 - [ ] Test Arabic/French switching and mobile layout at 400px.
+- [ ] Test tactical board pointer/touch dragging, arrows, stage navigation, custom drill CRUD, and multi-drill session linking in a real browser.
 - [ ] Verify backup/restore and two-device synchronization.
 - [x] Add coach profile settings and JSON backup/restore (merge-based restore). Deployment and coach setup documentation remain pending.
 
