@@ -111,7 +111,7 @@ create table public.match_lineups (
   match_id uuid not null references public.matches(id) on delete cascade,
   player_id uuid not null references public.players(id) on delete cascade,
   selection_status text not null default 'starter'
-    check (selection_status in ('starter','substitute','not_selected')),
+    constraint match_lineups_selection_status_check check (selection_status in ('starter','substitute','not_selected','manual')),
   position text, shirt_number integer check (shirt_number is null or shirt_number between 1 and 99),
   started_minute integer check (started_minute between 0 and 300),
   ended_minute integer check (ended_minute between 0 and 300),
