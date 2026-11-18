@@ -4,8 +4,12 @@
 
 This repository is configured for a dedicated Supabase project.
 
-1. Open the project's SQL Editor.
-2. Review supabase/schema.sql, then run it once on a fresh project. It creates the tables, owner-scoped RLS policies, ownership-check triggers, auth bootstrap trigger, and the training, competition, and suspension structures.
+1. Open the project's SQL Editor and create a new query for each script below.
+2. Run these three scripts separately and in this exact order, waiting for each to finish successfully before starting the next:
+   - [01_tables.sql](../supabase/install/01_tables.sql) — tables and base function.
+   - [02_auth_and_ownership.sql](../supabase/install/02_auth_and_ownership.sql) — Auth bootstrap and cross-owner protection.
+   - [03_suspensions_and_rls.sql](../supabase/install/03_suspensions_and_rls.sql) — reversible suspension accounting and RLS policies.
+   These smaller scripts replace the need to copy the large supabase/schema.sql file in one operation; they are intended for a fresh, dedicated project only.
 3. Run supabase/verify.sql and inspect the results:
    - all expected public tables should exist and have RLS enabled;
    - each business table should have an owner-only policy, and profiles should be self-scoped;
