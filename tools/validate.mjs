@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "playerProfilePanel"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "playerProfilePanel", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -56,6 +56,7 @@ const frKeys = keys(frMap);
 const usedTranslations = new Set([
   ...[...html.matchAll(/data-i18n="([^"]+)"/g)].map((m) => m[1]),
   ...[...html.matchAll(/data-i18n-placeholder="([^"]+)"/g)].map((m) => m[1]),
+  ...[...html.matchAll(/data-i18n-title="([^"]+)"/g)].map((m) => m[1]),
   ...[...script.matchAll(/tr\("([^"]+)"\)/g)].map((m) => m[1]),
 ]);
 for (const key of usedTranslations) {
@@ -69,5 +70,20 @@ const referencedTables = new Set([...script.matchAll(/(?:selectRows|saveRow|dele
 for (const table of referencedTables) {
   assert.ok(schemaTables.has(table), "Application references a table missing from schema.sql: " + table);
 }
+
+const drillStart = script.indexOf("const builtInDrills=[");
+const drillEnd = script.indexOf("function drillText", drillStart);
+assert.ok(drillStart >= 0 && drillEnd > drillStart, "Missing built-in training drill library");
+const drillSection = script.slice(drillStart, drillEnd);
+assert.equal([...drillSection.matchAll(/\{id:"/g)].length, 8, "Expected eight bundled original drills");
+assert.ok(script.includes("animateTransform"), "Tactical stage playback should animate player movement");
+assert.ok(schema.includes("selection_status in ('starter','substitute','not_selected','manual')"), "Schema must support manual match-stat rows");
+assert.ok(schema.includes("training_session_drills") && schema.includes("builtin_drill_key"), "Schema must support built-in and custom drills in session plans");
+const manualMigration = readFileSync(new URL("../supabase/migrations/20261118_manual_match_stats.sql", import.meta.url), "utf8");
+const drillMigration = readFileSync(new URL("../supabase/migrations/20261118_training_drill_library.sql", import.meta.url), "utf8");
+const competitionMigration = readFileSync(new URL("../supabase/migrations/20261118_competition_manual_results.sql", import.meta.url), "utf8");
+assert.ok(manualMigration.includes("'manual'"), "Manual match-stat migration is missing");
+assert.ok(drillMigration.includes("training_drills") && drillMigration.includes("builtin_drill_key"), "Training drill migration is missing");
+assert.ok(competitionMigration.includes("remaining_matches"), "Competition migration is missing");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
