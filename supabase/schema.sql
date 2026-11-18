@@ -396,7 +396,7 @@ do $$ declare t text; begin
   foreach t in array array[
     'profiles','clubs','teams','players','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
-    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','settings'
+    'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
     execute format('alter table public.%I enable row level security',t);
     execute format('revoke all on table public.%I from anon',t);
