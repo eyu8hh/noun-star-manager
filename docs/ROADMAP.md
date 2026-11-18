@@ -38,7 +38,9 @@
 
 ## Phase 5 — Training, health, and statistics
 - [x] Training sessions and attendance (per-player status; injured players default to injured rather than present).
-- [x] Original Arabic-first drill bank across technical, tactical, transition, finishing, and physical categories.
+- [x] Original Arabic-first bilingual drill bank expanded to 16 illustrated drills across technical, tactical, transition, finishing, and physical categories.
+- [x] Copy a built-in drill into the coach’s own editable library; import/export the personal drill bank as validated JSON.
+- [x] Add official FIFA Training Centre and UEFA grassroots learning links without copying their protected drill text or artwork.
 - [x] Interactive SVG tactical board: add/drag players, defenders, ball and cones; draw movement arrows.
 - [x] Stage-by-stage drill explanation and guided playback.
 - [x] Coach-created drill form with diagram/stage data; custom cloud storage schema and migration committed (live persistence awaits migration).
@@ -47,12 +49,13 @@
 - [x] Player statistics table and UTF-8 CSV export (goals, assists, cards, appearances, and lineup minutes; career/team history aggregation remains pending).
 
 ## Phase 6 — QA and handoff
-- [ ] Test core create/edit/delete workflows and related-record cleanup in a real browser and live Supabase project.
+- [ ] Test core create/edit/delete workflows, demo loading/reset, and related-record cleanup in a real browser and live Supabase project.
 - [ ] Test match finish/reopen and suspension reversal.
 - [ ] Test Arabic/French switching and mobile layout at 400px.
 - [ ] Test tactical board pointer/touch dragging, arrows, stage navigation, custom drill CRUD, multi-drill session linking, and manual match-stat entry in a real browser.
 - [ ] Verify backup/restore (including custom drills and session links) and two-device synchronization; focus/idle refresh is implemented but not yet live-tested.
-- [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the new training tables. Deployment and coach setup documentation remain pending.
+- [x] Add coach profile settings and JSON backup/restore (merge-based restore), including the training tables and suspension accounting ledger.
+- [x] Add an opt-in demo club/team dataset and a separately confirmed team-data reset that preserves coach login and preferences. Deployment and coach setup documentation remain pending.
 - [x] Restore and validate the markup for lineup, health, statistics, discipline, and settings screens.
 - [x] Extend CI checks to cover every referenced DOM ID, duplicate IDs, Arabic/French translation keys, static database table references, and module-parent hierarchy.
 
