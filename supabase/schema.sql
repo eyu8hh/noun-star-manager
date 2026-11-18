@@ -294,6 +294,7 @@ begin
       where s.owner_id = new.owner_id
         and s.status = 'active'
         and s.matches_remaining > 0
+        and new.match_date >= coalesce(s.confirmed_at,s.created_at)
         and (s.incident_match_id is null or s.incident_match_id <> new.id)
       order by s.id
       for update of s
