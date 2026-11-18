@@ -97,4 +97,26 @@ assert.ok(schema.includes("nsm_suspension_log_refs") && schema.includes("revoke 
 assert.ok(suspensionMigration.includes("grant select,insert,update,delete on table public.suspension_match_log") && suspensionMigration.includes("nsm_suspension_log_refs"), "Suspension ledger migration is missing owner-scoped backup permissions");
 assert.ok(script.includes('"suspension_match_log"'), "Backup/restore must include the suspension ledger");
 
+
+const ownerPolicyStart = schema.indexOf("create policy nsm_owner_only on public.%I");
+assert.ok(ownerPolicyStart > 0, "Missing dynamic owner-only RLS policy");
+const ownerPolicyListStart = schema.lastIndexOf("foreach t in array array[", ownerPolicyStart);
+const ownerPolicyListEnd = schema.indexOf("] loop", ownerPolicyListStart);
+assert.ok(ownerPolicyListStart >= 0 && ownerPolicyListEnd > ownerPolicyListStart, "Cannot inspect owner RLS table list");
+const ownerPolicyList = schema.slice(ownerPolicyListStart, ownerPolicyListEnd);
+for (const table of schemaTables) {
+  if (table === "profiles") continue;
+  assert.ok(ownerPolicyList.includes("'" + table + "'"), "Missing owner-only RLS policy for table: " + table);
+}
+assert.ok(schema.includes("nsm_suspension_log_refs"), "Suspension ledger needs a same-owner reference trigger");
+assert.ok(schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension accounting trigger must not be directly executable");
+const verifySql = readFileSync(new URL("../supabase/verify.sql", import.meta.url), "utf8");
+assert.ok(verifySql.toLowerCase().includes("from pg_policies") && verifySql.toLowerCase().includes("rls_enabled"), "Read-only Supabase verification queries are missing");
+assert.ok(!/\\b(insert into|update public\\.|delete from|create table|alter table|drop table)\\b/i.test(verifySql), "Supabase verification script must remain read-only");
+const deployWorkflow = readFileSync(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
+assert.ok(deployWorkflow.includes("workflow_dispatch") && deployWorkflow.includes("actions/deploy-pages@v4"), "Manual GitHub Pages deployment workflow is missing");
+assert.ok(deployWorkflow.includes("pages: write") && deployWorkflow.includes("id-token: write"), "GitHub Pages deployment permissions are incomplete");
+assert.ok(script.includes('finishedMatchIds.has(e.match_id)'), "Discipline thresholds must ignore unfinished matches");
+assert.ok(script.includes('order=sort_order.asc'), "Training session drill order must be persisted and restored");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
