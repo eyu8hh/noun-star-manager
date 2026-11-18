@@ -20,10 +20,11 @@ const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) =
 const missingIds = [...referencedIds].filter((id) => !idSet.has(id));
 assert.deepEqual(missingIds, [], "Application references missing HTML IDs");
 
-const translationsStart = script.indexOf("const translations={");
-const translationsEnd = script.indexOf("\n};", translationsStart);
-assert.ok(translationsStart >= 0 && translationsEnd > translationsStart, "Missing Arabic/French translations");
-const translations = script.slice(translationsStart, translationsEnd);
+const translationsStart = script.indexOf("const translations");
+const translationsObjectStart = script.indexOf("{", translationsStart);
+const translationsEnd = script.indexOf("\n};", translationsObjectStart);
+assert.ok(translationsStart >= 0 && translationsObjectStart > translationsStart && translationsEnd > translationsObjectStart, "Missing Arabic/French translations");
+const translations = script.slice(translationsObjectStart, translationsEnd);
 const arStart = translations.indexOf("ar:{") + 4;
 const frStart = translations.indexOf("\nfr:{");
 assert.ok(arStart >= 4 && frStart > arStart, "Missing Arabic or French translation map");
