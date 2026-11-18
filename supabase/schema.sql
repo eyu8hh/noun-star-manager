@@ -204,6 +204,15 @@ end $$;
 create trigger nsm_auth_user_created after insert on auth.users
 for each row execute function public.nsm_on_auth_user_created();
 
+-- Backfill the manually-created coach account if it predates this bootstrap.
+insert into public.profiles(id,display_name)
+select id,coalesce(raw_user_meta_data ->> 'display_name','') from auth.users
+on conflict(id) do nothing;
+insert into public.settings(owner_id)
+select id from auth.users
+on conflict(owner_id) do nothing;
+
+
 -- Enforce that every referenced business record belongs to the same authenticated owner.
 create or replace function public.nsm_assert_related_owner()
 returns trigger language plpgsql security definer set search_path = ''
@@ -253,32 +262,41 @@ create trigger nsm_suspensions_refs before insert or update on public.suspension
 for each row execute function public.nsm_assert_related_owner('players','player_id','matches','incident_match_id');
 
 -- Match finalization consumes one match from each active suspension belonging
--- to a currently registered player of that team. Reopening/deleting the match
--- restores the exact prior suspension state. The unique ledger makes this idempotent.
+-- to a currently registered player of that team. Reversals increment the current
+-- balance rather than restoring a stale snapshot, so out-of-order reopening is safe.
 create or replace function public.nsm_account_suspensions_for_match()
 returns trigger language plpgsql security definer set search_path = ''
-as $
+as $$
 declare
   rec record;
   inserted_id uuid;
   target_match_id uuid;
+  target_owner_id uuid;
 begin
-  target_match_id := case when tg_op = 'DELETE' then old.id else new.id end;
+  if tg_op = 'DELETE' then
+    target_match_id := old.id;
+    target_owner_id := old.owner_id;
+  else
+    target_match_id := new.id;
+    target_owner_id := new.owner_id;
+  end if;
 
-  if tg_op = 'DELETE' or (old.status = 'finished' and new.status <> 'finished') then
+  if tg_op = 'DELETE' or (tg_op = 'UPDATE' and old.status = 'finished' and new.status <> 'finished') then
     for rec in
-      select l.suspension_id,l.matches_before,l.status_before,l.confirmed_at_before
+      select l.suspension_id,l.owner_id
       from public.suspension_match_log l
-      where l.match_id = target_match_id
+      where l.match_id = target_match_id and l.owner_id = target_owner_id
       order by l.created_at desc
     loop
       update public.suspensions
-      set matches_remaining = rec.matches_before,
-          status = rec.status_before,
-          confirmed_at = rec.confirmed_at_before
-      where id = rec.suspension_id and owner_id = case when tg_op='DELETE' then old.owner_id else new.owner_id end;
+      set matches_remaining = matches_remaining + 1,
+          status = case when status = 'served' then 'active' else status end
+      where id = rec.suspension_id
+        and owner_id = rec.owner_id
+        and status in ('active','served');
     end loop;
-    delete from public.suspension_match_log where match_id = target_match_id;
+    delete from public.suspension_match_log
+    where match_id = target_match_id and owner_id = target_owner_id;
     if tg_op = 'DELETE' then return old; else return new; end if;
   end if;
 
@@ -316,7 +334,7 @@ begin
     end loop;
   end if;
   return new;
-end $;
+end $$;
 
 create trigger nsm_match_suspension_accounting
 before update of status on public.matches
@@ -373,5 +391,5 @@ commit;
 -- 1) Disable public sign-ups (Authentication > Settings/User Signups).
 -- 2) Create the coach account manually in Authentication > Users.
 -- 3) Use the publishable key in the browser only; never expose service_role/secret keys.
--- Match finalization/reopening/deletion now has a transactional, reversible suspension ledger.
--- Standings aggregation and target-position projections still need a separate implementation.
+-- Match finalization/reopening/deletion has a transactional, reversible suspension ledger.
+-- Standings and target-position calculations are handled by the client from registered fixtures.
