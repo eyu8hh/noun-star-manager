@@ -465,7 +465,7 @@ create policy nsm_profile_self on public.profiles for all to authenticated
 using (id = (select auth.uid())) with check (id = (select auth.uid()));
 do $$ declare t text; begin
   foreach t in array array[
-    'clubs','teams','team_coaches','players','team_players','player_team_history','competitions',
+    'clubs','teams','team_coaches','players','player_profile_change_requests','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
     'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
