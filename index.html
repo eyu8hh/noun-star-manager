@@ -1373,12 +1373,13 @@ $("publicPostForm").addEventListener("submit",async e=>{e.preventDefault();if(!p
 $("publicPostsAdminList").addEventListener("click",async e=>{const toggle=e.target.closest("[data-toggle-public-post]"),del=e.target.closest("[data-delete-public-post]");if(!publicSiteAdmin||(!toggle&&!del))return;try{if(del&&confirm("هل تريد حذف هذا المنشور؟"))await deleteRow("public_posts",del.dataset.deletePublicPost);else if(toggle)await saveRow("public_posts",{is_published:toggle.dataset.published!=="true"},toggle.dataset.togglePublicPost);await loadPublicPostsAdmin();await loadPublicHome()}catch{$("publicPostMessage").textContent="تعذر تحديث المنشور."}});
 
 $("dashboardTeamFilter").addEventListener("change",loadDashboard);
-// One capture-phase router owns the shell controls. This keeps mobile taps working
-// even when buttons contain nested icons/text and prevents duplicate toggle handlers.
-document.addEventListener("click",event=>{
- const origin=event.target;
- const b=origin instanceof Element?origin.closest("button"):null;
- if(!b)return;
+// Route shell interactions at the window capture phase. This is deliberately
+// above document-level handlers so nested icons and mobile touch-generated clicks
+// cannot be swallowed by a lower-level delegated listener.
+window.addEventListener("click",event=>{
+ const path=typeof event.composedPath==="function"?event.composedPath():[event.target];
+ const b=path.find(node=>node instanceof HTMLButtonElement)||null;
+ if(!b||!$("appView")||$("appView").classList.contains("hidden"))return;
  const id=b.id;
  if(id==="menuBtn"){
   event.preventDefault();event.stopImmediatePropagation();
@@ -1400,8 +1401,8 @@ document.addEventListener("click",event=>{
   document.body.classList.toggle("light");
   localStorage.setItem("nsm_theme",document.body.classList.contains("light")?"light":"dark");return;
  }
- const nav=b.closest("#nav button[data-page]");
- const quick=b.closest("[data-goto]");
+ const nav=b.matches("#nav button[data-page]")?b:b.closest("#nav button[data-page]");
+ const quick=b.matches("[data-goto]")?b:b.closest("[data-goto]");
  if(nav||quick){
   event.preventDefault();event.stopImmediatePropagation();
   const page=(nav||quick).dataset.page||(nav||quick).dataset.goto;
