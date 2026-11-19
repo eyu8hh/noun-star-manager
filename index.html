@@ -51,7 +51,7 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
 @media(max-width:520px){.public-nav{min-height:68px}.public-crest{width:40px;height:40px}.public-brand b{font-size:15px}.public-hero{margin-top:16px;display:block;padding:30px 22px}.public-hero-art{position:absolute;bottom:18px;inset-inline-end:15px;opacity:.35}.public-hero-copy{max-width:100%}.public-hero h1{font-size:42px}.public-hero-meta{max-width:220px;line-height:1.8}.public-shortcuts{gap:8px}.public-shortcuts a{min-height:105px;padding:12px}.public-shortcuts b{font-size:11px}.public-posts-grid{grid-template-columns:1fr}.public-info-card{align-items:flex-start;padding:15px}.public-modal-card{padding:22px 17px}.public-footer{flex-direction:column;align-items:flex-start}}
 
 .public-match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.public-match-card{padding:17px;border:1px solid #ffffff1a;border-radius:16px;background:#191c25}.public-match-top{display:flex;justify-content:space-between;gap:8px;color:#9eacd0;font-size:10px}.public-match-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:18px 0}.public-match-teams b{font-size:13px;text-align:center}.public-match-score{font-size:22px;font-weight:900;color:#b7c4ff;white-space:nowrap}.public-match-bottom{display:flex;justify-content:space-between;gap:8px;color:#9da7bc;font-size:10px}.public-match-status{color:#aebdff;font-weight:800}@media(max-width:520px){.public-match-grid{grid-template-columns:1fr}}
-@media print{body *{visibility:hidden!important}#playerProfilePanel,#playerProfilePanel *{visibility:visible!important}#playerProfilePanel{display:block!important;position:absolute!important;inset:0!important;width:100%!important;margin:0!important;padding:10mm!important;box-shadow:none!important;border:0!important;background:#fff!important;color:#111!important}#playerProfilePanel .module-actions,#playerProfilePanel form button{display:none!important}#playerProfilePanel .card{break-inside:avoid}#playerProfilePanel .data-table-wrap{overflow:visible!important}#playerProfilePanel table{width:100%!important;border-collapse:collapse!important}#playerProfilePanel th,#playerProfilePanel td{border:1px solid #bbb!important;color:#111!important;padding:6px!important}}</style>
+@media print{body *{visibility:hidden!important}#playerProfilePanel,#playerProfilePanel *{visibility:visible!important}#playerProfilePanel{display:block!important;position:absolute!important;inset:0!important;width:100%!important;margin:0!important;padding:10mm!important;box-shadow:none!important;border:0!important;background:#fff!important;color:#111!important}#playerProfilePanel .module-actions,#playerProfilePanel form button{display:none!important}#playerProfilePanel .card{break-inside:avoid}#playerProfilePanel .data-table-wrap{overflow:visible!important}#playerProfilePanel table{width:100%!important;border-collapse:collapse!important}#playerProfilePanel th,#playerProfilePanel td{border:1px solid #bbb!important;color:#111!important;padding:6px!important}}.report-bar-row{display:grid;grid-template-columns:90px minmax(40px,1fr) auto;align-items:center;gap:9px;margin:12px 0;font-size:12px}.report-bar-track{height:9px;border-radius:20px;background:var(--line);overflow:hidden}.report-bar-track i{display:block;height:100%;border-radius:20px;background:var(--blue)}.report-insights{display:grid;gap:9px}.report-insight{padding:10px 12px;border:1px solid var(--line);border-radius:12px;font-size:12px;line-height:1.7}.reportTable h4,#reportTable h4{margin:18px 0 8px;color:var(--text)}@media print{.report-bar-track{border:1px solid #aaa}.report-bar-track i{background:#555!important}}@media print{body *{visibility:hidden!important}#reportsModule,#reportsModule *{visibility:visible!important}#reportsModule{display:block!important;position:absolute!important;inset:0!important;width:100%!important;margin:0!important;padding:8mm!important;background:#fff!important;color:#111!important}#reportsModule .module-toolbar,#reportsModule .card:first-child,#reportsModule .form-grid,#reportsModule .module-actions{display:none!important}#reportPrintArea .card{break-inside:avoid;box-shadow:none!important;border:0!important;background:#fff!important;color:#111!important}#reportPrintArea .stat{border:1px solid #bbb!important;background:#fff!important;color:#111!important}#reportPrintArea .stat *{color:#111!important}#reportPrintArea table{width:100%!important;border-collapse:collapse!important}#reportPrintArea th,#reportPrintArea td{border:1px solid #bbb!important;color:#111!important;padding:5px!important}#reportPrintArea h3,#reportPrintArea h4{color:#111!important}}</style>
 </head>
 <body>
 <div id="loginView" class="public-shell">
@@ -1015,6 +1015,128 @@ async function showModule(page){
  else if(page==="clubs"){ $("modulePlaceholder").classList.add("hidden");$("clubsModule").classList.remove("hidden");try{await loadClubs()}catch{}}
  else if(page==="players"){ $("modulePlaceholder").classList.add("hidden");$("playersModule").classList.remove("hidden");try{await loadPlayers()}catch{}} else if(page==="matches"){ $("modulePlaceholder").classList.add("hidden");$("matchesModule").classList.remove("hidden");try{await loadMatches()}catch{}} else if(page==="competitions"){ $("modulePlaceholder").classList.add("hidden");$("competitionsModule").classList.remove("hidden");try{await loadCompetitions()}catch{}} else if(page==="training"){ $("modulePlaceholder").classList.add("hidden");$("trainingModule").classList.remove("hidden");try{await loadTraining()}catch{}} else if(page==="health"){ $("modulePlaceholder").classList.add("hidden");$("healthModule").classList.remove("hidden");try{await loadHealth()}catch{}} else if(page==="statistics"){ $("modulePlaceholder").classList.add("hidden");$("statisticsModule").classList.remove("hidden");try{membershipsData=await selectRows("team_players","&is_current=eq.true");await loadStatistics()}catch{alert(tr("loadError"))}} else if(page==="discipline"){ $("modulePlaceholder").classList.add("hidden");$("disciplineModule").classList.remove("hidden");try{await loadDiscipline()}catch{alert(tr("loadError"))}} else if(page==="finance"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("financeModule").classList.remove("hidden");try{await loadFinance()}catch{alert("تعذر تحميل السجل المالي. تحقق من الاتصال والصلاحيات.")}} else if(page==="clubResources"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("clubResourcesModule").classList.remove("hidden");try{await loadClubResources()}catch{alert("تعذر تحميل موارد النادي. تحقق من الاتصال والصلاحيات.")}} else if(page==="reports"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("reportsModule").classList.remove("hidden");try{await loadReports()}catch(err){$("reportStatus").textContent="تعذر تحميل بيانات التقرير. تحقق من الاتصال والصلاحيات.";console.error("reports",err)}} else if(page==="settings"){ $("modulePlaceholder").classList.add("hidden");$("settingsModule").classList.remove("hidden");try{await loadSettings()}catch{alert(tr("loadError"))}}
 }
+
+let reportsData={teams:[],seasons:[],players:[],matches:[],events:[],lineups:[],sessions:[],attendance:[],evaluations:[],transactions:[],dues:[],sponsorPayments:[],equipment:[],kitAssignments:[]},reportExportRows=[];
+const reportTitles={overview:"التقرير الشامل للنادي",sports:"الأداء الرياضي والمباريات",players:"اللاعبون والتطور الفني",training:"التدريبات والحضور",finance:"المالية والاشتراكات",resources:"الموارد والتجهيزات"};
+function reportDate(value){return value?String(value).slice(0,10):""}
+function reportInRange(value,from,to){const d=reportDate(value);return !!d&&(!from||d>=from)&&(!to||d<=to)}
+function reportTable(headers,rows){if(!rows.length)return '<div class="empty-state"><b>لا توجد بيانات ضمن الفترة المحددة</b>ستظهر التفاصيل بعد تسجيل البيانات في الموقع.</div>';return '<table class="data-table"><thead><tr>'+headers.map(x=>'<th>'+esc(x)+'</th>').join("")+'</tr></thead><tbody>'+rows.join("")+'</tbody></table>'}
+function reportStat(label,value,note=""){return '<article class="stat"><div class="stat-top"><span>'+esc(label)+'</span></div><div class="stat-value">'+esc(String(value))+'</div><div class="stat-foot">'+esc(note)+'</div></article>'}
+function reportBars(items){const max=Math.max(1,...items.map(x=>Number(x.value)||0));return items.map(x=>'<div class="report-bar-row"><span>'+esc(x.label)+'</span><div class="report-bar-track"><i style="width:'+Math.max(0,Math.min(100,(Number(x.value)||0)/max*100))+'%"></i></div><b>'+esc(String(x.display??x.value))+'</b></div>').join("")||'<div class="empty-state">لا توجد مؤشرات كافية للرسم.</div>'}
+async function loadReports(){
+ if(currentProfile?.role!=="manager")throw Error("MANAGER_ONLY");
+ $("reportStatus").textContent="جارٍ تجميع بيانات التقارير...";
+ const today=localFinanceDate(),yearStart=today.slice(0,4)+"-01-01";
+ if(!$("reportFrom").value)$("reportFrom").value=yearStart;
+ if(!$("reportTo").value)$("reportTo").value=today;
+ const tables=["teams","club_seasons","players","matches","match_events","match_lineups","training_sessions","training_attendance","player_evaluations","finance_transactions","finance_dues","sponsor_payments","equipment_items","kit_assignments"];
+ const values=await Promise.all(tables.map(t=>selectRows(t,"&limit=1000")));
+ tables.forEach((t,i)=>reportsData[t==="club_seasons"?"seasons":t==="training_sessions"?"sessions":t==="training_attendance"?"attendance":t==="player_evaluations"?"evaluations":t==="finance_transactions"?"transactions":t==="finance_dues"?"dues":t==="sponsor_payments"?"sponsorPayments":t==="equipment_items"?"equipment":t==="kit_assignments"?"kitAssignments":t]=values[i]);
+ const teamSelect=$("reportTeam"),seasonSelect=$("reportSeason"),teamValue=teamSelect.value,seasonValue=seasonSelect.value;
+ teamSelect.innerHTML='<option value="">جميع الفئات</option>'+reportsData.teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
+ seasonSelect.innerHTML='<option value="">كل الفترات</option>'+reportsData.seasons.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+(x.status==="active"?" · نشط":"")+'</option>').join("");
+ teamSelect.value=teamValue;seasonSelect.value=seasonValue;
+ renderReports();
+}
+function renderReports(){
+ const type=$("reportType").value,teamId=$("reportTeam").value,seasonId=$("reportSeason").value;
+ let from=$("reportFrom").value,to=$("reportTo").value;
+ const season=reportsData.seasons.find(x=>x.id===seasonId);
+ if(season){from=season.start_date||from;to=season.end_date||to}
+ const team=reportsData.teams.find(x=>x.id===teamId);
+ const inRange=v=>reportInRange(v,from,to);
+ const matchTeam=m=>!teamId||m.team_id===teamId;
+ const matches=reportsData.matches.filter(m=>inRange(m.match_date)&&matchTeam(m));
+ const finished=matches.filter(m=>m.status==="finished");
+ const wins=finished.filter(m=>Number(m.goals_for||0)>Number(m.goals_against||0)).length;
+ const draws=finished.filter(m=>Number(m.goals_for||0)===Number(m.goals_against||0)).length;
+ const losses=finished.length-wins-draws;
+ const goalsFor=finished.reduce((n,m)=>n+Number(m.goals_for||0),0),goalsAgainst=finished.reduce((n,m)=>n+Number(m.goals_against||0),0);
+ const currentMembership=reportsData.lineups;
+ const filteredLineups=currentMembership.filter(x=>matches.some(m=>m.id===x.match_id));
+ const filteredEvents=reportsData.events.filter(x=>matches.some(m=>m.id===x.match_id));
+ const teamPlayerIds=teamId?new Set(filteredLineups.map(x=>x.player_id)):null;
+ const players=reportsData.players.filter(p=>!teamPlayerIds||teamPlayerIds.has(p.id));
+ const sessions=reportsData.sessions.filter(x=>inRange(x.session_date)&&(!teamId||x.team_id===teamId));
+ const sessionIds=new Set(sessions.map(x=>x.id));
+ const attendance=reportsData.attendance.filter(x=>sessionIds.has(x.session_id));
+ const present=attendance.filter(x=>["present","late","حاضر","متأخر"].includes(String(x.attendance_status||"").toLowerCase())).length;
+ const evaluations=reportsData.evaluations.filter(x=>inRange(x.period_start)&&(!teamId||x.team_id===teamId));
+ const transactions=reportsData.transactions.filter(x=>inRange(x.transaction_date));
+ const income=transactions.filter(x=>x.kind==="income").reduce((n,x)=>n+Number(x.amount||0),0);
+ const expense=transactions.filter(x=>x.kind==="expense").reduce((n,x)=>n+Number(x.amount||0),0);
+ const dues=reportsData.dues;
+ const dueTotal=dues.reduce((n,x)=>n+Number(x.amount_due||0),0),paidTotal=dues.reduce((n,x)=>n+Number(x.amount_paid||0),0);
+ const dueRemaining=Math.max(0,dueTotal-paidTotal);
+ const sponsorPayments=reportsData.sponsorPayments.filter(x=>inRange(x.payment_date));
+ const equipment=reportsData.equipment,lowStock=equipment.filter(x=>Number(x.quantity_on_hand)<=Number(x.minimum_quantity));
+ const issuedKits=reportsData.kitAssignments.filter(x=>x.status==="issued");
+ const playerGoals={};filteredEvents.filter(x=>x.event_type==="goal"&&x.player_id).forEach(x=>playerGoals[x.player_id]=(playerGoals[x.player_id]||0)+1);
+ const playerApps={};filteredLineups.forEach(x=>playerApps[x.player_id]=(playerApps[x.player_id]||0)+1);
+ const playerEval={};evaluations.forEach(x=>{const a=playerEval[x.player_id]||(playerEval[x.player_id]={sum:0,count:0});a.sum+=["technical_score","tactical_score","physical_score","discipline_score"].reduce((n,k)=>n+Number(x[k]||0),0)/4;a.count++});
+ const avgScore=Object.values(playerEval).length?Object.values(playerEval).reduce((n,x)=>n+x.sum/x.count,0)/Object.values(playerEval).length:0;
+ const attendanceRate=attendance.length?present/attendance.length*100:0;
+ $("reportHeading").textContent=reportTitles[type]||reportTitles.overview;
+ $("reportPeriodLabel").textContent=(team?team.name+" · ":"")+(season?season.name+" · ":"")+((from||"بداية الفترة")+" — "+(to||"حتى الآن"));
+ $("reportVisualTitle").textContent=type==="finance"?"توزيع الحركات المالية":type==="training"?"الحضور التدريبي": "مؤشرات النتائج";
+ let stats=[],bars=[],insights=[],tables=[];
+ const matchRows=finished.slice().sort((a,b)=>String(b.match_date).localeCompare(String(a.match_date))).map(m=>'<tr><td>'+esc(reportDate(m.match_date))+'</td><td>'+esc(reportsData.teams.find(t=>t.id===m.team_id)?.name||"—")+'</td><td>'+esc(m.opponent_name||"—")+'</td><td><b>'+Number(m.goals_for||0)+' - '+Number(m.goals_against||0)+'</b></td><td>'+esc(m.home_away||"—")+'</td></tr>');
+ const playerRows=players.slice().sort((a,b)=>(playerGoals[b.id]||0)-(playerGoals[a.id]||0)).map(p=>'<tr><td><b>'+esc(p.full_name)+'</b></td><td>'+esc(p.primary_position||"—")+'</td><td>'+Number(playerApps[p.id]||0)+'</td><td>'+Number(playerGoals[p.id]||0)+'</td><td>'+((playerEval[p.id]?.count)?(playerEval[p.id].sum/playerEval[p.id].count).toFixed(1)+"/10":"—")+'</td></tr>');
+ const financeRows=transactions.slice().sort((a,b)=>String(b.transaction_date).localeCompare(String(a.transaction_date))).map(x=>'<tr><td>'+esc(reportDate(x.transaction_date))+'</td><td>'+esc(x.kind==="income"?"دخل":"مصروف")+'</td><td>'+esc(x.title)+'</td><td>'+esc(x.category||"—")+'</td><td>'+esc(moneyMAD(x.amount))+'</td></tr>');
+ const attendanceRows=sessions.slice().sort((a,b)=>String(b.session_date).localeCompare(String(a.session_date))).map(x=>{const list=attendance.filter(a=>a.session_id===x.id),yes=list.filter(a=>["present","late","حاضر","متأخر"].includes(String(a.attendance_status||"").toLowerCase())).length;return '<tr><td>'+esc(reportDate(x.session_date))+'</td><td>'+esc(x.title||"حصة تدريبية")+'</td><td>'+esc(reportsData.teams.find(t=>t.id===x.team_id)?.name||"—")+'</td><td>'+list.length+'</td><td>'+yes+'</td><td>'+ (list.length?Math.round(yes/list.length*100):0)+'%</td></tr>'});
+ if(type==="overview"||type==="sports"){
+  stats=[reportStat("اللاعبون",players.length,"ضمن النطاق المحدد"),reportStat("المباريات المكتملة",finished.length,"مباراة"),reportStat("الفوز / التعادل / الخسارة",wins+" / "+draws+" / "+losses,"من المباريات المكتملة"),reportStat("الأهداف له / عليه",goalsFor+" / "+goalsAgainst,"إجمالي الأهداف")];
+  bars=[{label:"فوز",value:wins},{label:"تعادل",value:draws},{label:"خسارة",value:losses}];
+  insights.push("نسبة الفوز: "+(finished.length?Math.round(wins/finished.length*100):0)+"%","متوسط الأهداف المسجلة في المباراة: "+(finished.length?(goalsFor/finished.length).toFixed(2):"—"),"عدد اللاعبين الذين شاركوا في التشكيلات: "+new Set(filteredLineups.map(x=>x.player_id)).size);
+  tables.push('<h4>نتائج المباريات</h4>'+reportTable(["التاريخ","الفئة","المنافس","النتيجة","المكان"],matchRows));
+ }
+ if(type==="overview"||type==="players"){
+  stats.push(reportStat("اللاعبون المسجلون",players.length,"ضمن النطاق المحدد"),reportStat("تقييمات فنية",evaluations.length,"تقييم مسجل"),reportStat("متوسط التقييم",avgScore?avgScore.toFixed(1)+"/10":"—","متوسط المحاور الأربعة"),reportStat("مشاركات مسجلة",filteredLineups.length,"في التشكيلات"));
+  const rows=playerRows;
+  tables.push('<h4>مؤشرات اللاعبين</h4>'+reportTable(["اللاعب","المركز","المشاركات","الأهداف","متوسط التقييم"],rows));
+  bars=[{label:"تقييم فني",value:avgScore,display:avgScore?avgScore.toFixed(1)+"/10":"—"}];
+  insights.push("التقييم الفني متوسط من المحاور التقنية والتكتيكية والبدنية والانضباطية.","الأهداف والمشاركات محسوبة من سجلات المباريات والتشكيلات.");
+ }
+ if(type==="overview"||type==="training"){
+  stats.push(reportStat("الحصص التدريبية",sessions.length,"ضمن الفترة"),reportStat("سجلات الحضور",attendance.length,"لاعب × حصة"),reportStat("حضور / تأخر",present,"حسب حالات الحضور المسجلة"),reportStat("نسبة الحضور",Math.round(attendanceRate)+"%","من سجلات الحضور"));
+  tables.push('<h4>الحصص والحضور</h4>'+reportTable(["التاريخ","الحصة","الفئة","السجلات","حاضر / متأخر","النسبة"],attendanceRows));
+  bars=[{label:"حضور / تأخر",value:present},{label:"غياب أو حالات أخرى",value:Math.max(0,attendance.length-present)}];
+  insights.push("نسبة الحضور محسوبة من سجلات الحضور الفعلية، ولا تُحتسب الحصص التي لم تُسجل لها حالات.");
+ }
+ if(type==="overview"||type==="finance"){
+  stats.push(reportStat("إجمالي المداخيل",moneyMAD(income),"ضمن الفترة"),reportStat("إجمالي المصاريف",moneyMAD(expense),"ضمن الفترة"),reportStat("الصافي",moneyMAD(income-expense),"دخل ناقص مصروف"),reportStat("الديون المتبقية",moneyMAD(dueRemaining),"من جميع الاستحقاقات"));
+  tables.push('<h4>دفتر الحركات المالية</h4>'+reportTable(["التاريخ","النوع","البيان","التصنيف","المبلغ"],financeRows));
+  tables.push('<h4>ملخص الاستحقاقات</h4>'+reportTable(["الاستحقاق","الموسم","المطلوب","المؤدى","المتبقي"],dues.map(x=>'<tr><td>'+esc(x.title)+'</td><td>'+esc(x.season||"—")+'</td><td>'+esc(moneyMAD(x.amount_due))+'</td><td>'+esc(moneyMAD(x.amount_paid))+'</td><td>'+esc(moneyMAD(Math.max(0,Number(x.amount_due)-Number(x.amount_paid))))+'</td></tr>')));
+  bars=[{label:"المداخيل",value:income,display:moneyMAD(income)},{label:"المصاريف",value:expense,display:moneyMAD(expense)}];
+  insights.push("الدفعات المسجلة للرعاة خلال الفترة: "+moneyMAD(sponsorPayments.reduce((n,x)=>n+Number(x.amount||0),0)),"المتبقي من الاشتراكات والالتزامات: "+moneyMAD(dueRemaining));
+ }
+ if(type==="overview"||type==="resources"){
+  stats.push(reportStat("عناصر المخزون",equipment.length,"أصناف مسجلة"),reportStat("تحت حد التنبيه",lowStock.length,"تحتاج متابعة"),reportStat("الأطقم المسلمة",issuedKits.length,"تسليم نشط"),reportStat("دفعات الرعاية",sponsorPayments.length,"ضمن الفترة"));
+  tables.push('<h4>حالة المخزون</h4>'+reportTable(["المعدة","التصنيف","المتوفر","حد التنبيه","الحالة"],equipment.map(x=>'<tr><td>'+esc(x.name)+'</td><td>'+esc(x.category||"—")+'</td><td>'+Number(x.quantity_on_hand)+'</td><td>'+Number(x.minimum_quantity)+'</td><td>'+esc(x.condition||"—")+'</td></tr>')));
+  tables.push('<h4>الأطقم المسلمة</h4>'+reportTable(["اللاعب","الطقم","المقاس","تاريخ التسليم","الحالة"],reportsData.kitAssignments.filter(x=>x.status==="issued").map(x=>'<tr><td>'+esc(reportsData.players.find(p=>p.id===x.player_id)?.full_name||"—")+'</td><td>'+esc(x.kit_id)+'</td><td>'+esc(x.size||"—")+'</td><td>'+esc(reportDate(x.issued_at))+'</td><td>'+esc(x.status)+'</td></tr>')));
+  bars=[{label:"مخزون سليم",value:Math.max(0,equipment.length-lowStock.length)},{label:"تحت حد التنبيه",value:lowStock.length}];
+  insights.push(lowStock.length?lowStock.length+" صنفاً وصل إلى حد التنبيه أو أقل.":"لا توجد أصناف تحت حد التنبيه حالياً.");
+ }
+ $("reportSummary").innerHTML=stats.join("");
+ $("reportVisuals").innerHTML=reportBars(bars);
+ $("reportInsights").innerHTML=insights.map(x=>'<div class="report-insight">'+esc(x)+'</div>').join("")||'<div class="empty-state">لا توجد ملاحظات كافية.</div>';
+ $("reportTableTitle").textContent=reportTitles[type]||"تفاصيل التقرير";
+ $("reportTable").innerHTML=tables.join("")||'<div class="empty-state">لا توجد تفاصيل لهذا التقرير.</div>';
+ reportExportRows=[];
+ if(type==="overview"||type==="sports")finished.forEach(m=>reportExportRows.push({type:"match",date:reportDate(m.match_date),team:reportsData.teams.find(t=>t.id===m.team_id)?.name||"",opponent:m.opponent_name,goals_for:m.goals_for,goals_against:m.goals_against}));
+ if(type==="overview"||type==="players")players.forEach(p=>reportExportRows.push({type:"player",name:p.full_name,position:p.primary_position,appearances:playerApps[p.id]||0,goals:playerGoals[p.id]||0,average_evaluation:playerEval[p.id]?.count?(playerEval[p.id].sum/playerEval[p.id].count).toFixed(1):""}));
+ if(type==="overview"||type==="training")sessions.forEach(x=>reportExportRows.push({type:"training",date:reportDate(x.session_date),session:x.title,team:reportsData.teams.find(t=>t.id===x.team_id)?.name||"",attendance:attendance.filter(a=>a.session_id===x.id).length}));
+ if(type==="overview"||type==="finance")transactions.forEach(x=>reportExportRows.push({type:"finance",date:reportDate(x.transaction_date),kind:x.kind,title:x.title,category:x.category,amount:x.amount}));
+ if(type==="overview"||type==="resources")equipment.forEach(x=>reportExportRows.push({type:"equipment",name:x.name,category:x.category,quantity:x.quantity_on_hand,minimum:x.minimum_quantity,condition:x.condition}));
+ $("reportStatus").textContent="تم تحديث التقرير من "+(from||"دون بداية محددة")+" إلى "+(to||"دون نهاية محددة")+" · "+reportExportRows.length+" سجل تفصيلي.";
+}
+$("reportGenerateBtn").addEventListener("click",()=>renderReports());
+$("reportType").addEventListener("change",()=>renderReports());
+$("reportTeam").addEventListener("change",()=>renderReports());
+$("reportSeason").addEventListener("change",()=>renderReports());
+$("reportPrintBtn").addEventListener("click",()=>window.print());
+$("reportCsvBtn").addEventListener("click",()=>{if(!reportExportRows.length){alert("لا توجد سجلات لتصديرها.");return}const cols=[...new Set(reportExportRows.flatMap(x=>Object.keys(x)))];const csv="\uFEFF"+[cols.join(","),...reportExportRows.map(row=>cols.map(k=>'"'+String(row[k]??"").replace(/"/g,'""')+'"').join(","))].join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="noun-star-report-"+$("reportType").value+"-"+localFinanceDate()+".csv";a.click();URL.revokeObjectURL(url)});
+
 $("addClubBtn").addEventListener("click",()=>{resetClubForm();openEditor("clubEditor");$("clubName").focus()});
 $("cancelClub").addEventListener("click",()=>{closeEditor("clubEditor");resetClubForm()});
 $("clubForm").addEventListener("submit",async e=>{e.preventDefault();const body={name:$("clubName").value.trim(),short_name:$("clubShort").value.trim()||null,notes:$("clubNotes").value.trim()||null};try{await saveRow("clubs",body,editingClub);closeEditor("clubEditor");resetClubForm();await loadClubs();loadDashboard();}catch(err){alert(err.message==="HTTP_409"?tr("clubExists"):tr("saveError"))}});
