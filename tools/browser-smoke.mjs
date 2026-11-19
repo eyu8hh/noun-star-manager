@@ -188,7 +188,7 @@ try {
 
   assert.deepEqual(pageErrors, [], "Browser console reported uncaught JavaScript errors");
   assert.deepEqual(consoleErrors, [], "Browser console reported console errors");
-  process.stdout.write("PASS: public account, RTL/LTR, manager, coach, player, fan login, role permissions, mobile drawer, navigation, and quick actions.\\n");
+  process.stdout.write("PASS: public account, RTL/LTR, manager, coach, player, fan login, role permissions, mobile drawer, navigation, and quick actions.\n");
 } finally {
   await context.close();
   await browser.close();
