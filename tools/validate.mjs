@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "loadDemoData", "clearAllData", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -79,7 +79,8 @@ assert.ok([...drillSection.matchAll(/\{(?:"id"|id):"/g)].length >= 16, "Expected
 assert.ok(script.includes("animateTransform"), "Tactical stage playback should animate player movement");
 assert.ok(script.includes("importDrillBankFile") && script.includes("downloadJsonFile"), "Drill bank JSON import/export is missing");
 assert.ok(script.includes("builtInDrills.push(...extraOriginalDrills)"), "Expanded original drill bank is not registered");
-assert.ok(script.includes("clearCoachTeamData") && script.includes("insertDemoRow"), "Demo loader and safe team-data reset are missing");
+assert.ok(!html.includes('id="loadDemoData"') && !html.includes('id="clearAllData"'), "Demo data controls must stay removed");
+assert.ok(!script.includes("insertDemoRow") && !script.includes("clearCoachTeamData"), "Demo data mutation helpers must stay removed");
 assert.ok(html.includes("@font-face") && html.includes("data:font/woff2;base64,"), "Cairo and Barlow fonts must be embedded in the single HTML file");
 assert.ok(html.includes('font-family:"Cairo"') && html.includes('font-family:"Barlow Condensed"'), "Both embedded font families must be declared");
 assert.ok(!/sb_secret_|service_role/i.test(html), "A secret or service-role key must never be embedded in the public HTML");
