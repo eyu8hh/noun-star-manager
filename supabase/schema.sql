@@ -422,7 +422,7 @@ end $$;
 create or replace function public.nsm_protect_profile_role()
 returns trigger language plpgsql as $
 begin
-  if new.role is distinct from old.role and current_user <> 'service_role' then
+  if current_user <> 'service_role' and (new.role is distinct from old.role or new.club_owner_id is distinct from old.club_owner_id or new.coach_code is distinct from old.coach_code) then
     raise exception 'Profile role can only be changed by club administration';
   end if;
   return new;
@@ -431,6 +431,8 @@ $;
 create trigger nsm_protect_profile_role before update on public.profiles
 for each row execute function public.nsm_protect_profile_role();
 
+create policy nsm_manager_read_club_coaches on public.profiles for select to authenticated
+using (role='coach' and club_owner_id=(select auth.uid()));
 create policy nsm_profile_self on public.profiles for all to authenticated
 using (id = (select auth.uid())) with check (id = (select auth.uid()));
 do $$ declare t text; begin
