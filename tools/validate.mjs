@@ -129,4 +129,10 @@ assert.ok(community.includes("nsm_public_poll_results"), "Public voting page mus
 assert.ok(community.includes("audience_poll_votes"), "Public voting page must submit votes");
 const communityScript = community.slice(community.indexOf("<script>") + 8, community.indexOf("</script>"));
 new Function(communityScript);
+const manifest = JSON.parse(readFileSync(new URL("../manifest.webmanifest", import.meta.url), "utf8"));
+assert.equal(manifest.display, "standalone", "PWA must be installable in standalone mode");
+assert.ok(manifest.icons?.length >= 1, "PWA manifest needs an app icon");
+const serviceWorker = readFileSync(new URL("../service-worker.js", import.meta.url), "utf8");
+new Function("self", "caches", "fetch", "URL", serviceWorker);
+assert.ok(html.includes('rel="manifest"') && community.includes('rel="manifest"'), "Both app surfaces must link to the PWA manifest");
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
