@@ -29,9 +29,8 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p site
-          cp index.html site/index.html
-          mkdir -p site/assets
-          cp assets/noun-star-logo.png site/assets/noun-star-logo.png
+          cp index.html community.html manifest.webmanifest service-worker.js site/
+          cp -R assets site/assets
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
