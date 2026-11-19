@@ -72,20 +72,35 @@ Deno.serve(async (req: Request) => {
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email: managerEmail, password, email_confirm: true, user_metadata: { display_name: displayName },
   });
-  if (createError || !created.user) return json({ error: createError?.message ?? "Could not create manager account" }, 400);
+  if (createError || !created.user) {
+    await admin.from("nsm_manager_bootstrap_tokens").update({ used_at: null }).eq("token_hash", tokenHash);
+    return json({ error: createError?.message ?? "Could not create manager account" }, 400);
+  }
   const managerId = created.user.id;
   let clubId: string | null = null;
   let oldProfileChanged = false;
   let settingsMoved = false;
   let publicAdminAdded = false;
 
+  const movedOwnerTables: string[] = [];
+  const ownerTables = [
+    "absences", "audience_polls", "competition_teams", "competitions", "injuries",
+    "match_events", "match_lineups", "matches", "player_evaluations", "player_monthly_votes",
+    "player_profile_change_requests", "player_team_history", "players", "public_posts",
+    "suspension_match_log", "suspensions", "team_coaches", "team_players", "teams",
+    "training_attendance", "training_drills", "training_session_drills", "training_sessions",
+  ];
   const rollback = async () => {
+    for (const table of [...movedOwnerTables].reverse()) {
+      await admin.from(table).update({ owner_id: callerId }).eq("owner_id", managerId);
+    }
     if (oldProfileChanged) await admin.from("profiles").update({ role: "manager", club_owner_id: null, coach_code: null }).eq("id", callerId);
     if (settingsMoved) await admin.from("settings").update({ owner_id: callerId }).eq("owner_id", managerId);
     if (publicAdminAdded) await admin.from("public_site_admins").delete().eq("user_id", managerId);
     if (clubId) await admin.from("clubs").delete().eq("id", clubId);
     await admin.auth.admin.deleteUser(managerId);
     if (oldEmail) await admin.auth.admin.updateUserById(callerId, { email: oldEmail, email_confirm: true });
+    await admin.from("nsm_manager_bootstrap_tokens").update({ used_at: null }).eq("token_hash", tokenHash);
   };
 
   const { error: profileError } = await admin.from("profiles").update({ role: "manager", display_name: displayName }).eq("id", managerId);
@@ -100,9 +115,19 @@ Deno.serve(async (req: Request) => {
   if (publicAdminError) { await rollback(); return json({ error: "Could not grant public-site management: " + publicAdminError.message }, 500); }
   publicAdminAdded = true;
 
+  // Auth user creation automatically creates a blank settings row for the new account.
+  // Remove that row first so transferring the existing settings primary key cannot collide.
+  const { error: blankSettingsError } = await admin.from("settings").delete().eq("owner_id", managerId);
+  if (blankSettingsError) { await rollback(); return json({ error: "Could not prepare manager settings: " + blankSettingsError.message }, 500); }
   const { error: settingsError } = await admin.from("settings").update({ owner_id: managerId, coach_name: displayName }).eq("owner_id", callerId);
   if (settingsError) { await rollback(); return json({ error: "Could not transfer club settings: " + settingsError.message }, 500); }
   settingsMoved = true;
+
+  for (const table of ownerTables) {
+    const { error } = await admin.from(table).update({ owner_id: managerId }).eq("owner_id", callerId);
+    if (error) { await rollback(); return json({ error: "Could not transfer " + table + ": " + error.message }, 500); }
+    movedOwnerTables.push(table);
+  }
 
   const { error: oldProfileError } = await admin.from("profiles")
     .update({ role: "coach", club_owner_id: managerId, coach_code: coachCode }).eq("id", callerId);
