@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "financeModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "financeModule", "clubResourcesModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam", "clubResourcesNav", "clubSeasonForm", "clubSponsorForm", "clubAgreementForm", "clubSponsorPaymentForm", "clubEquipmentForm", "clubEquipmentMovementForm", "clubKitForm", "clubKitAssignmentForm", "clubActivityTable"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -34,7 +34,7 @@ for (const match of htmlBeforeScript.matchAll(divTags)) {
   }
 }
 assert.deepEqual(divStack, [], "Unbalanced application div structure");
-for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "financeModule", "settingsModule"]) {
+for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "financeModule", "clubResourcesModule", "settingsModule"]) {
   assert.equal(parentById.get(id), "appView", id + " must be a sibling module under appView");
 }
 assert.equal(parentById.get("playerProfilePanel"), "appView>playersModule", "Player profile must be inside playersModule");
@@ -109,7 +109,7 @@ const ownerPolicyListEnd = schema.indexOf("] loop", ownerPolicyListStart);
 assert.ok(ownerPolicyListStart >= 0 && ownerPolicyListEnd > ownerPolicyListStart, "Cannot inspect owner RLS table list");
 const ownerPolicyList = schema.slice(ownerPolicyListStart, ownerPolicyListEnd);
 for (const table of schemaTables) {
-  if (table === "profiles" || ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes","audience_members","public_site_admins","public_posts","audience_notifications","audience_notification_reads","audience_signup_attempts","nsm_manager_bootstrap_tokens","finance_dues","finance_transactions"].includes(table)) continue;
+  if (table === "profiles" || ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes","audience_members","public_site_admins","public_posts","audience_notifications","audience_notification_reads","audience_signup_attempts","nsm_manager_bootstrap_tokens","finance_dues","finance_transactions","club_seasons","sponsors","sponsor_agreements","sponsor_payments","equipment_items","equipment_movements","club_kits","kit_assignments","club_activity_logs"].includes(table)) continue;
   assert.ok(ownerPolicyList.includes("'" + table + "'"), "Missing owner-only RLS policy for table: " + table);
 }
 for (const table of ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes","public_posts"]) assert.ok(schema.includes("create policy nsm_"), "New feature tables must declare explicit RLS policies");
@@ -162,7 +162,7 @@ const playerAccountFunction = readFileSync(new URL("../supabase/functions/nsm-cr
 assert.ok(playerAccountFunction.includes('profile?.role!=="manager"') && playerAccountFunction.includes('.eq("owner_id",data.user.id)'), "Player account creation must be manager-only and owner-scoped");
 assert.ok(playerAccountFunction.includes('role:"player"') && playerAccountFunction.includes('user_id:user.user.id'), "Player account must be linked to the existing player record");
 assert.ok(html.includes('id="managerCoachAssignmentCard"') && html.includes('id="managerQuickCoaches"') && html.includes('id="managerDashboardPanel"'), "Manager-only dashboard and staff controls are missing");
-assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&(page==="clubs"||page==="finance")'), "Manager/coach workspace separation is missing");
+assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&(page==="clubs"||page==="finance"||page==="clubResources")'), "Manager/coach workspace separation is missing");
 const managerAccessMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_controls_coach_assignments.sql", import.meta.url), "utf8");
 assert.ok(managerAccessMigration.includes("drop policy if exists nsm_coach_insert_own_assignments") && managerAccessMigration.includes("tc.coach_user_id = (select auth.uid())"), "Coach assignments must be manager-controlled and team reads assignment-scoped");
 const coachProvisioning = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
@@ -171,6 +171,6 @@ assert.ok(html.includes('id="financeNav"') && html.includes('id="financeModule"'
 assert.ok(script.includes('currentProfile?.role!=="manager"') && script.includes("async function loadFinance") && script.includes('saveRow("finance_transactions"') && script.includes('saveRow("finance_dues"'), "Finance workspace must enforce manager access and support ledger/dues");
 const financeMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_finance_ledger.sql", import.meta.url), "utf8");
 assert.ok(financeMigration.includes("alter table public.finance_dues enable row level security") && financeMigration.includes("finance_transactions_manager_insert") && financeMigration.includes("nsm_validate_finance_due_payment") && financeMigration.includes("nsm_validate_finance_due_owner") && financeMigration.includes("Player does not belong to this club") && financeMigration.includes("nsm_sync_finance_due_paid"), "Manager-only finance RLS and due payment synchronization are required");
-assert.ok(serviceWorker.includes('nsm-shell-v4'), "PWA cache must refresh after the finance release");
+assert.ok(serviceWorker.includes('nsm-shell-v5'), "PWA cache must refresh after the imported club resources release");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
