@@ -99,7 +99,7 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
       <div class="public-info-card"><span class="public-info-icon">🏆</span><div><b>شارك في تصويتات ومسابقات النادي</b><p>تابع اختيار الأفضل، وتحديات الجمهور، والفعاليات التي ينشرها النادي.</p><a href="./community.html">انتقل إلى مساحة التصويتات ←</a></div></div>
     </section>
     <section id="fanNotificationsPanel" class="public-section hidden">
-      <div class="public-section-head"><div><span class="public-kicker">YOUR UPDATES</span><h2>إشعاراتك</h2></div><label class="public-notify-toggle"><input id="fanNotificationsEnabled" type="checkbox" checked> تفعيل التنبيهات</label></div>
+      <div class="public-section-head"><div><span class="public-kicker">YOUR UPDATES</span><h2>إشعاراتك</h2></div><label class="public-notify-toggle"><input id="fanNotificationsEnabled" type="checkbox" checked> إظهار تنبيهات الحساب داخل الموقع</label></div>
       <div id="fanNotificationsList" class="public-notifications"></div>
     </section>
   </main>
@@ -881,6 +881,7 @@ async function loadPublicHome(){
 }
 async function loadFanNotifications(){
  if(!audienceMember||!session)return;
+ if(!audienceMember.notifications_enabled){$("fanNotificationsList").innerHTML='<div class="public-empty">أوقفت تنبيهات الحساب داخل الموقع. يمكنك إعادة تفعيلها من هذا القسم.</div>';return}
  try{
   const [items,reads]=await Promise.all([
    publicRequest("audience_notifications","select=id,title,body,audience,created_at&order=created_at.desc&limit=20"),
