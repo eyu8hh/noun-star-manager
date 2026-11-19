@@ -145,6 +145,9 @@ const manifest = JSON.parse(readFileSync(new URL("../manifest.webmanifest", impo
 assert.equal(manifest.display, "standalone", "PWA must be installable in standalone mode");
 assert.ok(manifest.icons?.length >= 1, "PWA manifest needs an app icon");
 const serviceWorker = readFileSync(new URL("../service-worker.js", import.meta.url), "utf8");
+const deployWorkflow = readFileSync(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
+const pagesArtifactName = "github-pages-${{ github.run_id }}-${{ github.run_attempt }}";
+assert.ok(deployWorkflow.includes("name: " + pagesArtifactName) && deployWorkflow.includes("artifact_name: " + pagesArtifactName), "Pages upload and deploy must use the same unique artifact name per workflow attempt");
 new Function("self", "caches", "fetch", "URL", serviceWorker);
 assert.ok(html.includes('rel="manifest"') && community.includes('rel="manifest"'), "Both app surfaces must link to the PWA manifest");
 
