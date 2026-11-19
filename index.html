@@ -606,7 +606,7 @@ async function loadPlayerPortal(){
  playerPortalRequests=await selectRows("player_profile_change_requests","&player_id=eq."+playerPortalRecord.id+"&order=created_at.desc");
  $("playerOwnRequests").innerHTML=tableHtml(["التاريخ","الحقل","القيمة المقترحة","الحالة","ملاحظة الإدارة"],playerPortalRequests.map(r=>'<tr><td>'+esc((r.created_at||"").slice(0,10))+'</td><td>'+esc(correctionFields[r.field_key]||r.field_key)+'</td><td>'+esc(r.proposed_value)+'</td><td>'+esc(r.status==="pending"?"قيد المراجعة":r.status==="approved"?"تمت الموافقة":"مرفوض")+'</td><td>'+esc(r.review_note||"—")+'</td></tr>'));
  const opts=links[0]?await api("/rest/v1/rpc/nsm_player_vote_candidates",{method:"POST",body:"{}"}):[];
- $("monthlyVoteCandidate").innerHTML='<option value="">اختر زميلاً</option>'+opts.map(p=>'<option value="'+esc(p.player_id)+'">'+esc(p.full_name)+(p.shirt_number?" · #"+p.shirt_number:"")+"</option>').join("");
+ $("monthlyVoteCandidate").innerHTML='<option value="">اختر زميلاً</option>'+opts.map(p=>'<option value="'+esc(p.player_id)+'">'+esc(p.full_name)+'</option>').join("");
  $("monthlyVoteMessage").textContent="";
  const existing=await selectRows("player_monthly_votes","&month_start=eq."+monthStart()+"&voter_player_id=eq."+playerPortalRecord.id);
  if(existing.length){$("playerMonthlyVoteForm").querySelector("button").disabled=true;$("monthlyVoteMessage").textContent="لقد أدليت بصوتك لهذا الشهر."}else $("playerMonthlyVoteForm").querySelector("button").disabled=opts.length===0;
