@@ -135,6 +135,7 @@ try {
     await page.locator("#appView:not(.hidden)").waitFor({ timeout: 15000 });
   }
   async function staffLogout() {
+    await page.waitForFunction(() => { const sidebar = document.getElementById("sidebar"); if (!sidebar || sidebar.classList.contains("open")) return false; const rect = sidebar.getBoundingClientRect(); return rect.right <= 0 || rect.left >= window.innerWidth; }, null, { timeout: 2000 });
     const logoutGeometry = await page.locator("#logoutBtn").evaluate((el) => { const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return { rect: { x: r.x, y: r.y, width: r.width, height: r.height }, hitId: hit?.id || "", hitClass: typeof hit?.className === "string" ? hit.className : "", dir: document.documentElement.dir }; });
     if (logoutGeometry.hitId !== "logoutBtn") throw new Error("Logout button is covered on mobile: " + JSON.stringify(logoutGeometry));
     await page.locator("#logoutBtn").click();
