@@ -165,6 +165,7 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
       <button data-page="health"><span class="nav-ico">✚</span><span data-i18n="health">الصحة والحضور</span></button>
       <button data-page="discipline"><span class="nav-ico">⚑</span><span data-i18n="discipline">الانضباط</span></button>
       <button data-page="finance" id="financeNav" class="hidden"><span class="nav-ico">د.م</span><span data-i18n="finance">الإدارة المالية</span></button>
+      <button data-page="clubResources" id="clubResourcesNav" class="hidden"><span class="nav-ico">⚒</span><span>موارد النادي</span></button>
       <button data-page="settings"><span class="nav-ico">⚙</span><span data-i18n="settings">الإعدادات</span></button>
     </nav></div>
     <div class="sidebar-foot"><div class="coach"><div class="avatar"><img src="./assets/noun-star-logo.png" alt="NOUN STAR"></div><div><b id="coachLabel" style="font-size:12px">المدرب</b><small data-i18n="coachAccount">حساب المدرب</small></div></div></div>
@@ -298,6 +299,96 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
     <div class="section-head"><h3>سجل الحركات المالية</h3><span id="financeTransactionsCount">0</span></div><div id="financeTransactionsTable" class="data-table-wrap"></div>
   </div>
   
+
+  <div id="clubResourcesModule" class="hidden">
+    <div class="module-toolbar"><div><h3>موارد النادي وإدارته</h3><p class="table-sub">المواسم، الرعاة والاتفاقيات، المعدات، الأطقم، وسجل العمليات. هذه المساحة خاصة بمدير النادي.</p></div><span class="welcome-tag">إدارة المالك</span></div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-head" style="margin-top:0"><div><h3>إدارة المواسم</h3><p class="table-sub">أغلق الموسم لحفظه كسجل تاريخي، أو اجعل موسماً آخر نشطاً.</p></div></div>
+      <form id="clubSeasonForm"><div class="form-grid">
+        <div class="form-field"><label for="clubSeasonName">اسم الموسم</label><input id="clubSeasonName" required maxlength="80" placeholder="2026/2027"></div>
+        <div class="form-field"><label for="clubSeasonStart">تاريخ البداية</label><input id="clubSeasonStart" type="date" required></div>
+        <div class="form-field"><label for="clubSeasonEnd">تاريخ النهاية</label><input id="clubSeasonEnd" type="date"></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">إنشاء موسم</button></div><p id="clubSeasonMessage" class="table-sub" aria-live="polite"></p></form>
+      <div id="clubSeasonsTable" class="data-table-wrap"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-head" style="margin-top:0"><div><h3>الرعاة والشراكات</h3><p class="table-sub">بيانات الجهات الداعمة والاتفاقيات والدفعات؛ الدفعات النقدية تُسجل تلقائياً في دفتر المالية.</p></div></div>
+      <form id="clubSponsorForm"><div class="form-grid">
+        <div class="form-field"><label for="clubSponsorName">اسم الراعي / الشريك</label><input id="clubSponsorName" required maxlength="120"></div>
+        <div class="form-field"><label for="clubSponsorContact">الشخص المسؤول</label><input id="clubSponsorContact" maxlength="100"></div>
+        <div class="form-field"><label for="clubSponsorPhone">الهاتف</label><input id="clubSponsorPhone" type="tel" maxlength="40"></div>
+        <div class="form-field"><label for="clubSponsorEmail">البريد الإلكتروني</label><input id="clubSponsorEmail" type="email" maxlength="160"></div>
+        <div class="form-field full"><label for="clubSponsorNotes">ملاحظات</label><textarea id="clubSponsorNotes" rows="2" maxlength="1000"></textarea></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">إضافة الراعي</button></div><p id="clubSponsorMessage" class="table-sub" aria-live="polite"></p></form>
+      <div class="divider"></div>
+      <h4>اتفاقية جديدة</h4>
+      <form id="clubAgreementForm"><div class="form-grid">
+        <div class="form-field"><label for="clubAgreementSponsor">الراعي</label><select id="clubAgreementSponsor" required></select></div>
+        <div class="form-field"><label for="clubAgreementTitle">عنوان الاتفاقية</label><input id="clubAgreementTitle" required maxlength="160" placeholder="رعاية الموسم"></div>
+        <div class="form-field"><label for="clubAgreementType">نوع الدعم</label><select id="clubAgreementType"><option value="cash">دعم مالي</option><option value="in_kind">دعم عيني</option><option value="service">خدمات</option></select></div>
+        <div class="form-field"><label for="clubAgreementValue">القيمة المتفق عليها (درهم)</label><input id="clubAgreementValue" type="number" min="0" step="0.01" value="0" required></div>
+        <div class="form-field"><label for="clubAgreementStart">تاريخ البداية</label><input id="clubAgreementStart" type="date" required></div>
+        <div class="form-field"><label for="clubAgreementEnd">تاريخ النهاية</label><input id="clubAgreementEnd" type="date"></div>
+        <div class="form-field full"><label for="clubAgreementNotes">تفاصيل</label><textarea id="clubAgreementNotes" rows="2"></textarea></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">حفظ الاتفاقية</button></div><p id="clubAgreementMessage" class="table-sub" aria-live="polite"></p></form>
+      <div class="divider"></div>
+      <h4>تسجيل دفعة راعٍ</h4>
+      <form id="clubSponsorPaymentForm"><div class="form-grid">
+        <div class="form-field"><label for="clubSponsorPaymentAgreement">الاتفاقية</label><select id="clubSponsorPaymentAgreement" required></select></div>
+        <div class="form-field"><label for="clubSponsorPaymentAmount">المبلغ (درهم)</label><input id="clubSponsorPaymentAmount" type="number" min="0.01" step="0.01" required></div>
+        <div class="form-field"><label for="clubSponsorPaymentDate">تاريخ الأداء</label><input id="clubSponsorPaymentDate" type="date" required></div>
+        <div class="form-field"><label for="clubSponsorPaymentMethod">طريقة الأداء</label><select id="clubSponsorPaymentMethod"><option value="cash">نقداً</option><option value="bank">إيداع بنكي</option><option value="transfer">تحويل</option><option value="other">أخرى</option></select></div>
+        <div class="form-field full"><label for="clubSponsorPaymentNotes">ملاحظات</label><input id="clubSponsorPaymentNotes" maxlength="500"></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">تسجيل الدفعة</button></div><p id="clubSponsorPaymentMessage" class="table-sub" aria-live="polite"></p></form>
+      <div id="clubSponsorsTable" class="data-table-wrap"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-head" style="margin-top:0"><div><h3>المعدات والمخزون</h3><p class="table-sub">تتبع الكميات الداخلة والخارجة والحد الأدنى للمخزون. يمنع النظام صرف كمية غير متوفرة.</p></div></div>
+      <form id="clubEquipmentForm"><div class="form-grid">
+        <div class="form-field"><label for="clubEquipmentName">اسم المعدة</label><input id="clubEquipmentName" required maxlength="120"></div>
+        <div class="form-field"><label for="clubEquipmentCategory">التصنيف</label><select id="clubEquipmentCategory"><option value="training">معدات تدريب</option><option value="medical">معدات طبية</option><option value="match">معدات مباريات</option><option value="office">لوازم إدارية</option><option value="general">عام</option></select></div>
+        <div class="form-field"><label for="clubEquipmentQuantity">الرصيد الافتتاحي</label><input id="clubEquipmentQuantity" type="number" min="0" step="1" value="0" required></div>
+        <div class="form-field"><label for="clubEquipmentMinimum">حد التنبيه</label><input id="clubEquipmentMinimum" type="number" min="0" step="1" value="0"></div>
+        <div class="form-field"><label for="clubEquipmentCondition">الحالة</label><select id="clubEquipmentCondition"><option value="new">جديد</option><option value="good">جيد</option><option value="worn">مستهلك</option><option value="damaged">متضرر</option></select></div>
+        <div class="form-field"><label for="clubEquipmentLocation">مكان التخزين</label><input id="clubEquipmentLocation" maxlength="120"></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">إضافة للمخزون</button></div><p id="clubEquipmentMessage" class="table-sub" aria-live="polite"></p></form>
+      <div class="divider"></div><h4>حركة مخزون</h4>
+      <form id="clubEquipmentMovementForm"><div class="form-grid">
+        <div class="form-field"><label for="clubMovementItem">المعدة</label><select id="clubMovementItem" required></select></div>
+        <div class="form-field"><label for="clubMovementType">نوع الحركة</label><select id="clubMovementType"><option value="in">إضافة كمية</option><option value="out">صرف كمية</option><option value="set">تسوية الرصيد إلى</option></select></div>
+        <div class="form-field"><label for="clubMovementQuantity">الكمية</label><input id="clubMovementQuantity" type="number" min="1" step="1" required></div>
+        <div class="form-field"><label for="clubMovementDate">التاريخ</label><input id="clubMovementDate" type="date" required></div>
+        <div class="form-field"><label for="clubMovementPlayer">اللاعب (اختياري)</label><select id="clubMovementPlayer"></select></div>
+        <div class="form-field"><label for="clubMovementTeam">الفئة (اختياري)</label><select id="clubMovementTeam"></select></div>
+        <div class="form-field full"><label for="clubMovementNotes">ملاحظات</label><input id="clubMovementNotes" maxlength="500"></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">حفظ حركة المخزون</button></div><p id="clubMovementMessage" class="table-sub" aria-live="polite"></p></form>
+      <div id="clubEquipmentTable" class="data-table-wrap"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="section-head" style="margin-top:0"><div><h3>الأطقم والقمصان</h3><p class="table-sub">تعريف أطقم النادي وتسجيل تسليم القمصان للاعبين مع المقاس ورقم القميص وحالة الإرجاع.</p></div></div>
+      <form id="clubKitForm"><div class="form-grid">
+        <div class="form-field"><label for="clubKitName">اسم الطقم</label><input id="clubKitName" required maxlength="100" placeholder="الطقم الرسمي الأول"></div>
+        <div class="form-field"><label for="clubKitType">النوع</label><select id="clubKitType"><option value="home">رسمي أساسي</option><option value="away">رسمي احتياطي</option><option value="third">طقم ثالث</option><option value="training">تدريب</option><option value="goalkeeper">حراس المرمى</option><option value="other">آخر</option></select></div>
+        <div class="form-field"><label for="clubKitSeason">الموسم</label><select id="clubKitSeason"></select></div>
+        <div class="form-field"><label for="clubKitPrimary">اللون الأساسي</label><input id="clubKitPrimary" maxlength="40"></div>
+        <div class="form-field"><label for="clubKitSecondary">اللون الثانوي</label><input id="clubKitSecondary" maxlength="40"></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">إضافة طقم</button></div><p id="clubKitMessage" class="table-sub" aria-live="polite"></p></form>
+      <div class="divider"></div><h4>تسليم قميص لاعب</h4>
+      <form id="clubKitAssignmentForm"><div class="form-grid">
+        <div class="form-field"><label for="clubKitAssignmentKit">الطقم</label><select id="clubKitAssignmentKit" required></select></div>
+        <div class="form-field"><label for="clubKitAssignmentPlayer">اللاعب</label><select id="clubKitAssignmentPlayer" required></select></div>
+        <div class="form-field"><label for="clubKitAssignmentNumber">رقم القميص</label><input id="clubKitAssignmentNumber" maxlength="8"></div>
+        <div class="form-field"><label for="clubKitAssignmentSize">المقاس</label><select id="clubKitAssignmentSize"><option value="">غير محدد</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select></div>
+        <div class="form-field"><label for="clubKitAssignmentDate">تاريخ التسليم</label><input id="clubKitAssignmentDate" type="date" required></div>
+      </div><div class="editor-footer"><button class="primary-btn" type="submit">تسجيل التسليم</button></div><p id="clubKitAssignmentMessage" class="table-sub" aria-live="polite"></p></form>
+      <div id="clubKitsTable" class="data-table-wrap"></div>
+    </div>
+    <div class="card">
+      <div class="section-head" style="margin-top:0"><div><h3>سجل عمليات الإدارة</h3><p class="table-sub">آخر التغييرات التي تمت من خلال وحدة موارد النادي.</p></div></div>
+      <div id="clubActivityTable" class="data-table-wrap"></div>
+    </div>
+  </div>
+
   <div id="settingsModule" class="hidden">
     <div id="managerBootstrapCard" class="card hidden" style="margin-bottom:14px;border:1px solid var(--accent)">
       <h3>تأسيس حساب مدير النادي</h3>
@@ -352,8 +443,8 @@ fr:{playerPortal:"Mon profil",loginTitle:"Heureux de vous revoir",loginDesc:"Con
 let lang=localStorage.getItem("nsm_lang")||"ar",session=null,currentPage="dashboard",currentProfile=null,audienceMember=null,publicSiteAdmin=false;
 function tr(k){return translations[lang][k]||k}
 function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=tr(el.dataset.i18n));document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>el.placeholder=tr(el.dataset.i18nPlaceholder));document.querySelectorAll("[data-i18n-title]").forEach(el=>el.title=tr(el.dataset.i18nTitle));$("langBtn").textContent=lang==="ar"?"FR":"AR";$("pageTitle").textContent=tr(currentPage==="dashboard"?"dashboard":pageKeys[currentPage]||"dashboard");if(typeof renderDrillLibrary==="function"&&currentPage==="training")renderDrillLibrary();if(typeof activeDrill!=="undefined"&&activeDrill){renderDrillDetailText();renderDrillStep()}}
-const pageKeys={playerPortal:"playerPortal",clubs:"clubsTeams",players:"players",matches:"matches",competitions:"competitions",training:"training",statistics:"statistics",health:"health",discipline:"discipline",finance:"finance",settings:"settings"};
-const pageIcons={clubs:"⌂",players:"♙",matches:"⚽",competitions:"♜",training:"◷",statistics:"▥",health:"✚",discipline:"⚑",finance:"د.م",settings:"⚙"};
+const pageKeys={playerPortal:"playerPortal",clubs:"clubsTeams",players:"players",matches:"matches",competitions:"competitions",training:"training",statistics:"statistics",health:"health",discipline:"discipline",finance:"finance",clubResources:"clubResources",settings:"settings"};
+const pageIcons={clubs:"⌂",players:"♙",matches:"⚽",competitions:"♜",training:"◷",statistics:"▥",health:"✚",discipline:"⚑",finance:"د.م",clubResources:"⚒",settings:"⚙"};
 let refreshInProgress=false;
 async function refreshCurrentView(force=false){
  if(!session||refreshInProgress)return;
@@ -368,7 +459,7 @@ $("refreshBtn").addEventListener("click",()=>refreshCurrentView(true));
 window.addEventListener("focus",()=>refreshCurrentView());
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshCurrentView()});
 setInterval(()=>{if(!document.hidden)refreshCurrentView()},60000);
-function setPage(page){if(currentProfile?.role==="player"&&page!=="playerPortal")page="playerPortal";if(currentProfile?.role==="coach"&&(page==="clubs"||page==="finance"))page="dashboard";if(currentProfile?.role!=="manager"&&page==="finance")page="dashboard";currentPage=page;const dash=page==="dashboard";$("dashboardPage").classList.toggle("hidden",!dash);$("modulePage").classList.toggle("hidden",dash);$("pageTitle").textContent=tr(dash?"dashboard":pageKeys[page]||"dashboard");$("moduleHeading").textContent=tr(pageKeys[page]||"dashboard");$("moduleIcon").textContent=pageIcons[page]||"◈";document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));$("sidebar").classList.remove("open");if(!dash&&session)showModule(page);}
+function setPage(page){if(currentProfile?.role==="player"&&page!=="playerPortal")page="playerPortal";if(currentProfile?.role==="coach"&&(page==="clubs"||page==="finance"||page==="clubResources"))page="dashboard";if(currentProfile?.role!=="manager"&&(page==="finance"||page==="clubResources"))page="dashboard";currentPage=page;const dash=page==="dashboard";$("dashboardPage").classList.toggle("hidden",!dash);$("modulePage").classList.toggle("hidden",dash);$("pageTitle").textContent=page==="clubResources"?"موارد النادي":tr(dash?"dashboard":pageKeys[page]||"dashboard");$("moduleHeading").textContent=page==="clubResources"?"موارد النادي":tr(pageKeys[page]||"dashboard");$("moduleIcon").textContent=pageIcons[page]||"◈";document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));$("sidebar").classList.remove("open");if(!dash&&session)showModule(page);}
 
 let clubsData=[],teamsData=[],playersData=[],membershipsData=[],editingClub=null,editingTeam=null,editingPlayer=null,selectedPlayerPhoto=null;
 const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -849,11 +940,50 @@ $("financeExportBtn").addEventListener("click",()=>{
  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="noun-star-finance-"+localFinanceDate()+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
 
-async function showModule(page){
- ["clubsModule","playersModule","matchesModule","competitionsModule","trainingModule","healthModule","statisticsModule","disciplineModule","financeModule","settingsModule","playerPortalModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
+async 
+let clubResourceData={seasons:[],sponsors:[],agreements:[],payments:[],items:[],kits:[],assignments:[],players:[],teams:[],logs:[]};
+const clubToday=()=>new Date().toISOString().slice(0,10);
+async function writeClubLog(action,entityType,entityId=null,details={}){try{await saveRow("club_activity_logs",{action,entity_type:entityType,entity_id:entityId,details})}catch(e){console.warn("activity log",e)}}
+async function loadClubResources(){
+ if(currentProfile?.role!=="manager")throw Error("MANAGER_ONLY");
+ const d=clubResourceData;
+ [d.seasons,d.sponsors,d.agreements,d.payments,d.items,d.kits,d.assignments,d.players,d.teams,d.logs]=await Promise.all([
+  selectRows("club_seasons","&order=start_date.desc"),selectRows("sponsors","&order=name.asc"),
+  selectRows("sponsor_agreements","&order=start_date.desc"),selectRows("sponsor_payments","&order=payment_date.desc"),
+  selectRows("equipment_items","&order=name.asc"),selectRows("club_kits","&order=name.asc"),
+  selectRows("kit_assignments","&order=issued_at.desc"),selectRows("players","&order=full_name.asc"),
+  selectRows("teams","&order=name.asc"),selectRows("club_activity_logs","&order=created_at.desc&limit=100")
+ ]);
+ const opts=(items,label,fn)=>'<option value="">'+label+'</option>'+items.map(x=>'<option value="'+esc(x.id)+'">'+esc(fn(x))+'</option>').join("");
+ $("clubAgreementSponsor").innerHTML=opts(d.sponsors,"اختر الراعي",x=>x.name);
+ $("clubSponsorPaymentAgreement").innerHTML=opts(d.agreements,"اختر الاتفاقية",x=>(d.sponsors.find(z=>z.id===x.sponsor_id)?.name||"راعي")+" — "+x.title);
+ $("clubMovementItem").innerHTML=opts(d.items,"اختر المعدة",x=>x.name+" ("+x.quantity_on_hand+")");
+ $("clubMovementPlayer").innerHTML=opts(d.players,"بدون لاعب",x=>x.full_name);
+ $("clubMovementTeam").innerHTML=opts(d.teams,"بدون فئة",x=>x.name);
+ $("clubKitSeason").innerHTML=opts(d.seasons,"بدون ربط بموسم",x=>x.name);
+ $("clubKitAssignmentKit").innerHTML=opts(d.kits,"اختر الطقم",x=>x.name);
+ $("clubKitAssignmentPlayer").innerHTML=opts(d.players,"اختر اللاعب",x=>x.full_name);
+ $("clubSeasonsTable").innerHTML=tableHtml(["الموسم","البداية","النهاية","الحالة","إجراء"],d.seasons.map(x=>'<tr><td><b>'+esc(x.name)+'</b></td><td>'+esc(x.start_date)+'</td><td>'+esc(x.end_date||"—")+'</td><td>'+esc(x.status==="active"?"نشط":x.status==="closed"?"مغلق":"مخطط")+'</td><td><div class="row-actions">'+(x.status!=="active"?'<button data-season-activate="'+x.id+'">تفعيل</button>':"")+(x.status!=="closed"?'<button data-season-close="'+x.id+'">إغلاق</button>':'<button data-season-reopen="'+x.id+'">إعادة فتح</button>')+'</div></td></tr>'));
+ $("clubSponsorsTable").innerHTML=tableHtml(["الراعي","الاتفاقيات","القيمة","المقبوض","الحالة"],d.sponsors.map(x=>{const ag=d.agreements.filter(a=>a.sponsor_id===x.id),ids=ag.map(a=>a.id),paid=d.payments.filter(p=>ids.includes(p.agreement_id)).reduce((n,p)=>n+Number(p.amount),0),value=ag.reduce((n,a)=>n+Number(a.agreed_value),0);return '<tr><td><b>'+esc(x.name)+'</b><span class="table-sub">'+esc(x.contact_person||x.phone||"")+'</span></td><td>'+ag.length+'</td><td>'+esc(moneyMAD(value))+'</td><td>'+esc(moneyMAD(paid))+'</td><td>'+esc(x.status==="active"?"نشط":"غير نشط")+'</td></tr>'}));
+ $("clubEquipmentTable").innerHTML=tableHtml(["المعدة","التصنيف","المتوفر","حد التنبيه","الحالة","الموقع"],d.items.map(x=>'<tr><td><b>'+esc(x.name)+'</b></td><td>'+esc(x.category)+'</td><td><span class="status-pill">'+Number(x.quantity_on_hand)+'</span></td><td>'+Number(x.minimum_quantity)+'</td><td>'+esc(x.condition)+'</td><td>'+esc(x.storage_location||"—")+'</td></tr>'));
+ $("clubKitsTable").innerHTML=tableHtml(["الطقم","النوع","الموسم","التسليمات"],d.kits.map(x=>'<tr><td><b>'+esc(x.name)+'</b><span class="table-sub">'+esc([x.primary_color,x.secondary_color].filter(Boolean).join(" / "))+'</span></td><td>'+esc(x.kit_type)+'</td><td>'+esc(d.seasons.find(z=>z.id===x.season_id)?.name||"—")+'</td><td>'+d.assignments.filter(a=>a.kit_id===x.id).length+'</td></tr>'));
+ $("clubActivityTable").innerHTML=tableHtml(["العملية","النوع","التاريخ","التفاصيل"],d.logs.map(x=>'<tr><td><b>'+esc(x.action)+'</b></td><td>'+esc(x.entity_type)+'</td><td>'+esc(new Date(x.created_at).toLocaleString(lang==="ar"?"ar-MA":"fr-FR"))+'</td><td>'+esc(JSON.stringify(x.details||{}).slice(0,180))+'</td></tr>'));
+}
+$("clubSeasonForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubSeasonMessage");try{const row=await saveRow("club_seasons",{name:$("clubSeasonName").value.trim(),start_date:$("clubSeasonStart").value,end_date:$("clubSeasonEnd").value||null,status:"planned"});await writeClubLog("إنشاء موسم","season",row[0]?.id,{name:$("clubSeasonName").value.trim()});e.target.reset();msg.textContent="تم إنشاء الموسم.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر إنشاء الموسم."}});
+$("clubSponsorForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubSponsorMessage");try{const row=await saveRow("sponsors",{name:$("clubSponsorName").value.trim(),contact_person:$("clubSponsorContact").value.trim()||null,phone:$("clubSponsorPhone").value.trim()||null,email:$("clubSponsorEmail").value.trim()||null,notes:$("clubSponsorNotes").value.trim()||null});await writeClubLog("إضافة راعٍ","sponsor",row[0]?.id,{name:$("clubSponsorName").value.trim()});e.target.reset();msg.textContent="تمت إضافة الراعي.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر حفظ الراعي."}});
+$("clubAgreementForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubAgreementMessage");try{const row=await saveRow("sponsor_agreements",{sponsor_id:$("clubAgreementSponsor").value,title:$("clubAgreementTitle").value.trim(),agreement_type:$("clubAgreementType").value,agreed_value:Number($("clubAgreementValue").value),start_date:$("clubAgreementStart").value,end_date:$("clubAgreementEnd").value||null,notes:$("clubAgreementNotes").value.trim()||null});await writeClubLog("إنشاء اتفاقية رعاية","sponsor_agreement",row[0]?.id,{title:$("clubAgreementTitle").value.trim()});e.target.reset();msg.textContent="تم حفظ الاتفاقية.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر حفظ الاتفاقية."}});
+$("clubSponsorPaymentForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubSponsorPaymentMessage");try{const row=await saveRow("sponsor_payments",{agreement_id:$("clubSponsorPaymentAgreement").value,amount:Number($("clubSponsorPaymentAmount").value),payment_date:$("clubSponsorPaymentDate").value,payment_method:$("clubSponsorPaymentMethod").value,notes:$("clubSponsorPaymentNotes").value.trim()||null});await writeClubLog("تسجيل دفعة راعٍ","sponsor_payment",row[0]?.id,{amount:Number($("clubSponsorPaymentAmount").value)});e.target.reset();msg.textContent="تم تسجيل الدفعة وربطها تلقائياً بدفتر المالية.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر تسجيل الدفعة."}});
+$("clubEquipmentForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubEquipmentMessage");try{const row=await saveRow("equipment_items",{name:$("clubEquipmentName").value.trim(),category:$("clubEquipmentCategory").value,quantity_on_hand:Number($("clubEquipmentQuantity").value),minimum_quantity:Number($("clubEquipmentMinimum").value||0),condition:$("clubEquipmentCondition").value,storage_location:$("clubEquipmentLocation").value.trim()||null});await writeClubLog("إضافة معدة للمخزون","equipment_item",row[0]?.id,{name:$("clubEquipmentName").value.trim()});e.target.reset();msg.textContent="تمت إضافة المعدة.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر حفظ المعدة."}});
+$("clubEquipmentMovementForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubMovementMessage");try{const row=await saveRow("equipment_movements",{item_id:$("clubMovementItem").value,movement_type:$("clubMovementType").value,quantity:Number($("clubMovementQuantity").value),movement_date:$("clubMovementDate").value,player_id:$("clubMovementPlayer").value||null,team_id:$("clubMovementTeam").value||null,notes:$("clubMovementNotes").value.trim()||null});await writeClubLog("حركة مخزون","equipment_movement",row[0]?.id,{type:$("clubMovementType").value,quantity:Number($("clubMovementQuantity").value)});e.target.reset();msg.textContent="تم حفظ الحركة وتحديث الرصيد.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر حفظ حركة المخزون."}});
+$("clubKitForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubKitMessage");try{const row=await saveRow("club_kits",{name:$("clubKitName").value.trim(),kit_type:$("clubKitType").value,season_id:$("clubKitSeason").value||null,primary_color:$("clubKitPrimary").value.trim()||null,secondary_color:$("clubKitSecondary").value.trim()||null});await writeClubLog("إضافة طقم","kit",row[0]?.id,{name:$("clubKitName").value.trim()});e.target.reset();msg.textContent="تمت إضافة الطقم.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر حفظ الطقم."}});
+$("clubKitAssignmentForm").addEventListener("submit",async e=>{e.preventDefault();const msg=$("clubKitAssignmentMessage");try{const row=await saveRow("kit_assignments",{kit_id:$("clubKitAssignmentKit").value,player_id:$("clubKitAssignmentPlayer").value,shirt_number:$("clubKitAssignmentNumber").value.trim()||null,size:$("clubKitAssignmentSize").value||null,issued_at:$("clubKitAssignmentDate").value});await writeClubLog("تسليم طقم للاعب","kit_assignment",row[0]?.id,{player_id:$("clubKitAssignmentPlayer").value});e.target.reset();msg.textContent="تم تسجيل تسليم القميص.";await loadClubResources()}catch(err){msg.textContent=err.message||"تعذر تسجيل التسليم."}});
+$("clubSeasonsTable").addEventListener("click",async e=>{const a=e.target.closest("[data-season-activate]"),c=e.target.closest("[data-season-close]"),o=e.target.closest("[data-season-reopen]");try{if(a){const id=a.dataset.seasonActivate;const active=clubResourceData.seasons.find(x=>x.status==="active");if(active)await saveRow("club_seasons",{status:"closed",closed_at:new Date().toISOString()},active.id);await saveRow("club_seasons",{status:"active",closed_at:null},id);await writeClubLog("تفعيل موسم","season",id)}else if(c){const id=c.dataset.seasonClose;if(!confirm("إغلاق الموسم؟ سيبقى محفوظاً كسجل تاريخي."))return;await saveRow("club_seasons",{status:"closed",closed_at:new Date().toISOString()},id);await writeClubLog("إغلاق موسم","season",id)}else if(o){const id=o.dataset.seasonReopen;if(!confirm("إعادة فتح الموسم للتعديل؟"))return;const active=clubResourceData.seasons.find(x=>x.status==="active");if(active&&active.id!==id)await saveRow("club_seasons",{status:"closed",closed_at:new Date().toISOString()},active.id);await saveRow("club_seasons",{status:"active",closed_at:null},id);await writeClubLog("إعادة فتح موسم","season",id)}else return;await loadClubResources()}catch(err){alert(err.message||"تعذر تحديث الموسم.")}});
+
+function showModule(page){
+ ["clubsModule","playersModule","matchesModule","competitionsModule","trainingModule","healthModule","statisticsModule","disciplineModule","financeModule","clubResourcesModule","settingsModule","playerPortalModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
  if(page==="playerPortal"){ $("modulePlaceholder").classList.add("hidden");$("playerPortalModule").classList.remove("hidden");try{await loadPlayerPortal()}catch{ $("playerPortalProfile").textContent=tr("loadError") }}
  else if(page==="clubs"){ $("modulePlaceholder").classList.add("hidden");$("clubsModule").classList.remove("hidden");try{await loadClubs()}catch{}}
- else if(page==="players"){ $("modulePlaceholder").classList.add("hidden");$("playersModule").classList.remove("hidden");try{await loadPlayers()}catch{}} else if(page==="matches"){ $("modulePlaceholder").classList.add("hidden");$("matchesModule").classList.remove("hidden");try{await loadMatches()}catch{}} else if(page==="competitions"){ $("modulePlaceholder").classList.add("hidden");$("competitionsModule").classList.remove("hidden");try{await loadCompetitions()}catch{}} else if(page==="training"){ $("modulePlaceholder").classList.add("hidden");$("trainingModule").classList.remove("hidden");try{await loadTraining()}catch{}} else if(page==="health"){ $("modulePlaceholder").classList.add("hidden");$("healthModule").classList.remove("hidden");try{await loadHealth()}catch{}} else if(page==="statistics"){ $("modulePlaceholder").classList.add("hidden");$("statisticsModule").classList.remove("hidden");try{membershipsData=await selectRows("team_players","&is_current=eq.true");await loadStatistics()}catch{alert(tr("loadError"))}} else if(page==="discipline"){ $("modulePlaceholder").classList.add("hidden");$("disciplineModule").classList.remove("hidden");try{await loadDiscipline()}catch{alert(tr("loadError"))}} else if(page==="finance"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("financeModule").classList.remove("hidden");try{await loadFinance()}catch{alert("تعذر تحميل السجل المالي. تحقق من الاتصال والصلاحيات.")}} else if(page==="settings"){ $("modulePlaceholder").classList.add("hidden");$("settingsModule").classList.remove("hidden");try{await loadSettings()}catch{alert(tr("loadError"))}}
+ else if(page==="players"){ $("modulePlaceholder").classList.add("hidden");$("playersModule").classList.remove("hidden");try{await loadPlayers()}catch{}} else if(page==="matches"){ $("modulePlaceholder").classList.add("hidden");$("matchesModule").classList.remove("hidden");try{await loadMatches()}catch{}} else if(page==="competitions"){ $("modulePlaceholder").classList.add("hidden");$("competitionsModule").classList.remove("hidden");try{await loadCompetitions()}catch{}} else if(page==="training"){ $("modulePlaceholder").classList.add("hidden");$("trainingModule").classList.remove("hidden");try{await loadTraining()}catch{}} else if(page==="health"){ $("modulePlaceholder").classList.add("hidden");$("healthModule").classList.remove("hidden");try{await loadHealth()}catch{}} else if(page==="statistics"){ $("modulePlaceholder").classList.add("hidden");$("statisticsModule").classList.remove("hidden");try{membershipsData=await selectRows("team_players","&is_current=eq.true");await loadStatistics()}catch{alert(tr("loadError"))}} else if(page==="discipline"){ $("modulePlaceholder").classList.add("hidden");$("disciplineModule").classList.remove("hidden");try{await loadDiscipline()}catch{alert(tr("loadError"))}} else if(page==="finance"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("financeModule").classList.remove("hidden");try{await loadFinance()}catch{alert("تعذر تحميل السجل المالي. تحقق من الاتصال والصلاحيات.")}} else if(page==="clubResources"&&currentProfile?.role==="manager"){ $("modulePlaceholder").classList.add("hidden");$("clubResourcesModule").classList.remove("hidden");try{await loadClubResources()}catch{alert("تعذر تحميل موارد النادي. تحقق من الاتصال والصلاحيات.")}} else if(page==="settings"){ $("modulePlaceholder").classList.add("hidden");$("settingsModule").classList.remove("hidden");try{await loadSettings()}catch{alert(tr("loadError"))}}
 }
 $("addClubBtn").addEventListener("click",()=>{resetClubForm();openEditor("clubEditor");$("clubName").focus()});
 $("cancelClub").addEventListener("click",()=>{closeEditor("clubEditor");resetClubForm()});
