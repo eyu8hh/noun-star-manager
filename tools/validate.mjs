@@ -149,6 +149,8 @@ assert.ok(html.includes("publicPostsFeed") && html.includes("accountModal") && h
 assert.ok(html.includes("publicMatchesFeed") && html.includes("matchPublic") && script.includes("nsm_public_match_feed"), "Explicitly published public match schedule/results are missing");
 assert.ok(script.includes("nsm-create-fan") && script.includes("loadFanNotifications") && script.includes("publicSiteAdmin"), "Fan registration, in-app notifications, or gated publishing tools are missing");
 assert.ok(schema.includes("audience_members") && schema.includes("public_site_admins") && schema.includes("public_posts") && schema.includes("audience_notifications"), "Public community schema is incomplete");
+assert.ok(schema.includes("nsm_audience_poll_owner_write") && schema.includes("public_site_admins"), "Only the designated public-site manager may create polls");
+assert.ok(script.includes('audiencePollManagerCard").classList.toggle("hidden",!publicSiteAdmin)'), "Public poll administration must be hidden from non-admin accounts");
 assert.ok(schema.includes("alter column role set default 'fan'") && schema.includes("role in ('manager','coach','player','fan')"), "Public registrations must default to fan role");
 const fanFunction = readFileSync(new URL("../supabase/functions/nsm-create-fan/index.ts", import.meta.url), "utf8");
 assert.ok(fanFunction.includes("email_confirm:true") && fanFunction.includes("audience_members") && fanFunction.includes("audience_signup_attempts"), "Fan signup must create a username account with rate limiting");
