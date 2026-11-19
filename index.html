@@ -783,18 +783,19 @@ function financeDate(value){if(!value)return "—";const d=new Date(value+"T00:0
 function financePlayerName(id){return financePlayers.find(p=>p.id===id)?.full_name||"—"}
 async function loadFinance(){
  if(currentProfile?.role!=="manager")throw Error("MANAGER_ONLY");
- const [dues,transactions,players]=await Promise.all([
+ const now=new Date(),month=localFinanceDate().slice(0,7),monthStart=month+"-01",nextMonthDate=new Date(now.getFullYear(),now.getMonth()+1,1),nextMonth=nextMonthDate.getFullYear()+"-"+String(nextMonthDate.getMonth()+1).padStart(2,"0")+"-01";
+ const [dues,transactions,players,monthTransactions]=await Promise.all([
   selectRows("finance_dues","&order=created_at.desc"),
-  selectRows("finance_transactions","&order=transaction_date.desc,created_at.desc&limit=150"),
-  selectRows("players","&order=full_name.asc")
+  selectRows("finance_transactions","&order=transaction_date.desc,created_at.desc&limit=1000"),
+  selectRows("players","&order=full_name.asc"),
+  api("/rest/v1/finance_transactions?select=kind,amount&transaction_date=gte."+monthStart+"&transaction_date=lt."+nextMonth)
  ]);
  financeDues=dues;financeTransactions=transactions;financePlayers=players;
  const playerOptions='<option value="">اختر اللاعب</option>'+players.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");
  $("financeDuePlayer").innerHTML=playerOptions;
  $("financeTxnPlayer").innerHTML='<option value="">بدون ربط بلاعب</option>'+players.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");
- const month=localFinanceDate().slice(0,7),monthRows=transactions.filter(t=>String(t.transaction_date||"").startsWith(month));
- const income=monthRows.filter(t=>t.kind==="income").reduce((n,t)=>n+Number(t.amount||0),0);
- const expense=monthRows.filter(t=>t.kind==="expense").reduce((n,t)=>n+Number(t.amount||0),0);
+ const income=monthTransactions.filter(t=>t.kind==="income").reduce((n,t)=>n+Number(t.amount||0),0);
+ const expense=monthTransactions.filter(t=>t.kind==="expense").reduce((n,t)=>n+Number(t.amount||0),0);
  const outstanding=dues.reduce((n,d)=>n+Math.max(0,Number(d.amount_due||0)-Number(d.amount_paid||0)),0);
  $("financeIncomeMonth").textContent=moneyMAD(income);$("financeExpenseMonth").textContent=moneyMAD(expense);$("financeNetMonth").textContent=moneyMAD(income-expense);$("financeOutstanding").textContent=moneyMAD(outstanding);
  $("financeDuesCount").textContent=dues.length;$("financeTransactionsCount").textContent=transactions.length;
