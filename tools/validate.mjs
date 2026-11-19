@@ -175,7 +175,7 @@ const resourcesMigration = readFileSync(new URL("../supabase/migrations/20261119
 for (const table of ["club_seasons","sponsors","sponsor_agreements","sponsor_payments","equipment_items","equipment_movements","club_kits","kit_assignments","club_activity_logs"]) assert.ok(schema.includes("create table if not exists public."+table) && resourcesMigration.includes("create table if not exists public."+table), "Missing imported resource table: "+table);
 assert.ok(script.includes("async function loadClubResources") && script.includes('saveRow("sponsor_payments"') && script.includes('saveRow("equipment_movements"') && script.includes('saveRow("kit_assignments"'), "Imported club resources UI is incomplete");
 assert.ok(resourcesMigration.includes("nsm_apply_equipment_movement") && resourcesMigration.includes("nsm_create_sponsor_finance_entry") && resourcesMigration.includes("t||'_manager_select'"), "Resource inventory, sponsor finance link, or manager-only RLS is missing");
-assert.ok(html.includes('id="clubResourcesNav"') && html.includes('id="clubResourcesModule"') && script.includes('currentProfile?.role!=="manager"&&page==="clubResources"')===false, "Club resources manager navigation is missing");
+assert.ok(html.includes('id="clubResourcesNav"') && html.includes('id="clubResourcesModule"') && script.includes('page==="clubResources"') && script.includes('currentProfile?.role!=="manager"'), "Club resources manager navigation is missing");
 assert.ok(serviceWorker.includes('nsm-shell-v5'), "PWA cache must refresh after the imported club resources release");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
