@@ -44,15 +44,19 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Only the club manager can create coach accounts" }, 403);
   }
 
-  let input: { email?: string; password?: string; display_name?: string; team_id?: string };
+  let input: { email?: string; coach_code?: string; password?: string; display_name?: string; team_id?: string; assignment_type?: string };
   try { input = await req.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
 
-  const email = String(input.email ?? "").trim().toLowerCase();
+  const coachCode = String(input.coach_code ?? "").trim().toLowerCase();
+  const email = String(input.email ?? (coachCode ? `coach+${coachCode}@login.nounstar.club` : "")).trim().toLowerCase();
   const password = String(input.password ?? "");
   const displayName = String(input.display_name ?? "").trim();
   const teamId = String(input.team_id ?? "").trim();
+  const assignmentType = String(input.assignment_type ?? "head");
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "A valid email is required" }, 400);
+  if (coachCode && !/^[a-z0-9_-]{4,20}$/.test(coachCode)) return json({ error: "Coach code must be 4–20 letters, numbers, _ or -" }, 400);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "A valid coach code or email is required" }, 400);
+  if (!["head", "assistant"].includes(assignmentType)) return json({ error: "Invalid assignment type" }, 400);
   if (password.length < 10) return json({ error: "Password must contain at least 10 characters" }, 400);
   if (!displayName) return json({ error: "Coach name is required" }, 400);
 
@@ -72,7 +76,7 @@ Deno.serve(async (req: Request) => {
 
   const coachId = created.user.id;
   const { error: roleError } = await admin.from("profiles")
-    .update({ display_name: displayName, role: "coach" }).eq("id", coachId);
+    .update({ display_name: displayName, role: "coach", club_owner_id: managerId, coach_code: coachCode || null }).eq("id", coachId);
 
   if (roleError) {
     await admin.auth.admin.deleteUser(coachId);
@@ -81,7 +85,7 @@ Deno.serve(async (req: Request) => {
 
   if (teamId) {
     const { error: assignmentError } = await admin.from("team_coaches").insert({
-      owner_id: managerId, team_id: teamId, coach_user_id: coachId,
+      owner_id: managerId, team_id: teamId, coach_user_id: coachId, assignment_type: assignmentType,
     });
     if (assignmentError) {
       await admin.auth.admin.deleteUser(coachId);
@@ -89,5 +93,5 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  return json({ id: coachId, display_name: displayName, role: "coach", team_id: teamId || null }, 201);
+  return json({ id: coachId, display_name: displayName, role: "coach", coach_code: coachCode || null, team_id: teamId || null }, 201);
 });
