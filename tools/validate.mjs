@@ -221,7 +221,8 @@ assert.ok(script.includes("const canManage=currentProfile?.role===\"manager\"") 
 assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canManageDisciplineSettings") && script.includes('if(currentProfile?.role!=="manager")return;'), "Discipline threshold settings must be manager-only");
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(html.includes("@keyframes nsmShimmer") && html.includes("cubic-bezier(.2,.85,.25,1.15)") && html.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
-assert.ok(serviceWorker.includes('nsm-shell-v27'), "PWA cache must refresh after mobile interaction fixes");
+assert.ok(html.includes(".workspace-navigation{flex:1 1 auto") && html.includes("overflow-y:auto") && html.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
+assert.ok(serviceWorker.includes('nsm-shell-v28'), "PWA cache must refresh after mobile interaction fixes");
 assert.ok(serviceWorker.includes('cache:"no-store"'), "PWA navigation must bypass stale browser HTTP cache");
 assert.ok(script.indexOf('$("loginForm").addEventListener("submit",async e=>') < script.indexOf("const translations=") && html.includes('id="loginForm" class="public-form" onsubmit="return false"'), "Professional login must bind before optional modules and never fall through to native form navigation");
 assert.ok(script.includes('$("playerProfilePrintBtn").addEventListener("click",()=>window.print())') && script.includes('selectRows("finance_dues","&player_id=eq."+id+"&order=due_date.desc")'), "Printable player dossier or manager-only player finance detail is missing");
