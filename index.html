@@ -585,7 +585,7 @@ $("correctionField").addEventListener("change",refreshCorrectionCurrent);
 function monthStart(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-01"}
 async function loadPlayerEvaluations(playerId,targetId){
  const rows=await selectRows("player_evaluations","&player_id=eq."+playerId+"&order=period_start.desc");
- $(targetId).innerHTML=rows.length?tableHtml(["الفترة","الفني","التكتيكي","البدني","الانضباط","المعدل","ملاحظات"],rows.map(x=>{const avg=((x.technical_score+x.tactical_score+x.physical_score+x.discipline_score)/4).toFixed(1);return '<tr><td>'+esc(x.period_start)+'</td><td>'+x.technical_score+'/10</td><td>'+x.tactical_score+'/10</td><td>'+x.physical_score+'/10</td><td>'+x.discipline_score+'/10</td><td><b>'+avg+'</b></td><td>'+esc(x.coach_note||"—")+'</td></tr>'}):'<div class="empty-state">لا توجد تقييمات مسجلة بعد.</div>';
+ $(targetId).innerHTML=rows.length?tableHtml(["الفترة","الفني","التكتيكي","البدني","الانضباط","المعدل","ملاحظات"],rows.map(x=>{const avg=((x.technical_score+x.tactical_score+x.physical_score+x.discipline_score)/4).toFixed(1);return '<tr><td>'+esc(x.period_start)+'</td><td>'+x.technical_score+'/10</td><td>'+x.tactical_score+'/10</td><td>'+x.physical_score+'/10</td><td>'+x.discipline_score+'/10</td><td><b>'+avg+'</b></td><td>'+esc(x.coach_note||"—")+'</td></tr>'})):'<div class="empty-state">لا توجد تقييمات مسجلة بعد.</div>';
  return rows;
 }
 async function loadPlayerPortal(){
