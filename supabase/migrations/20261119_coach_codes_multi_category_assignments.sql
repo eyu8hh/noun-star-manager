@@ -9,7 +9,7 @@ alter table public.team_coaches add constraint team_coaches_assignment_type_chec
 create or replace function public.nsm_protect_profile_role()
 returns trigger language plpgsql as $$
 begin
- if new.role is distinct from old.role and current_user <> 'service_role' then
+ if current_user <> 'service_role' and (new.role is distinct from old.role or new.club_owner_id is distinct from old.club_owner_id or new.coach_code is distinct from old.coach_code) then
   raise exception 'Profile role can only be changed by club administration';
  end if;
  return new;
