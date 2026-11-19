@@ -774,7 +774,6 @@ $("managerBootstrapForm").addEventListener("submit",async e=>{
  }catch(err){msg.textContent=err.message||"تعذر إتمام إعداد حساب المدير. لم يتم تأكيد نجاح العملية."}
  finally{btn.disabled=false}
 });
-async 
 let financeDues=[],financeTransactions=[],financePlayers=[];
 const financeCategories={subscription:"اشتراكات",sponsorship:"دعم ورعاية",donation:"تبرعات",equipment:"معدات وتجهيزات",transport:"النقل والتنقل",medical:"الصحة والعلاج",competition:"مشاركة وبطولات",facility:"الملعب والمرافق",salary:"تعويضات وأجور",other:"أخرى"};
 const financeMethods={cash:"نقداً",bank:"إيداع بنكي",transfer:"تحويل",other:"أخرى"};
@@ -849,7 +848,7 @@ $("financeExportBtn").addEventListener("click",()=>{
  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="noun-star-finance-"+localFinanceDate()+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
 
-function showModule(page){
+async function showModule(page){
  ["clubsModule","playersModule","matchesModule","competitionsModule","trainingModule","healthModule","statisticsModule","disciplineModule","financeModule","settingsModule","playerPortalModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
  if(page==="playerPortal"){ $("modulePlaceholder").classList.add("hidden");$("playerPortalModule").classList.remove("hidden");try{await loadPlayerPortal()}catch{ $("playerPortalProfile").textContent=tr("loadError") }}
  else if(page==="clubs"){ $("modulePlaceholder").classList.add("hidden");$("clubsModule").classList.remove("hidden");try{await loadClubs()}catch{}}
