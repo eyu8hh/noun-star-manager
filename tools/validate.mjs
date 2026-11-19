@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "loadDemoData", "clearAllData", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "loadDemoData", "clearAllData", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -123,4 +123,9 @@ assert.ok(deployWorkflow.includes("pages: write") && deployWorkflow.includes("id
 assert.ok(script.includes('finishedMatchIds.has(e.match_id)'), "Discipline thresholds must ignore unfinished matches");
 assert.ok(script.includes('order=sort_order.asc'), "Training session drill order must be persisted and restored");
 
+const community = readFileSync(new URL("../community.html", import.meta.url), "utf8");
+assert.ok(community.includes("nsm_public_poll_results"), "Public voting page must load poll results");
+assert.ok(community.includes("audience_poll_votes"), "Public voting page must submit votes");
+const communityScript = community.slice(community.indexOf("<script>") + 8, community.indexOf("</script>"));
+new Function(communityScript);
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
