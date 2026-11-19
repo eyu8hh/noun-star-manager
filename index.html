@@ -718,8 +718,10 @@ if(localStorage.getItem("nsm_theme")==="light")document.body.classList.add("ligh
 try{const saved=JSON.parse(localStorage.getItem("nsm_session")||"null");if(saved?.refresh_token){session=saved;if(!saved.expires_at||saved.expires_at*1000<Date.now()+60000){refreshSession().then(showApp).catch(()=>{logout(true);applyLang()})}else{showApp()}}else{localStorage.removeItem("nsm_session");applyLang()}}catch{applyLang()}
 applyLang();
 })();
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}))}
 </script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}))}</script>
+
 
 </body>
 </html>
