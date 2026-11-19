@@ -16,6 +16,7 @@ on:
     paths:
       - "index.html"
       - "tools/validate.mjs"
+      - "tools/browser-smoke.mjs"
       - ".github/workflows/validate.yml"
       - ".github/workflows/deploy-pages.yml"
       - "supabase/**"
