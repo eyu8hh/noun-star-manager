@@ -90,11 +90,11 @@ begin
 
   perform set_config('nsm.allow_role_change', 'on', true);
   update public.profiles set role = p_role where id = p_user_id;
-  perform set_config('nsm.allow_role_change', 'off', true);
-
   if not found then
+    perform set_config('nsm.allow_role_change', 'off', true);
     raise exception 'Profile not found';
   end if;
+  perform set_config('nsm.allow_role_change', 'off', true);
 end;
 $$;
 
