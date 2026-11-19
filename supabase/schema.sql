@@ -421,7 +421,7 @@ revoke all on function public.nsm_account_suspensions_for_match() from public,an
 
 -- Updated-at triggers
 do $$ declare t text; begin
-  foreach t in array array['profiles','clubs','teams','team_coaches','players','player_profile_change_requests','competitions','matches','training_sessions','training_drills','settings'] loop
+  foreach t in array array['profiles','clubs','teams','team_coaches','players','competitions','matches','training_sessions','training_drills','settings'] loop
     execute format('create trigger nsm_touch before update on public.%I for each row execute function public.nsm_touch_updated_at()',t);
   end loop;
 end $$;
