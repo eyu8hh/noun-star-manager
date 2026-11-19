@@ -171,7 +171,6 @@ assert.ok(html.includes('id="financeNav"') && html.includes('id="financeModule"'
 assert.ok(script.includes('currentProfile?.role!=="manager"') && script.includes("async function loadFinance") && script.includes('saveRow("finance_transactions"') && script.includes('saveRow("finance_dues"'), "Finance workspace must enforce manager access and support ledger/dues");
 const financeMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_finance_ledger.sql", import.meta.url), "utf8");
 assert.ok(financeMigration.includes("alter table public.finance_dues enable row level security") && financeMigration.includes("finance_transactions_manager_insert") && financeMigration.includes("nsm_validate_finance_due_payment") && financeMigration.includes("nsm_sync_finance_due_paid"), "Manager-only finance RLS and due payment synchronization are required");
-const serviceWorker = readFileSync(new URL("../service-worker.js", import.meta.url), "utf8");
 assert.ok(serviceWorker.includes('nsm-shell-v4'), "PWA cache must refresh after the finance release");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
