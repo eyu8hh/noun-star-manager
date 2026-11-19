@@ -165,5 +165,7 @@ assert.ok(html.includes('id="managerCoachAssignmentCard"') && html.includes('id=
 assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&page==="clubs"'), "Manager/coach workspace separation is missing");
 const managerAccessMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_controls_coach_assignments.sql", import.meta.url), "utf8");
 assert.ok(managerAccessMigration.includes("drop policy if exists nsm_coach_insert_own_assignments") && managerAccessMigration.includes("tc.coach_user_id = (select auth.uid())"), "Coach assignments must be manager-controlled and team reads assignment-scoped");
+const coachProvisioning = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
+assert.ok(coachProvisioning.includes("coach_code?: string") && coachProvisioning.includes("club_owner_id: managerId") && coachProvisioning.includes("coach_code: coachCode"), "Manager-created coach accounts must use coach codes and belong to the manager's club");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
