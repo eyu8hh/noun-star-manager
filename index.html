@@ -774,7 +774,82 @@ $("managerBootstrapForm").addEventListener("submit",async e=>{
  }catch(err){msg.textContent=err.message||"تعذر إتمام إعداد حساب المدير. لم يتم تأكيد نجاح العملية."}
  finally{btn.disabled=false}
 });
-async function showModule(page){
+async 
+let financeDues=[],financeTransactions=[],financePlayers=[];
+const financeCategories={subscription:"اشتراكات",sponsorship:"دعم ورعاية",donation:"تبرعات",equipment:"معدات وتجهيزات",transport:"النقل والتنقل",medical:"الصحة والعلاج",competition:"مشاركة وبطولات",facility:"الملعب والمرافق",salary:"تعويضات وأجور",other:"أخرى"};
+const financeMethods={cash:"نقداً",bank:"إيداع بنكي",transfer:"تحويل",other:"أخرى"};
+function localFinanceDate(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function moneyMAD(value){return new Intl.NumberFormat(lang==="ar"?"ar-MA":"fr-MA",{style:"currency",currency:"MAD",maximumFractionDigits:2}).format(Number(value)||0)}
+function financeDate(value){if(!value)return "—";const d=new Date(value+"T00:00:00");return Number.isNaN(d.getTime())?value:d.toLocaleDateString(lang==="ar"?"ar-MA":"fr-MA",{year:"numeric",month:"short",day:"numeric"})}
+function financePlayerName(id){return financePlayers.find(p=>p.id===id)?.full_name||"—"}
+async function loadFinance(){
+ if(currentProfile?.role!=="manager")throw Error("MANAGER_ONLY");
+ const [dues,transactions,players]=await Promise.all([
+  selectRows("finance_dues","&order=created_at.desc"),
+  selectRows("finance_transactions","&order=transaction_date.desc,created_at.desc&limit=150"),
+  selectRows("players","&order=full_name.asc")
+ ]);
+ financeDues=dues;financeTransactions=transactions;financePlayers=players;
+ const playerOptions='<option value="">اختر اللاعب</option>'+players.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");
+ $("financeDuePlayer").innerHTML=playerOptions;
+ $("financeTxnPlayer").innerHTML='<option value="">بدون ربط بلاعب</option>'+players.map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");
+ const month=localFinanceDate().slice(0,7),monthRows=transactions.filter(t=>String(t.transaction_date||"").startsWith(month));
+ const income=monthRows.filter(t=>t.kind==="income").reduce((n,t)=>n+Number(t.amount||0),0);
+ const expense=monthRows.filter(t=>t.kind==="expense").reduce((n,t)=>n+Number(t.amount||0),0);
+ const outstanding=dues.reduce((n,d)=>n+Math.max(0,Number(d.amount_due||0)-Number(d.amount_paid||0)),0);
+ $("financeIncomeMonth").textContent=moneyMAD(income);$("financeExpenseMonth").textContent=moneyMAD(expense);$("financeNetMonth").textContent=moneyMAD(income-expense);$("financeOutstanding").textContent=moneyMAD(outstanding);
+ $("financeDuesCount").textContent=dues.length;$("financeTransactionsCount").textContent=transactions.length;
+ $("financeDuesTable").innerHTML=dues.length?'<table class="data-table"><thead><tr><th>اللاعب</th><th>الاستحقاق</th><th>الموسم</th><th>المطلوب</th><th>المؤدى</th><th>المتبقي</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>'+dues.map(d=>{const remain=Math.max(0,Number(d.amount_due)-Number(d.amount_paid)),pct=Math.min(100,Math.round(Number(d.amount_paid)/Number(d.amount_due)*100));return '<tr><td>'+esc(financePlayerName(d.player_id))+'</td><td><b>'+esc(d.title)+'</b><span class="table-sub">'+esc(financeDate(d.due_date))+'</span></td><td>'+esc(d.season||"—")+'</td><td>'+esc(moneyMAD(d.amount_due))+'</td><td>'+esc(moneyMAD(d.amount_paid))+'</td><td><b>'+esc(moneyMAD(remain))+'</b></td><td><span class="welcome-tag">'+(remain<=0?"مكتمل":Number(d.amount_paid)>0?"جزئي":"غير مؤدى")+'</span><span class="table-sub">'+pct+'%</span></td><td>'+(Number(d.amount_paid)===0?'<button class="danger" data-finance-delete-due="'+esc(d.id)+'">حذف</button>':"—")+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty-state">لا توجد اشتراكات أو مستحقات مسجلة بعد.</div>';
+ $("financeTransactionsTable").innerHTML=transactions.length?'<table class="data-table"><thead><tr><th>التاريخ</th><th>البيان</th><th>التصنيف</th><th>اللاعب</th><th>النوع</th><th>المبلغ</th><th>طريقة الأداء</th><th>إجراء</th></tr></thead><tbody>'+transactions.map(t=>'<tr><td>'+esc(financeDate(t.transaction_date))+'</td><td><b>'+esc(t.title)+'</b>'+(t.notes?'<span class="table-sub">'+esc(t.notes)+'</span>':"")+'</td><td>'+esc(financeCategories[t.category]||t.category)+'</td><td>'+esc(financePlayerName(t.player_id))+'</td><td><span class="welcome-tag">'+(t.kind==="income"?"مدخول":"مصروف")+'</span></td><td><b>'+esc(moneyMAD(t.amount))+'</b></td><td>'+esc(financeMethods[t.payment_method]||t.payment_method)+'</td><td><button class="danger" data-finance-delete-transaction="'+esc(t.id)+'">حذف</button></td></tr>').join("")+'</tbody></table>':'<div class="empty-state">لا توجد حركات مالية مسجلة بعد.</div>';
+ const openDues=dues.filter(d=>Number(d.amount_due)>Number(d.amount_paid));
+ $("financePaymentDue").innerHTML=openDues.length?'<option value="">اختر اشتراكاً مستحقاً</option>'+openDues.map(d=>'<option value="'+esc(d.id)+'">'+esc(financePlayerName(d.player_id))+' · '+esc(d.title)+' · متبقي '+esc(moneyMAD(Number(d.amount_due)-Number(d.amount_paid)))+'</option>').join(""):'<option value="">لا توجد مبالغ متبقية</option>';
+ $("financePaymentDue").disabled=!openDues.length;
+ $("financeDuePlayer").disabled=!players.length;
+ if(!$("financeTxnDate").value)$("financeTxnDate").value=localFinanceDate();
+ if(!$("financeDueDate").value)$("financeDueDate").value=localFinanceDate();
+ if(!$("financePaymentDate").value)$("financePaymentDate").value=localFinanceDate();
+}
+$("financeTransactionForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(currentProfile?.role!=="manager")return;
+ const msg=$("financeTxnMessage");msg.textContent="جارٍ الحفظ...";
+ try{
+  const amount=Number($("financeTxnAmount").value);if(!Number.isFinite(amount)||amount<=0)throw Error("أدخل مبلغاً صحيحاً.");
+  await saveRow("finance_transactions",{owner_id:session.user.id,kind:$("financeTxnKind").value,title:$("financeTxnTitle").value.trim(),category:$("financeTxnCategory").value,amount,transaction_date:$("financeTxnDate").value,payment_method:$("financeTxnMethod").value,player_id:$("financeTxnPlayer").value||null,notes:$("financeTxnNotes").value.trim()||null});
+  $("financeTransactionForm").reset();$("financeTxnDate").value=localFinanceDate();msg.textContent="تم حفظ الحركة المالية.";await loadFinance();
+ }catch(err){msg.textContent=err.message==="HTTP_403"?"هذه العملية متاحة لمدير النادي فقط.":err.message==="HTTP_400"?"تحقق من المبلغ والبيانات المدخلة.":"تعذر حفظ الحركة المالية. "+(err.message||"")}
+});
+$("financeDueForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(currentProfile?.role!=="manager")return;
+ const msg=$("financeDueMessage");msg.textContent="جارٍ حفظ الاستحقاق...";
+ try{
+  const amount=Number($("financeDueAmount").value);if(!financePlayers.length)throw Error("أضف اللاعبين أولاً.");
+  if(!Number.isFinite(amount)||amount<=0)throw Error("أدخل مبلغاً صحيحاً.");
+  await saveRow("finance_dues",{owner_id:session.user.id,player_id:$("financeDuePlayer").value,title:$("financeDueTitle").value.trim(),season:$("financeDueSeason").value.trim()||null,amount_due:amount,due_date:$("financeDueDate").value||null,notes:$("financeDueNotes").value.trim()||null});
+  $("financeDueForm").reset();$("financeDueTitle").value="اشتراك الموسم";$("financeDueDate").value=localFinanceDate();msg.textContent="تمت إضافة الاستحقاق.";await loadFinance();
+ }catch(err){msg.textContent="تعذر إضافة الاستحقاق. "+(err.message||"")}
+});
+$("financePaymentForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(currentProfile?.role!=="manager")return;
+ const msg=$("financePaymentMessage"),due=financeDues.find(d=>d.id===$("financePaymentDue").value);msg.textContent="جارٍ تسجيل الأداء...";
+ try{
+  if(!due)throw Error("اختر اشتراكاً صالحاً.");
+  const amount=Number($("financePaymentAmount").value),remaining=Number(due.amount_due)-Number(due.amount_paid);
+  if(!Number.isFinite(amount)||amount<=0||amount>remaining)throw Error("المبلغ يتجاوز الرصيد المتبقي أو غير صالح.");
+  await saveRow("finance_transactions",{owner_id:session.user.id,kind:"income",title:"أداء اشتراك: "+due.title,category:"subscription",amount,transaction_date:$("financePaymentDate").value,payment_method:$("financePaymentMethod").value,player_id:due.player_id,due_id:due.id,notes:$("financePaymentNotes").value.trim()||null});
+  $("financePaymentForm").reset();$("financePaymentDate").value=localFinanceDate();msg.textContent="تم تسجيل الأداء وتحديث الرصيد المتبقي.";await loadFinance();
+ }catch(err){msg.textContent="تعذر تسجيل الأداء. "+(err.message||"")}
+});
+$("financePaymentDue").addEventListener("change",()=>{const d=financeDues.find(x=>x.id===$("financePaymentDue").value);if(d){const remain=Number(d.amount_due)-Number(d.amount_paid);$("financePaymentAmount").max=remain.toFixed(2);$("financePaymentAmount").value=remain.toFixed(2)}});
+$("financeDuesTable").addEventListener("click",async e=>{const b=e.target.closest("[data-finance-delete-due]");if(!b||currentProfile?.role!=="manager")return;if(!confirm("حذف هذا الاستحقاق؟"))return;try{await deleteRow("finance_dues",b.dataset.financeDeleteDue);await loadFinance()}catch{alert("تعذر حذف الاستحقاق المرتبط بحركة مالية.")}});
+$("financeTransactionsTable").addEventListener("click",async e=>{const b=e.target.closest("[data-finance-delete-transaction]");if(!b||currentProfile?.role!=="manager")return;if(!confirm("حذف هذه الحركة؟ إذا كانت أداء اشتراك فسيُعاد احتساب الدين تلقائياً."))return;try{await deleteRow("finance_transactions",b.dataset.financeDeleteTransaction);await loadFinance()}catch{alert("تعذر حذف الحركة المالية.")}});
+$("financeExportBtn").addEventListener("click",()=>{
+ if(currentProfile?.role!=="manager")return;
+ const rows=[["التاريخ","النوع","البيان","التصنيف","المبلغ MAD","طريقة الأداء","اللاعب","ملاحظات"],...financeTransactions.map(t=>[t.transaction_date,t.kind==="income"?"مدخول":"مصروف",t.title,financeCategories[t.category]||t.category,t.amount,financeMethods[t.payment_method]||t.payment_method,financePlayerName(t.player_id),t.notes||""])];
+ const csv="\uFEFF"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+ const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="noun-star-finance-"+localFinanceDate()+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+
+function showModule(page){
  ["clubsModule","playersModule","matchesModule","competitionsModule","trainingModule","healthModule","statisticsModule","disciplineModule","financeModule","settingsModule","playerPortalModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
  if(page==="playerPortal"){ $("modulePlaceholder").classList.add("hidden");$("playerPortalModule").classList.remove("hidden");try{await loadPlayerPortal()}catch{ $("playerPortalProfile").textContent=tr("loadError") }}
  else if(page==="clubs"){ $("modulePlaceholder").classList.add("hidden");$("clubsModule").classList.remove("hidden");try{await loadClubs()}catch{}}
