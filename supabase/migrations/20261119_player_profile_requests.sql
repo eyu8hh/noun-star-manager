@@ -27,7 +27,7 @@ create policy nsm_player_change_request_read on public.player_profile_change_req
 using (exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())) or owner_id=(select auth.uid()));
 drop policy if exists nsm_player_change_request_insert on public.player_profile_change_requests;
 create policy nsm_player_change_request_insert on public.player_profile_change_requests for insert to authenticated
-with check (status='pending' and reviewed_by is null and reviewed_at is null and exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid()) and p.owner_id=owner_id));
+with check (status='pending' and reviewed_by is null and reviewed_at is null and exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid()) and p.owner_id=player_profile_change_requests.owner_id));
 drop policy if exists nsm_player_change_request_manager_update on public.player_profile_change_requests;
 create policy nsm_player_change_request_manager_update on public.player_profile_change_requests for update to authenticated
 using (owner_id=(select auth.uid())) with check (owner_id=(select auth.uid()));
