@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "financeModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -34,7 +34,7 @@ for (const match of htmlBeforeScript.matchAll(divTags)) {
   }
 }
 assert.deepEqual(divStack, [], "Unbalanced application div structure");
-for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "settingsModule"]) {
+for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "financeModule", "settingsModule"]) {
   assert.equal(parentById.get(id), "appView", id + " must be a sibling module under appView");
 }
 assert.equal(parentById.get("playerProfilePanel"), "appView>playersModule", "Player profile must be inside playersModule");
@@ -167,5 +167,11 @@ const managerAccessMigration = readFileSync(new URL("../supabase/migrations/2026
 assert.ok(managerAccessMigration.includes("drop policy if exists nsm_coach_insert_own_assignments") && managerAccessMigration.includes("tc.coach_user_id = (select auth.uid())"), "Coach assignments must be manager-controlled and team reads assignment-scoped");
 const coachProvisioning = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
 assert.ok(coachProvisioning.includes("coach_code?: string") && coachProvisioning.includes("club_owner_id: managerId") && coachProvisioning.includes("coach_code: coachCode"), "Manager-created coach accounts must use coach codes and belong to the manager's club");
+assert.ok(html.includes('id="financeNav"') && html.includes('id="financeModule"') && html.includes('data-i18n="finance"'), "Manager finance navigation and module are missing");
+assert.ok(script.includes('currentProfile?.role!=="manager"') && script.includes("async function loadFinance") && script.includes('saveRow("finance_transactions"') && script.includes('saveRow("finance_dues"'), "Finance workspace must enforce manager access and support ledger/dues");
+const financeMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_finance_ledger.sql", import.meta.url), "utf8");
+assert.ok(financeMigration.includes("alter table public.finance_dues enable row level security") && financeMigration.includes("finance_transactions_manager_insert") && financeMigration.includes("nsm_validate_finance_due_payment") && financeMigration.includes("nsm_sync_finance_due_paid"), "Manager-only finance RLS and due payment synchronization are required");
+const serviceWorker = readFileSync(new URL("../service-worker.js", import.meta.url), "utf8");
+assert.ok(serviceWorker.includes('nsm-shell-v4'), "PWA cache must refresh after the finance release");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
