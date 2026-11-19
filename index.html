@@ -1253,6 +1253,14 @@ async function loadCurrentProfile(){
  }catch(err){currentProfile=null;publicSiteAdmin=false;$("coachManagementCard").classList.add("hidden");$("playerPortalNav").classList.add("hidden");$("financeNav").classList.add("hidden");$("clubResourcesNav").classList.add("hidden");$("reportsNav").classList.add("hidden");$("publicContentManagerCard").classList.add("hidden");throw err}
 }
 function showLogin(){ $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("accountModal").classList.add("hidden");updatePublicAccountUI();loadPublicHome()}
+function showStaffBootstrapError(err){
+ const code=String(err?.message||"");
+ if(code==="SESSION_EXPIRED"||code==="NO_SESSION"){logout(true);$("accountModal").classList.remove("hidden");$("accountChoice").classList.add("hidden");$("staffLoginPanel").classList.remove("hidden");return;}
+ $("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("accountModal").classList.remove("hidden");$("accountChoice").classList.add("hidden");$("staffLoginPanel").classList.remove("hidden");
+ $("loginError").textContent=code==="PROFILE_NOT_FOUND"?"تم قبول الدخول، لكن ملف صلاحيات المدير غير متاح. لم نسجل خروجك؛ أعد المحاولة أو تواصل مع الدعم.":/^HTTP_\d+$/.test(code)?"تم قبول الدخول، لكن تعذر تحميل بيانات الإدارة ("+code+"). بقيت الجلسة محفوظة لتشخيص المشكلة.":code==="INVALID_CREDENTIALS"?"بيانات الدخول غير صحيحة. تحقق من الكود وكلمة المرور.":"تعذر فتح لوحة الإدارة ("+(code||"BOOTSTRAP_ERROR")+"). بقيت الجلسة محفوظة؛ أعد المحاولة دون إنشاء حساب جديد.";
+ console.error("NOUN STAR staff session bootstrap",err);
+}
+
 async function publicRpc(name,body={}){const headers={apikey:CONFIG.publishableKey,Authorization:"Bearer "+(session?.access_token||CONFIG.publishableKey),"Content-Type":"application/json"};const response=await fetch(CONFIG.supabaseUrl+"/rest/v1/rpc/"+name,{method:"POST",headers,body:JSON.stringify(body)});if(!response.ok)throw Error("PUBLIC_RPC_"+response.status);return response.json()}
 async function publicRequest(table,query=""){
  const headers={apikey:CONFIG.publishableKey,Authorization:"Bearer "+(session?.access_token||CONFIG.publishableKey)};
@@ -1369,7 +1377,7 @@ $("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-page
 document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.goto)));
 if(localStorage.getItem("nsm_theme")==="light")document.body.classList.add("light");
 $("publicLangBtn").textContent=lang==="ar"?"FR":"AR";
-try{const saved=JSON.parse(localStorage.getItem("nsm_session")||"null");if(saved?.refresh_token){session=saved;if(!saved.expires_at||saved.expires_at*1000<Date.now()+60000){refreshSession().then(showApp).catch(()=>{logout(true);applyLang()})}else{showApp().catch(()=>logout(true))}}else{localStorage.removeItem("nsm_session");applyLang();loadPublicHome();updatePublicAccountUI()}}catch{applyLang()}
+try{const saved=JSON.parse(localStorage.getItem("nsm_session")||"null");if(saved?.refresh_token){session=saved;if(!saved.expires_at||saved.expires_at*1000<Date.now()+60000){refreshSession().then(showApp).catch(err=>showStaffBootstrapError(err))}else{showApp().catch(err=>showStaffBootstrapError(err))}}else{localStorage.removeItem("nsm_session");applyLang();loadPublicHome();updatePublicAccountUI()}}catch(err){showStaffBootstrapError(err)}
 applyLang();
 })();
 
