@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "NOUN STAR Manager",
+  "name": "NOUN STAR Football Club",
   "short_name": "NOUN STAR",
-  "description": "Noun Star Football Club — Elite Youth Development",
+  "description": "NOUN STAR Football Club — public club news, community and team management",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./",
@@ -11,9 +11,22 @@
   "orientation": "any",
   "background_color": "#101116",
   "theme_color": "#101116",
-  "categories": ["sports", "business"],
+  "categories": [
+    "sports",
+    "business"
+  ],
   "icons": [
-    {"src":"./assets/noun-star-logo.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"./assets/noun-star-logo.png","sizes":"512x512","type":"image/png","purpose":"any"}
+    {
+      "src": "./assets/noun-star-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/noun-star-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }
