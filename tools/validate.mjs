@@ -13,7 +13,7 @@ const ids = [...html.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
 const idSet = new Set(ids);
 const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i);
 assert.deepEqual(duplicates, [], "HTML contains duplicate IDs");
-for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "financeModule", "clubResourcesModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam", "clubResourcesNav", "clubSeasonForm", "clubSponsorForm", "clubAgreementForm", "clubSponsorPaymentForm", "clubEquipmentForm", "clubEquipmentMovementForm", "clubKitForm", "clubKitAssignmentForm", "clubActivityTable", "clubAgreementsTable", "clubSponsorPaymentsTable", "clubEquipmentMovementsTable", "clubKitAssignmentsTable", "playerFinancePanel", "playerFinanceTable", "playerProfilePrintBtn"]) {
+for (const id of ["loginView", "appView", "dashboardPage", "clubsModule", "playersModule", "matchesModule", "competitionsModule", "trainingModule", "healthModule", "statisticsModule", "disciplineModule", "financeModule", "clubResourcesModule", "settingsModule", "lineupPanel", "exportDrillBank", "importDrillBankBtn", "copyDrillToBank", "playerProfilePanel", "playerPortalNav", "playerPortalModule", "playerCorrectionForm", "playerRequestsManagerCard", "playerAccountCard", "playerPortalStats", "playerPortalEvaluations", "playerEvaluationForm", "playerEvaluationHistory", "evaluationPlayerId", "playerMonthlyVoteForm", "monthlyVoteCandidate", "audiencePollForm", "audiencePollManagerCard", "monthlyVotesManagerCard", "manualStatsPanel", "manualStatsForm", "playerFilterPosition", "playerFilterTeam", "clubResourcesNav", "clubSeasonForm", "clubSponsorForm", "clubAgreementForm", "clubSponsorPaymentForm", "clubEquipmentForm", "clubEquipmentMovementForm", "clubKitForm", "clubKitAssignmentForm", "clubActivityTable", "clubAgreementsTable", "clubSponsorPaymentsTable", "clubEquipmentMovementsTable", "clubKitAssignmentsTable", "playerFinancePanel", "playerFinanceTable", "playerProfilePrintBtn", "reportsNav", "reportsModule", "reportFilterCard", "reportType", "reportTeam", "reportSeason", "reportFrom", "reportTo", "reportGenerateBtn", "reportPrintBtn", "reportCsvBtn", "reportSummary", "reportVisuals", "reportInsights", "reportTable"]) {
   assert.ok(idSet.has(id), "Missing required app section: " + id);
 }
 const referencedIds = new Set([...script.matchAll(/\$\("([^"]+)"\)/g)].map((m) => m[1]));
@@ -34,7 +34,7 @@ for (const match of htmlBeforeScript.matchAll(divTags)) {
   }
 }
 assert.deepEqual(divStack, [], "Unbalanced application div structure");
-for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "financeModule", "clubResourcesModule", "settingsModule"]) {
+for (const id of ["clubsModule", "playersModule", "competitionsModule", "trainingModule", "matchesModule", "statisticsModule", "healthModule", "disciplineModule", "financeModule", "clubResourcesModule", "reportsModule", "settingsModule"]) {
   assert.equal(parentById.get(id), "appView", id + " must be a sibling module under appView");
 }
 assert.equal(parentById.get("playerProfilePanel"), "appView>playersModule", "Player profile must be inside playersModule");
@@ -180,7 +180,7 @@ assert.ok(script.includes('table==="equipment_items"&&movementItems.has(x.id))x.
 assert.ok(script.includes("playerFinancePanel") && script.includes("playerProfilePrintBtn"), "Player dossier must include print and manager-only finance detail");
 assert.ok(resourcesMigration.includes("nsm_apply_equipment_movement") && resourcesMigration.includes("nsm_create_sponsor_finance_entry") && resourcesMigration.includes("t||'_manager_select'"), "Resource inventory, sponsor finance link, or manager-only RLS is missing");
 assert.ok(html.includes('id="clubResourcesNav"') && html.includes('id="clubResourcesModule"') && script.includes('page==="clubResources"') && script.includes('currentProfile?.role!=="manager"'), "Club resources manager navigation is missing");
-assert.ok(serviceWorker.includes('nsm-shell-v9'), "PWA cache must refresh after backup and restore changes");
+assert.ok(serviceWorker.includes('nsm-shell-v10'), "PWA cache must refresh after reports and session fixes");
 assert.ok(script.includes('$("playerProfilePrintBtn").addEventListener("click",()=>window.print())') && script.includes('selectRows("finance_dues","&player_id=eq."+id+"&order=due_date.desc")'), "Printable player dossier or manager-only player finance detail is missing");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
