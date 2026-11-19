@@ -108,10 +108,10 @@ const ownerPolicyListEnd = schema.indexOf("] loop", ownerPolicyListStart);
 assert.ok(ownerPolicyListStart >= 0 && ownerPolicyListEnd > ownerPolicyListStart, "Cannot inspect owner RLS table list");
 const ownerPolicyList = schema.slice(ownerPolicyListStart, ownerPolicyListEnd);
 for (const table of schemaTables) {
-  if (table === "profiles" || ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes"].includes(table)) continue;
+  if (table === "profiles" || ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes","audience_members","public_site_admins","public_posts","audience_notifications","audience_notification_reads","audience_signup_attempts"].includes(table)) continue;
   assert.ok(ownerPolicyList.includes("'" + table + "'"), "Missing owner-only RLS policy for table: " + table);
 }
-for (const table of ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes"]) assert.ok(schema.includes("create policy nsm_"), "New feature tables must declare explicit RLS policies");
+for (const table of ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes","public_posts"]) assert.ok(schema.includes("create policy nsm_"), "New feature tables must declare explicit RLS policies");
 assert.ok(schema.includes("nsm_suspension_log_refs"), "Suspension ledger needs a same-owner reference trigger");
 assert.ok(schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension accounting trigger must not be directly executable");
 const verifySql = readFileSync(new URL("../supabase/verify.sql", import.meta.url), "utf8");
@@ -143,7 +143,13 @@ const playerPortalCode = script.slice(playerPortalStart, playerPortalEnd);
 assert.ok(playerPortalCode.includes('selectRows("players","&user_id=eq."+session.user.id)'), "Player portal must load only the signed-in player's profile");
 assert.ok(playerPortalCode.includes('selectRows("player_profile_change_requests"'), "Player portal must show its correction request history");
 assert.ok(playerPortalCode.includes('selectRows("player_evaluations"') || script.includes("async function loadPlayerEvaluations"), "Player portal must expose evaluation history");
-assert.ok(script.includes('async function login(identifier,password)') && script.includes('@login.nounstar.club'), "Player/coach identifier login mapping is missing");
+assert.ok(script.includes('async function login(identifier,password)') && script.includes('@login.nounstar.club') && script.includes('@fans.nounstar.club'), "Staff/player/fan identifier login mapping is missing");
+assert.ok(html.includes("publicPostsFeed") && html.includes("accountModal") && html.includes("joinFansBtn"), "Public-first homepage and unified account center are missing");
+assert.ok(script.includes("nsm-create-fan") && script.includes("loadFanNotifications") && script.includes("publicSiteAdmin"), "Fan registration, in-app notifications, or gated publishing tools are missing");
+assert.ok(schema.includes("audience_members") && schema.includes("public_site_admins") && schema.includes("public_posts") && schema.includes("audience_notifications"), "Public community schema is incomplete");
+assert.ok(schema.includes("alter column role set default 'fan'") && schema.includes("role in ('manager','coach','player','fan')"), "Public registrations must default to fan role");
+const fanFunction = readFileSync(new URL("../supabase/functions/nsm-create-fan/index.ts", import.meta.url), "utf8");
+assert.ok(fanFunction.includes("email_confirm: true") && fanFunction.includes("audience_members") && fanFunction.includes("audience_signup_attempts"), "Fan signup must create a username account with rate limiting");
 assert.ok(script.includes('currentProfile?.role==="player"') && script.includes('setPage("playerPortal")'), "Player accounts must be routed to the read-only portal");
 assert.ok(script.includes('playerCorrectionForm").addEventListener("submit"') && script.includes('saveRow("player_profile_change_requests"'), "Player corrections must be submitted as review requests, not direct profile edits");
 assert.ok(schema.includes("nsm_player_read_own_profile") && schema.includes("nsm_player_change_request_insert") && schema.includes("nsm_player_read_own_team_details"), "Player profile, correction, and team read policies are required");
