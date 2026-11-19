@@ -126,7 +126,7 @@ assert.ok(script.includes('order=sort_order.asc'), "Training session drill order
 
 const community = readFileSync(new URL("../community.html", import.meta.url), "utf8");
 assert.ok(community.includes("nsm_public_poll_results"), "Public voting page must load poll results");
-assert.ok(community.includes("audience_poll_votes"), "Public voting page must submit votes");
+assert.ok(community.includes("audience_poll_votes") && community.includes("voter_user_id") && community.includes("audience_members"), "Public voting must require a loyal fan account and enforce one vote per account");
 const communityScript = community.slice(community.indexOf("<script>") + 8, community.indexOf("</script>"));
 new Function(communityScript);
 const manifest = JSON.parse(readFileSync(new URL("../manifest.webmanifest", import.meta.url), "utf8"));
