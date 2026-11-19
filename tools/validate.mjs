@@ -96,6 +96,8 @@ const suspensionMigration = readFileSync(new URL("../supabase/migrations/2026111
 const mediaMigration = readFileSync(new URL("../supabase/migrations/20261119_club_media_gallery.sql", import.meta.url), "utf8");
 const mediaTuningMigration = readFileSync(new URL("../supabase/migrations/20261119_club_media_policy_tuning.sql", import.meta.url), "utf8");
 const roleHardeningMigration = readFileSync(new URL("../supabase/migrations/20261119_profile_role_helpers_hardening.sql", import.meta.url), "utf8");
+const fkIndexesMigration = readFileSync(new URL("../supabase/migrations/20261119_foreign_key_indexes.sql", import.meta.url), "utf8");
+const rlsInitplanMigration = readFileSync(new URL("../supabase/migrations/20261119_rls_initplan_optimization.sql", import.meta.url), "utf8");
 assert.ok(manualMigration.includes("'manual'"), "Manual match-stat migration is missing");
 assert.ok(drillMigration.includes("training_drills") && drillMigration.includes("builtin_drill_key"), "Training drill migration is missing");
 assert.ok(competitionMigration.includes("remaining_matches"), "Competition migration is missing");
@@ -105,6 +107,8 @@ assert.ok(suspensionMigration.includes("grant select,insert,update,delete on tab
 assert.ok(mediaMigration.includes("public.club_media") && mediaMigration.includes("noun-star-media") && mediaMigration.includes("consent_confirmed"), "Public media gallery migration or consent safeguards are missing");
 assert.ok(mediaTuningMigration.includes("drop policy if exists nsm_club_media_manager_read") && mediaTuningMigration.includes("club_media_created_by_idx"), "Media gallery policy tuning or foreign-key index is missing");
 assert.ok(roleHardeningMigration.includes("revoke execute on function public.nsm_guard_profile_role_change()") && roleHardeningMigration.includes("alter function public.nsm_protect_profile_role() set search_path") && roleHardeningMigration.includes("revoke execute on function public.nsm_set_profile_role(uuid,text) from public,anon"), "Profile-role helper RPC hardening is missing");
+assert.ok((fkIndexesMigration.match(/create index if not exists/g) || []).length === 22, "Missing foreign-key indexes");
+assert.ok(rlsInitplanMigration.includes("alter policy") && rlsInitplanMigration.includes("(select auth.uid())"), "RLS initplan optimization is missing");
 assert.ok(script.includes('"suspension_match_log"'), "Backup/restore must include the suspension ledger");
 
 
