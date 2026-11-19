@@ -984,3 +984,44 @@ for each row execute function public.nsm_sync_finance_due_paid();
 
 revoke all on function public.nsm_validate_finance_due_payment() from public, anon, authenticated;
 revoke all on function public.nsm_sync_finance_due_paid() from public, anon, authenticated;
+
+
+-- Enforce same-club player references in both dues and ledger entries.
+create or replace function public.nsm_validate_finance_due_owner()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare actor_role text;
+begin
+  if auth.uid() is null or new.owner_id <> auth.uid() then raise exception 'Invalid finance owner'; end if;
+  select role into actor_role from public.profiles where id = auth.uid();
+  if actor_role <> 'manager' then raise exception 'Only the club manager can manage subscription dues'; end if;
+  if not exists (select 1 from public.players where id = new.player_id and owner_id = new.owner_id) then
+    raise exception 'Player does not belong to this club';
+  end if;
+  return new;
+end; $$;
+drop trigger if exists nsm_validate_finance_due_owner on public.finance_dues;
+create trigger nsm_validate_finance_due_owner before insert or update of owner_id, player_id on public.finance_dues
+for each row execute function public.nsm_validate_finance_due_owner();
+
+create or replace function public.nsm_validate_finance_due_payment()
+returns trigger language plpgsql security definer set search_path = public, pg_temp as $$
+declare due_row public.finance_dues%rowtype; already_paid numeric(12,2); actor_role text;
+begin
+  if auth.uid() is null or new.owner_id <> auth.uid() then raise exception 'Invalid finance owner'; end if;
+  select role into actor_role from public.profiles where id = auth.uid();
+  if actor_role <> 'manager' then raise exception 'Only the club manager can record finance transactions'; end if;
+  if new.player_id is not null and not exists (select 1 from public.players where id = new.player_id and owner_id = new.owner_id) then
+    raise exception 'Player does not belong to this club';
+  end if;
+  if new.due_id is not null then
+    if new.kind <> 'income' then raise exception 'A due can only be settled by an income transaction'; end if;
+    select * into due_row from public.finance_dues where id = new.due_id and owner_id = new.owner_id for update;
+    if not found then raise exception 'Subscription due not found'; end if;
+    if new.player_id is distinct from due_row.player_id then raise exception 'Payment player does not match the due'; end if;
+    select coalesce(sum(amount),0) into already_paid from public.finance_transactions where due_id = new.due_id and owner_id = new.owner_id;
+    if already_paid + new.amount > due_row.amount_due then raise exception 'Payment exceeds the remaining balance'; end if;
+  end if;
+  return new;
+end; $$;
+revoke all on function public.nsm_validate_finance_due_owner() from public, anon, authenticated;
+revoke all on function public.nsm_validate_finance_due_payment() from public, anon, authenticated;
