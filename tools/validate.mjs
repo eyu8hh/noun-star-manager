@@ -180,7 +180,7 @@ assert.ok(script.includes('table==="equipment_items"&&movementItems.has(x.id))x.
 assert.ok(script.includes("playerFinancePanel") && script.includes("playerProfilePrintBtn"), "Player dossier must include print and manager-only finance detail");
 assert.ok(resourcesMigration.includes("nsm_apply_equipment_movement") && resourcesMigration.includes("nsm_create_sponsor_finance_entry") && resourcesMigration.includes("t||'_manager_select'"), "Resource inventory, sponsor finance link, or manager-only RLS is missing");
 assert.ok(html.includes('id="clubResourcesNav"') && html.includes('id="clubResourcesModule"') && script.includes('page==="clubResources"') && script.includes('currentProfile?.role!=="manager"'), "Club resources manager navigation is missing");
-assert.ok(serviceWorker.includes('nsm-shell-v8'), "PWA cache must refresh after backup and restore changes");
+assert.ok(serviceWorker.includes('nsm-shell-v9'), "PWA cache must refresh after backup and restore changes");
 assert.ok(script.includes('$("playerProfilePrintBtn").addEventListener("click",()=>window.print())') && script.includes('selectRows("finance_dues","&player_id=eq."+id+"&order=due_date.desc")'), "Printable player dossier or manager-only player finance detail is missing");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
