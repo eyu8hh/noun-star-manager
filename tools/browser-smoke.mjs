@@ -162,7 +162,13 @@ try {
   await page.locator("#financeNav").waitFor({ state: "hidden" });
   await page.locator('#nav button[data-page="clubs"]').waitFor({ state: "hidden" });
   await page.locator("#menuBtn").click();
-  await page.locator('#nav button[data-page="training"]').click();
+  const sidebarMetrics = await page.locator("#sidebar").evaluate((el) => ({ scrollHeight: el.scrollHeight, clientHeight: el.clientHeight }));
+  assert.ok(sidebarMetrics.scrollHeight > sidebarMetrics.clientHeight, "Mobile navigation drawer must be vertically scrollable");
+  const trainingNav = page.locator('#nav button[data-page="training"]');
+  await trainingNav.scrollIntoViewIfNeeded();
+  const sidebarScrollTop = await page.locator("#sidebar").evaluate((el) => el.scrollTop);
+  assert.ok(sidebarScrollTop > 0, "Training navigation item must be reachable by scrolling the drawer");
+  await trainingNav.click();
   await page.locator("#trainingModule:not(.hidden)").waitFor();
   await staffLogout();
 
