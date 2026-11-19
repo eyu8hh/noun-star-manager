@@ -162,7 +162,7 @@ const playerAccountFunction = readFileSync(new URL("../supabase/functions/nsm-cr
 assert.ok(playerAccountFunction.includes('profile?.role!=="manager"') && playerAccountFunction.includes('.eq("owner_id",data.user.id)'), "Player account creation must be manager-only and owner-scoped");
 assert.ok(playerAccountFunction.includes('role:"player"') && playerAccountFunction.includes('user_id:user.user.id'), "Player account must be linked to the existing player record");
 assert.ok(html.includes('id="managerCoachAssignmentCard"') && html.includes('id="managerQuickCoaches"') && html.includes('id="managerDashboardPanel"'), "Manager-only dashboard and staff controls are missing");
-assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&page==="clubs"'), "Manager/coach workspace separation is missing");
+assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&(page==="clubs"||page==="finance")'), "Manager/coach workspace separation is missing");
 const managerAccessMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_controls_coach_assignments.sql", import.meta.url), "utf8");
 assert.ok(managerAccessMigration.includes("drop policy if exists nsm_coach_insert_own_assignments") && managerAccessMigration.includes("tc.coach_user_id = (select auth.uid())"), "Coach assignments must be manager-controlled and team reads assignment-scoped");
 const coachProvisioning = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
