@@ -149,7 +149,7 @@ assert.ok(script.includes("nsm-create-fan") && script.includes("loadFanNotificat
 assert.ok(schema.includes("audience_members") && schema.includes("public_site_admins") && schema.includes("public_posts") && schema.includes("audience_notifications"), "Public community schema is incomplete");
 assert.ok(schema.includes("alter column role set default 'fan'") && schema.includes("role in ('manager','coach','player','fan')"), "Public registrations must default to fan role");
 const fanFunction = readFileSync(new URL("../supabase/functions/nsm-create-fan/index.ts", import.meta.url), "utf8");
-assert.ok(fanFunction.includes("email_confirm: true") && fanFunction.includes("audience_members") && fanFunction.includes("audience_signup_attempts"), "Fan signup must create a username account with rate limiting");
+assert.ok(fanFunction.includes("email_confirm:true") && fanFunction.includes("audience_members") && fanFunction.includes("audience_signup_attempts"), "Fan signup must create a username account with rate limiting");
 assert.ok(script.includes('currentProfile?.role==="player"') && script.includes('setPage("playerPortal")'), "Player accounts must be routed to the read-only portal");
 assert.ok(script.includes('playerCorrectionForm").addEventListener("submit"') && script.includes('saveRow("player_profile_change_requests"'), "Player corrections must be submitted as review requests, not direct profile edits");
 assert.ok(schema.includes("nsm_player_read_own_profile") && schema.includes("nsm_player_change_request_insert") && schema.includes("nsm_player_read_own_team_details"), "Player profile, correction, and team read policies are required");
