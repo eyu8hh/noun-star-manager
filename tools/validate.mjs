@@ -226,7 +226,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(html.includes("@keyframes nsmShimmer") && html.includes("cubic-bezier(.2,.85,.25,1.15)") && html.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(html.includes(".workspace-navigation{flex:1 1 auto") && html.includes("overflow-y:auto") && html.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v29'), "PWA cache must refresh after gallery viewer changes");
+assert.ok(serviceWorker.includes('nsm-shell-v30'), "PWA cache must refresh after gallery viewer changes");
 assert.ok(html.includes('id="publicGalleryLightbox"') && html.includes('id="galleryLightboxImage"') && html.includes('data-open-gallery'), "Public media gallery must provide an accessible image lightbox and carousel controls");
 assert.ok(script.includes("function openPublicGallery(") && script.includes("function movePublicGallery(") && script.includes("galleryLightboxPrev") && script.includes("galleryLightboxNext"), "Public media gallery navigation handlers are required");
 
