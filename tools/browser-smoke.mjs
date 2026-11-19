@@ -163,6 +163,7 @@ try {
   await page.locator('#nav button[data-page="clubs"]').waitFor({ state: "hidden" });
   await page.locator("#menuBtn").click();
   await page.locator("#sidebar.open").waitFor();
+  await page.waitForFunction(() => getComputedStyle(document.getElementById("sidebar")).transform === "matrix(1, 0, 0, 1, 0, 0)", null, { timeout: 2000 });
   const drawerState = await page.locator("#sidebar").evaluate((el) => ({ rect: (() => { const r = el.getBoundingClientRect(); return { x: r.x, width: r.width }; })(), transform: getComputedStyle(el).transform, dir: document.documentElement.dir }));
   const drawerBox = await page.locator("#sidebar").boundingBox();
   assert.ok(drawerBox && drawerBox.x < 390 && drawerBox.x + drawerBox.width > 0, "LTR mobile drawer must intersect the visible viewport: " + JSON.stringify(drawerState));
