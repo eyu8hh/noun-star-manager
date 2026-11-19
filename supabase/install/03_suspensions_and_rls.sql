@@ -100,7 +100,7 @@ end $$;
 -- Private row-level access. The profile uses its Auth UUID; all other tables use owner_id.
 do $$ declare t text; begin
   foreach t in array array[
-    'profiles','clubs','teams','players','team_players','player_team_history','competitions',
+    'profiles','clubs','teams','team_coaches','players','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
     'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
@@ -109,6 +109,19 @@ do $$ declare t text; begin
     execute format('grant select,insert,update,delete on table public.%I to authenticated',t);
   end loop;
 end $$;
+create or replace function public.nsm_protect_profile_role()
+returns trigger language plpgsql as $
+begin
+  if new.role is distinct from old.role and current_user <> 'service_role' then
+    raise exception 'Profile role can only be changed by club administration';
+  end if;
+  return new;
+end;
+$;
+drop trigger if exists nsm_protect_profile_role on public.profiles;
+create trigger nsm_protect_profile_role before update on public.profiles
+for each row execute function public.nsm_protect_profile_role();
+
 create policy nsm_profile_self on public.profiles for all to authenticated
 using (id = (select auth.uid())) with check (id = (select auth.uid()));
 do $$ declare t text; begin
