@@ -1283,3 +1283,56 @@ grant execute on function public.nsm_protect_profile_role() to service_role;
 alter function public.nsm_protect_profile_role() set search_path=public,pg_temp;
 revoke execute on function public.nsm_set_profile_role(uuid,text) from public,anon;
 grant execute on function public.nsm_set_profile_role(uuid,text) to authenticated,service_role;
+
+
+-- Additional foreign-key indexes for club operations.
+-- Cover foreign-key lookups and parent deletes/updates on frequently used club tables.
+create index if not exists nsm_idx_audience_notification_reads_user_fk on public.audience_notification_reads(user_id);
+create index if not exists nsm_idx_audience_poll_options_poll_fk on public.audience_poll_options(poll_id);
+create index if not exists nsm_idx_audience_poll_votes_option_fk on public.audience_poll_votes(option_id);
+create index if not exists nsm_idx_audience_poll_votes_voter_fk on public.audience_poll_votes(voter_user_id);
+create index if not exists nsm_idx_audience_polls_owner_fk on public.audience_polls(owner_id);
+create index if not exists nsm_idx_club_activity_logs_actor_fk on public.club_activity_logs(actor_id);
+create index if not exists nsm_idx_club_kits_season_fk on public.club_kits(season_id);
+create index if not exists nsm_idx_equipment_movements_item_fk on public.equipment_movements(item_id);
+create index if not exists nsm_idx_equipment_movements_player_fk on public.equipment_movements(player_id);
+create index if not exists nsm_idx_equipment_movements_team_fk on public.equipment_movements(team_id);
+create index if not exists nsm_idx_finance_dues_player_fk on public.finance_dues(player_id);
+create index if not exists nsm_idx_finance_transactions_player_fk on public.finance_transactions(player_id);
+create index if not exists nsm_idx_kit_assignments_kit_fk on public.kit_assignments(kit_id);
+create index if not exists nsm_idx_kit_assignments_player_fk on public.kit_assignments(player_id);
+create index if not exists nsm_idx_player_evaluations_coach_fk on public.player_evaluations(coach_user_id);
+create index if not exists nsm_idx_player_evaluations_owner_fk on public.player_evaluations(owner_id);
+create index if not exists nsm_idx_player_evaluations_team_fk on public.player_evaluations(team_id);
+create index if not exists nsm_idx_player_monthly_votes_candidate_fk on public.player_monthly_votes(candidate_player_id);
+create index if not exists nsm_idx_player_monthly_votes_voter_fk on public.player_monthly_votes(voter_player_id);
+create index if not exists nsm_idx_player_profile_change_requests_reviewer_fk on public.player_profile_change_requests(reviewed_by);
+create index if not exists nsm_idx_public_posts_owner_fk on public.public_posts(owner_id);
+create index if not exists nsm_idx_sponsor_payments_agreement_fk on public.sponsor_payments(agreement_id);
+
+
+-- RLS initplan optimization for audience and public content policies.
+-- Replace per-row auth.uid() calls with statement-level initplans in policies that still use direct calls.
+do $$
+declare p record; updated_expr text;
+begin
+ for p in
+  select schemaname,tablename,policyname,qual,with_check
+  from pg_policies
+  where schemaname='public'
+    and (
+      (coalesce(qual,'') ~* 'auth\.uid\(\)' and coalesce(qual,'') !~* 'select\s+auth\.uid\(\)')
+      or
+      (coalesce(with_check,'') ~* 'auth\.uid\(\)' and coalesce(with_check,'') !~* 'select\s+auth\.uid\(\)')
+    )
+ loop
+  if p.qual is not null and p.qual ~* 'auth\.uid\(\)' and p.qual !~* 'select\s+auth\.uid\(\)' then
+   updated_expr:=regexp_replace(p.qual,'auth\.uid\(\)','(select auth.uid())','gi');
+   execute format('alter policy %I on %I.%I using (%s)',p.policyname,p.schemaname,p.tablename,updated_expr);
+  end if;
+  if p.with_check is not null and p.with_check ~* 'auth\.uid\(\)' and p.with_check !~* 'select\s+auth\.uid\(\)' then
+   updated_expr:=regexp_replace(p.with_check,'auth\.uid\(\)','(select auth.uid())','gi');
+   execute format('alter policy %I on %I.%I with check (%s)',p.policyname,p.schemaname,p.tablename,updated_expr);
+  end if;
+ end loop;
+end $$;
