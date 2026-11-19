@@ -121,6 +121,7 @@ assert.ok(!["insert into","update public.","delete from","create table","alter t
 const deployWorkflow = readFileSync(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
 assert.ok(deployWorkflow.includes("workflow_dispatch") && deployWorkflow.includes("actions/deploy-pages@v4"), "Manual GitHub Pages deployment workflow is missing");
 assert.ok(deployWorkflow.includes("pages: write") && deployWorkflow.includes("id-token: write"), "GitHub Pages deployment permissions are incomplete");
+assert.ok(deployWorkflow.includes("cp index.html community.html manifest.webmanifest service-worker.js site/") && deployWorkflow.includes("cp -R assets site/assets"), "GitHub Pages must deploy the public voting page, PWA shell, and all assets");
 assert.ok(script.includes('finishedMatchIds.has(e.match_id)'), "Discipline thresholds must ignore unfinished matches");
 assert.ok(script.includes('order=sort_order.asc'), "Training session drill order must be persisted and restored");
 
