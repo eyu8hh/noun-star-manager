@@ -20,7 +20,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +30,13 @@ jobs:
           node-version: 22
       - name: Validate application and regression checks
         run: node tools/validate.mjs
+      - name: Install Playwright browser test runtime
+        run: |
+          npm init -y
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install chromium
+      - name: Test real browser interactions with mocked Supabase
+        run: node tools/browser-smoke.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Prepare site
