@@ -163,6 +163,8 @@ try {
   await page.locator('#nav button[data-page="clubs"]').waitFor({ state: "hidden" });
   await page.locator("#menuBtn").click();
   await page.locator("#sidebar.open").waitFor();
+  const drawerBox = await page.locator("#sidebar").boundingBox();
+  assert.ok(drawerBox && drawerBox.x >= -1 && drawerBox.x < 5, "LTR mobile drawer must slide into the visible viewport");
   await page.locator('#nav button[data-page="training"]').click();
   await page.locator("#trainingModule:not(.hidden)").waitFor();
   await staffLogout();
