@@ -100,7 +100,7 @@ end $$;
 -- Private row-level access. The profile uses its Auth UUID; all other tables use owner_id.
 do $$ declare t text; begin
   foreach t in array array[
-    'profiles','clubs','teams','team_coaches','players','team_players','player_team_history','competitions',
+    'profiles','clubs','teams','team_coaches','players','player_profile_change_requests','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
     'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
@@ -124,6 +124,15 @@ for each row execute function public.nsm_protect_profile_role();
 
 create policy nsm_manager_read_club_coaches on public.profiles for select to authenticated
 using (role='coach' and club_owner_id=(select auth.uid()));
+create policy nsm_player_read_own_profile on public.players for select to authenticated using (user_id=(select auth.uid()));
+create policy nsm_player_read_own_team on public.team_players for select to authenticated using (exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())));
+create policy nsm_player_read_own_team_details on public.teams for select to authenticated using (exists(select 1 from public.team_players tp join public.players p on p.id=tp.player_id where tp.team_id=teams.id and p.user_id=(select auth.uid()) and tp.is_current=true));
+create policy nsm_player_change_request_read on public.player_profile_change_requests for select to authenticated using (exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())) or owner_id=(select auth.uid()));
+create policy nsm_player_change_request_insert on public.player_profile_change_requests for insert to authenticated with check (status='pending' and reviewed_by is null and reviewed_at is null and exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid()) and p.owner_id=owner_id));
+create policy nsm_player_change_request_manager_update on public.player_profile_change_requests for update to authenticated using (owner_id=(select auth.uid())) with check (owner_id=(select auth.uid()));
+create or replace function public.nsm_touch_change_request() returns trigger language plpgsql set search_path = '' as $ begin new.updated_at:=now(); return new; end $;
+drop trigger if exists nsm_touch_change_request on public.player_profile_change_requests;
+create trigger nsm_touch_change_request before update on public.player_profile_change_requests for each row execute function public.nsm_touch_change_request();
 create policy nsm_profile_self on public.profiles for all to authenticated
 using (id = (select auth.uid())) with check (id = (select auth.uid()));
 do $$ declare t text; begin
