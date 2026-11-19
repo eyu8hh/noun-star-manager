@@ -1,3 +1,4 @@
+-- Safe to rerun: existing triggers are replaced without deleting application data.
 begin;
 
 -- Create a profile and default settings row when the coach account is created in Auth.
@@ -11,6 +12,7 @@ begin
   insert into public.settings(owner_id) values(new.id) on conflict(owner_id) do nothing;
   return new;
 end $$;
+drop trigger if exists nsm_auth_user_created on auth.users;
 create trigger nsm_auth_user_created after insert on auth.users
 for each row execute function public.nsm_on_auth_user_created();
 
@@ -46,34 +48,49 @@ begin
   return new;
 end $$;
 
+drop trigger if exists nsm_teams_refs on public.teams;
 create trigger nsm_teams_refs before insert or update on public.teams
 for each row execute function public.nsm_assert_related_owner('clubs','club_id');
+drop trigger if exists nsm_team_players_refs on public.team_players;
 create trigger nsm_team_players_refs before insert or update on public.team_players
 for each row execute function public.nsm_assert_related_owner('teams','team_id','players','player_id');
+drop trigger if exists nsm_history_refs on public.player_team_history;
 create trigger nsm_history_refs before insert or update on public.player_team_history
 for each row execute function public.nsm_assert_related_owner('players','player_id','teams','team_id');
+drop trigger if exists nsm_competition_teams_refs on public.competition_teams;
 create trigger nsm_competition_teams_refs before insert or update on public.competition_teams
 for each row execute function public.nsm_assert_related_owner('competitions','competition_id','teams','team_id');
+drop trigger if exists nsm_matches_refs on public.matches;
 create trigger nsm_matches_refs before insert or update on public.matches
 for each row execute function public.nsm_assert_related_owner('teams','team_id','competitions','competition_id');
+drop trigger if exists nsm_lineups_refs on public.match_lineups;
 create trigger nsm_lineups_refs before insert or update on public.match_lineups
 for each row execute function public.nsm_assert_related_owner('matches','match_id','players','player_id');
+drop trigger if exists nsm_events_refs on public.match_events;
 create trigger nsm_events_refs before insert or update on public.match_events
 for each row execute function public.nsm_assert_related_owner('matches','match_id','players','player_id','players','related_player_id');
+drop trigger if exists nsm_training_refs on public.training_sessions;
 create trigger nsm_training_refs before insert or update on public.training_sessions
 for each row execute function public.nsm_assert_related_owner('teams','team_id');
+drop trigger if exists nsm_training_drills_owner on public.training_drills;
 create trigger nsm_training_drills_owner before insert or update on public.training_drills
 for each row execute function public.nsm_assert_related_owner();
+drop trigger if exists nsm_training_session_drills_refs on public.training_session_drills;
 create trigger nsm_training_session_drills_refs before insert or update on public.training_session_drills
 for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','training_drills','drill_id');
+drop trigger if exists nsm_attendance_refs on public.training_attendance;
 create trigger nsm_attendance_refs before insert or update on public.training_attendance
 for each row execute function public.nsm_assert_related_owner('training_sessions','session_id','players','player_id');
+drop trigger if exists nsm_injuries_refs on public.injuries;
 create trigger nsm_injuries_refs before insert or update on public.injuries
 for each row execute function public.nsm_assert_related_owner('players','player_id');
+drop trigger if exists nsm_absences_refs on public.absences;
 create trigger nsm_absences_refs before insert or update on public.absences
 for each row execute function public.nsm_assert_related_owner('players','player_id');
+drop trigger if exists nsm_suspensions_refs on public.suspensions;
 create trigger nsm_suspensions_refs before insert or update on public.suspensions
 for each row execute function public.nsm_assert_related_owner('players','player_id','matches','incident_match_id');
+drop trigger if exists nsm_suspension_log_refs on public.suspension_match_log;
 create trigger nsm_suspension_log_refs before insert or update on public.suspension_match_log
 for each row execute function public.nsm_assert_related_owner('suspensions','suspension_id','matches','match_id');
 
