@@ -460,22 +460,26 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
 const CONFIG={supabaseUrl:"https://fatjyhoscjtwthbwiefo.supabase.co",publishableKey:"sb_publishable_-2WmKjEZQe-Ap2UGymmuRg_OhlT5bMV"};
 const $=id=>document.getElementById(id);
 document.addEventListener("click",event=>{
- const trigger=event.target.closest?.("#accountBtn");
- if(trigger){
-  const modal=$("accountModal");
-  if(!modal)return;
-  event.preventDefault();
-  modal.classList.remove("hidden");
-  modal.setAttribute("aria-hidden","false");
+ const target=event.target.closest?.("button");
+ if(target?.id==="accountBtn"){
+  const modal=$("accountModal");if(!modal)return;
+  event.preventDefault();modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false");
   $("accountChoice")?.classList.toggle("hidden",!!audienceMember);
   $("fanSignedInPanel")?.classList.toggle("hidden",!audienceMember);
-  $("staffLoginPanel")?.classList.add("hidden");
-  $("fanLoginPanel")?.classList.add("hidden");
+  $("staffLoginPanel")?.classList.add("hidden");$("fanLoginPanel")?.classList.add("hidden");return;
+ }
+ if(target?.id==="openStaffAccount"){
+  event.preventDefault();$("accountChoice")?.classList.add("hidden");$("fanLoginPanel")?.classList.add("hidden");
+  $("staffLoginPanel")?.classList.remove("hidden");$("email")?.focus();return;
+ }
+ if(target?.id==="openFanAccount"){
+  event.preventDefault();$("accountChoice")?.classList.add("hidden");
+  if(audienceMember){$("fanSignedInPanel")?.classList.remove("hidden")}
+  else{$("staffLoginPanel")?.classList.add("hidden");$("fanLoginPanel")?.classList.remove("hidden");$("fanLoginForm")?.classList.remove("hidden");$("fanSignupForm")?.classList.add("hidden");$("fanLoginTab")?.classList.add("active");$("fanSignupTab")?.classList.remove("active");$("fanLoginUsername")?.focus()}
   return;
  }
- if(event.target.closest?.("#closeAccountModal")||event.target===$("accountModal")){
-  $("accountModal")?.classList.add("hidden");
-  $("accountModal")?.setAttribute("aria-hidden","true");
+ if(target?.id==="closeAccountModal"||event.target===$("accountModal")){
+  $("accountModal")?.classList.add("hidden");$("accountModal")?.setAttribute("aria-hidden","true");
  }
 });
 const translations={
