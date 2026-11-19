@@ -997,7 +997,6 @@ $("financeExportBtn").addEventListener("click",()=>{
  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));const a=document.createElement("a");a.href=url;a.download="noun-star-finance-"+localFinanceDate()+".csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 });
 
-async 
 let clubResourceData={seasons:[],sponsors:[],agreements:[],payments:[],items:[],kits:[],assignments:[],players:[],teams:[],logs:[]};
 const clubToday=()=>new Date().toISOString().slice(0,10);
 async function writeClubLog(action,entityType,entityId=null,details={}){try{await saveRow("club_activity_logs",{action,entity_type:entityType,entity_id:entityId,details})}catch(e){console.warn("activity log",e)}}
