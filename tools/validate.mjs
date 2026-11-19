@@ -225,7 +225,10 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(html.includes("@keyframes nsmShimmer") && html.includes("cubic-bezier(.2,.85,.25,1.15)") && html.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(html.includes(".workspace-navigation{flex:1 1 auto") && html.includes("overflow-y:auto") && html.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v28'), "PWA cache must refresh after mobile interaction fixes");
+assert.ok(serviceWorker.includes('nsm-shell-v29'), "PWA cache must refresh after gallery viewer changes");
+assert.ok(html.includes('id="publicGalleryLightbox"') && html.includes('id="galleryLightboxImage"') && html.includes('data-open-gallery'), "Public media gallery must provide an accessible image lightbox and carousel controls");
+assert.ok(script.includes("function openPublicGallery(") && script.includes("function movePublicGallery(") && script.includes("galleryLightboxPrev") && script.includes("galleryLightboxNext"), "Public media gallery navigation handlers are required");
+
 assert.ok(serviceWorker.includes('cache:"no-store"'), "PWA navigation must bypass stale browser HTTP cache");
 assert.ok(script.indexOf('$("loginForm").addEventListener("submit",async e=>') < script.indexOf("const translations=") && html.includes('id="loginForm" class="public-form" onsubmit="return false"'), "Professional login must bind before optional modules and never fall through to native form navigation");
 assert.ok(script.includes('$("playerProfilePrintBtn").addEventListener("click",()=>window.print())') && script.includes('selectRows("finance_dues","&player_id=eq."+id+"&order=due_date.desc")'), "Printable player dossier or manager-only player finance detail is missing");
