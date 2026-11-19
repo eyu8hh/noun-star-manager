@@ -286,7 +286,7 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
     <div id="playerRequestsManagerCard" class="card hidden" style="margin-bottom:14px"><h3>طلبات تصحيح بيانات اللاعبين</h3><p class="table-sub">راجع المقترحات ثم وافق أو ارفض مع توضيح القرار.</p><div id="playerRequestsManagerList" class="data-table-wrap"></div></div>
     <div class="card"><h3 data-i18n="coachSettings">بيانات المدرب</h3><form id="settingsForm"><div class="form-grid"><div class="form-field"><label data-i18n="coachName">اسم المدرب</label><input id="settingsCoachName" maxlength="100"></div><div class="form-field"><label data-i18n="preferredLanguage">اللغة المفضلة</label><select id="settingsLanguage"><option value="ar">العربية</option><option value="fr">Français</option></select></div></div><div class="editor-footer"><button class="primary-btn" type="submit" data-i18n="saveSettings">حفظ الإعدادات</button></div></form></div>
     <div class="card" style="margin-top:14px"><h3 data-i18n="backupTitle">النسخ الاحتياطي</h3><p class="table-sub" data-i18n="backupDesc">صدّر نسخة JSON من بيانات حسابك أو استعد نسخة سابقة.</p><div class="module-actions"><button class="primary-btn" id="exportBackup" data-i18n="exportBackup">تنزيل نسخة احتياطية</button><button class="secondary-btn" id="chooseRestore" data-i18n="restoreBackup">استعادة نسخة</button><input id="restoreFile" type="file" accept="application/json,.json" class="hidden"></div><p id="backupMessage" class="table-sub" aria-live="polite"></p></div>
-    <div class="card" style="margin-top:14px"><h3 data-i18n="demoTools">البيانات التجريبية وإدارة البيانات</h3><p class="table-sub" data-i18n="demoToolsDesc">حمّل فريقا تجريبيا كاملا للتعرف على الموقع، أو امسح بيانات الفريق للبدء من الصفر. لا يؤثر المسح على حساب الدخول أو إعدادات المدرب.</p><div class="module-actions"><button class="secondary-btn" id="loadDemoData" data-i18n="loadDemoData">تحميل بيانات تجريبية</button><button class="secondary-btn danger" id="clearAllData" data-i18n="clearAllData">ابدأ بناديك — مسح بيانات الفريق</button></div></div>
+    
   </div>
 <div id="playerPortalModule" class="hidden"><div class="module-toolbar"><div><h3>ملفي الشخصي</h3><p>بياناتك للعرض فقط. إذا وجدت خطأ، أرسل طلب تصحيح للإدارة.</p></div></div><div id="playerPortalProfile" class="card"></div><div class="card" style="margin-top:14px"><h3>أدائي وتطوري</h3><div id="playerPortalStats"></div><h4>تقييمات المدرب وتطور المستوى</h4><div id="playerPortalEvaluations" class="data-table-wrap"></div><h4 style="margin-top:14px">الحالة الصحية وسجل الغياب</h4><div id="playerPortalHealth" class="data-table-wrap"></div></div><div class="card" style="margin-top:14px"><h3>التصويت لأفضل لاعب في الشهر</h3><p class="table-sub">صوت واحد لكل لاعب في الشهر، ولا يمكنك التصويت لنفسك.</p><form id="playerMonthlyVoteForm"><div class="form-field"><label>اختر اللاعب</label><select id="monthlyVoteCandidate" required></select></div><button class="primary-btn" type="submit">تأكيد التصويت</button><p id="monthlyVoteMessage" class="table-sub" aria-live="polite"></p></form></div><div class="card" style="margin-top:14px"><h3>طلب تصحيح بيانات</h3><form id="playerCorrectionForm"><div class="form-grid"><div class="form-field"><label>المعلومة المراد تصحيحها</label><select id="correctionField" required><option value="full_name">الاسم الكامل</option><option value="shirt_number">رقم القميص</option><option value="primary_position">المركز</option><option value="birth_date">تاريخ الميلاد</option><option value="phone">الهاتف</option><option value="notes">ملاحظات</option></select></div><div class="form-field"><label>القيمة الحالية</label><input id="correctionCurrent" readonly></div><div class="form-field"><label>التصحيح المقترح</label><input id="correctionProposed" maxlength="2000" required></div><div class="form-field full"><label>سبب التصحيح / توضيح</label><textarea id="correctionReason" rows="3" maxlength="1000"></textarea></div></div><div class="editor-footer"><button class="primary-btn" type="submit">إرسال للمراجعة</button></div><p id="correctionMessage" class="table-sub" aria-live="polite"></p></form></div><div class="card" style="margin-top:14px"><h3>طلباتي السابقة</h3><div id="playerOwnRequests" class="data-table-wrap"></div></div></div>
 </section>
@@ -649,61 +649,6 @@ async function clearCoachTeamData(){
  const tables=["suspension_match_log","training_session_drills","training_attendance","match_events","match_lineups","injuries","absences","suspensions","training_sessions","matches","competition_teams","team_players","player_team_history","training_drills","players","teams","competitions","clubs"];
  for(const table of tables)await api("/rest/v1/"+table+"?owner_id=eq."+encodeURIComponent(session.user.id),{method:"DELETE",headers:{"Prefer":"return=minimal"}});
 }
-$("clearAllData").addEventListener("click",async()=>{
- if(!confirm(lang==="ar"?"سيتم حذف جميع بيانات الأندية والفرق واللاعبين والمباريات والتدريبات والإحصائيات والإصابات. لن يمكن التراجع عن ذلك. هل تريد المتابعة؟":"Toutes les données des clubs, équipes, joueurs, matchs, entraînements, statistiques et blessures seront supprimées. Cette action est irréversible. Continuer ?"))return;
- const typed=prompt(lang==="ar"?"اكتب امسح للتأكيد النهائي:":"Tapez EFFACER pour confirmer :");
- if(typed!==(lang==="ar"?"امسح":"EFFACER"))return;
- try{await clearCoachTeamData();await loadDashboard();setPage("dashboard");alert(lang==="ar"?"تم مسح بيانات الفريق. يمكنك الآن إنشاء ناديك.":"Les données de l’équipe ont été effacées. Vous pouvez créer votre club.");}
- catch{alert(lang==="ar"?"تعذر إكمال المسح. راجع اتصال قاعدة البيانات ثم أعد المحاولة.":"Suppression incomplète. Vérifiez la connexion à la base puis réessayez.");}
-});
-$("loadDemoData").addEventListener("click",async()=>{
- try{
-  const existing=await Promise.all(["clubs","teams","players","matches"].map(t=>selectRows(t)));if(existing.some(rows=>rows.length)){alert(lang==="ar"?"لمنع خلط البيانات، حمّل البيانات التجريبية بعد مسح بيانات الفريق أولا.":"Pour éviter de mélanger les données, effacez d’abord les données de l’équipe.");return}
-  if(!confirm(lang==="ar"?"سيتم إنشاء نادٍ تجريبي وفريق U15 و12 لاعبا و4 مباريات وحصة تدريبية وبطولة وسجل إصابة وغياب. هل تتابع؟":"Un club de démonstration, une équipe U15, 12 joueurs, 4 matchs, une séance, une compétition, une blessure et une absence seront créés. Continuer ?"))return;
-  const today=new Date().toISOString().slice(0,10),club=await insertDemoRow("clubs",{name:lang==="ar"?"نادي تجريبي — DEMO":"Club démo — DEMO",short_name:"DEMO",notes:"Données de démonstration — Demo data"});
-  const team=await insertDemoRow("teams",{club_id:club.id,name:"U15",age_category:"U15",season:String(new Date().getFullYear())+"/"+(new Date().getFullYear()+1)});
-  const competition=await insertDemoRow("competitions",{name:lang==="ar"?"بطولة تجريبية":"Compétition démo",season:String(new Date().getFullYear()),points_win:3,points_draw:1,points_loss:0,target_position:2});
-  const roster=[
-   ["آدم العلوي","GK"],["ياسين الإدريسي","DF"],["حمزة المرابط","DF"],["أيوب بنعيسى","DF"],["سفيان أمين","DF"],
-   ["إلياس الراجي","MF"],["أنس الكتاني","MF"],["مهدي الزهراني","MF"],["ريان الصديقي","MF"],["بلال السالمي","FW"],["زكرياء العمراني","FW"],["يوسف الحداد","FW"]
-  ];
-  const players=[];
-  for(let i=0;i<roster.length;i++){
-   const p=await insertDemoRow("players",{full_name:roster[i][0],shirt_number:i+1,primary_position:roster[i][1],birth_date:(2009+(i%2))+"-04-"+String(5+i).padStart(2,"0"),availability:i===10?"injured":"available",notes:"لاعب تجريبي"});
-   players.push(p);
-   await insertDemoRow("team_players",{team_id:team.id,player_id:p.id,joined_on:today,is_current:true});
-   await insertDemoRow("player_team_history",{player_id:p.id,team_id:team.id,joined_on:today,stats_snapshot:{}});
-  }
-  await insertDemoRow("competition_teams",{competition_id:competition.id,team_id:team.id,played:3,won:2,drawn:0,lost:1,goals_for:6,goals_against:3,manual_points:0,remaining_matches:2});
-  for(const [name,played,won,drawn,lost,gf,ga,remaining] of [["اتحاد المدينة",3,2,1,0,5,2,2],["نجوم الحي",3,1,1,1,4,4,2],["شباب المستقبل",3,0,1,2,2,6,2]])await insertDemoRow("competition_teams",{competition_id:competition.id,opponent_name:name,played,won,drawn,lost,goals_for:gf,goals_against:ga,remaining_matches:remaining});
-  const matchSpecs=[
-   {days:-21,opponent:"اتحاد المدينة",gf:2,ga:1,status:"finished"},
-   {days:-14,opponent:"نجوم الحي",gf:3,ga:0,status:"finished"},
-   {days:-7,opponent:"شباب المستقبل",gf:1,ga:2,status:"finished"},
-   {days:7,opponent:"أكاديمية الغد",gf:null,ga:null,status:"scheduled"}
-  ],matches=[];
-  for(const spec of matchSpecs){
-   const date=new Date(Date.now()+spec.days*86400000);date.setHours(17,0,0,0);
-   matches.push(await insertDemoRow("matches",{team_id:team.id,competition_id:competition.id,opponent_name:spec.opponent,match_date:date.toISOString(),venue:spec.days<0?"ملعب النادي":"الملعب البلدي",duration_minutes:90,home_away:"home",goals_for:spec.gf,goals_against:spec.ga,status:spec.status,finalized_at:spec.status==="finished"?date.toISOString():null}));
-  }
-  const eventRows=[
-   [0,9,"goal",18,null],[0,5,"assist",18,9],[0,11,"goal",72,null],
-   [1,10,"goal",24,null],[1,6,"assist",24,10],[1,9,"goal",51,null],[1,11,"goal",80,null],
-   [2,7,"goal",39,null],[2,3,"yellow_card",65,null]
-  ];
-  for(const [mi,pi,type,minute,related] of eventRows)await insertDemoRow("match_events",{match_id:matches[mi].id,player_id:players[pi].id,related_player_id:related===null?null:players[related].id,event_type:type,minute});
-  const sessionDate=new Date(Date.now()+86400000);sessionDate.setHours(18,0,0,0);
-  const training=await insertDemoRow("training_sessions",{team_id:team.id,session_date:sessionDate.toISOString(),title:lang==="ar"?"الاستحواذ والخروج من الضغط":"Possession et sortie de pression",location:"الملعب الرئيسي",notes:"إحماء 15 د · روندو 12 د · تطبيق تكتيكي 20 د · مباراة مصغرة 15 د"});
-  for(const [i,key] of ["rondo-4-2","scan-between-lines","third-man"].entries())await insertDemoRow("training_session_drills",{session_id:training.id,builtin_drill_key:key,sort_order:i+1});
-  for(let i=0;i<players.length;i++)await insertDemoRow("training_attendance",{session_id:training.id,player_id:players[i].id,attendance_status:i===10?"injured":i===8?"absent":"present",reason:i===8?"غياب تجريبي":null});
-  await insertDemoRow("injuries",{player_id:players[10].id,injury_name:"التواء خفيف في الكاحل",started_on:today,expected_return:new Date(Date.now()+10*86400000).toISOString().slice(0,10),status:"active",notes:"سجل تجريبي — يلزم تقييم طبي قبل العودة"});
-  await insertDemoRow("absences",{player_id:players[8].id,absence_date:today,reason:"غياب تجريبي"});
-  await api("/rest/v1/players?id=eq."+players[10].id,{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({availability:"injured"})});
-  await loadDashboard();setPage("dashboard");
-  alert(lang==="ar"?"اكتملت البيانات التجريبية. ستجد النادي باسم DEMO ويمكن مسحها من الإعدادات عند البدء بناديك.":"Données de démonstration chargées. Le club DEMO peut être effacé depuis les paramètres.");
- }catch(err){alert(lang==="ar"?"توقف إنشاء البيانات التجريبية بسبب خطأ. استخدم مسح بيانات الفريق ثم أعد المحاولة.":"Le chargement de démonstration a échoué. Effacez les données de l’équipe puis réessayez.");}
-});
-
 let playerPortalRecord=null,playerPortalRequests=[];
 const correctionFields={full_name:"الاسم الكامل",shirt_number:"رقم القميص",primary_position:"المركز",birth_date:"تاريخ الميلاد",phone:"الهاتف",notes:"ملاحظات"};
 function playerFieldValue(p,k){return p?.[k]===null||p?.[k]===undefined?"":String(p[k])}
@@ -859,7 +804,7 @@ async function loadCurrentProfile(){
   const adminRows=await api("/rest/v1/public_site_admins?select=user_id&user_id=eq."+session.user.id);publicSiteAdmin=adminRows.length>0;
   const isPlayer=currentProfile?.role==="player";$("playerPortalNav").classList.toggle("hidden",!isPlayer);document.querySelectorAll("#nav button:not(#playerPortalNav)").forEach(b=>b.classList.toggle("hidden",isPlayer));
   $("coachManagementCard").classList.toggle("hidden",currentProfile?.role!=="manager");
-  $("managerBootstrapCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("playerAccountCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("audiencePollManagerCard").classList.toggle("hidden",!publicSiteAdmin);
+  const canBootstrapManager=currentProfile?.role==="manager"&&!/^manager\+/i.test(session?.user?.email||"");$("managerBootstrapCard").classList.toggle("hidden",!canBootstrapManager);$("playerAccountCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("audiencePollManagerCard").classList.toggle("hidden",!publicSiteAdmin);
   if(publicSiteAdmin)loadAudiencePollAdmin();if(currentProfile?.role==="manager"){$("monthlyVotesManagerCard").classList.remove("hidden");loadMonthlyVotesAdmin()}else $("monthlyVotesManagerCard").classList.add("hidden");
   $("playerRequestsManagerCard").classList.toggle("hidden",currentProfile?.role!=="manager");
   $("publicContentManagerCard").classList.toggle("hidden",!publicSiteAdmin);if(publicSiteAdmin)loadPublicPostsAdmin();
