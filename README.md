@@ -86,3 +86,16 @@ A manual GitHub Pages deployment workflow is included at .github/workflows/deplo
 - The club manager reviews requests in Settings. Approval applies the proposed field value to the player record; rejection records the decision and optional note. Players can track request status.
 - The `player_profile_change_requests` table is protected by row-level security. Players can read and submit requests only for their linked player record; club owners can review requests for their own records.
 - Creating a player account requires the deployed `nsm-create-player` Edge Function. The source is maintained in `supabase/functions/nsm-create-player/index.ts`.
+
+## Player development, awards and audience voting
+- Coaches assigned to a team can create monthly player evaluations (technical, tactical, physical, discipline; each scored 1–10) with a development note. The club manager can review all club evaluations.
+- Players can see their own match appearances, minutes, goals, assists, training attendance percentage, and evaluation history from their read-only portal.
+- A linked player account can vote once per calendar month for another player in the same current team. The manager sees the club's current-month vote totals.
+- Managers can create public audience polls from Settings. The public voting page is `community.html`; active poll results are returned through a restricted aggregate RPC, not by exposing individual vote records.
+- Audience vote de-duplication currently uses a random browser-local key. It is a convenience control, not verified identity or strong anti-fraud protection; stronger verification (for example, phone OTP) is a separate future task.
+
+## Installable web app (PWA)
+- The site includes `manifest.webmanifest` and `service-worker.js`, so supported browsers can install it to the home screen.
+- The service worker caches the app shell only. Live club records and account actions still require an internet connection.
+- This remains a web project; there is no native Android or iOS application in this repository.
+- Android Play Store distribution can later use a Trusted Web Activity after Digital Asset Links verification. iOS App Store distribution would need a properly packaged iOS app and must meet Apple's minimum-functionality and review requirements; a simple website wrapper is not guaranteed approval.
