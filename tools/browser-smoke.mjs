@@ -45,7 +45,9 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const pageErrors = [];
-page.on("pageerror", (error) => pageErrors.push(error.message));
+const consoleErrors = [];
+page.on("pageerror", (error) => pageErrors.push(error.stack || error.message));
+page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
 
 const userId = "11111111-1111-4111-8111-111111111111";
 const session = {
@@ -93,7 +95,13 @@ await page.route("https://fatjyhoscjtwthbwiefo.supabase.co/**", async (route) =>
 
 try {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
-  await page.waitForFunction(() => window.__nsmBootReady === true);
+  try {
+    await page.waitForFunction(() => window.__nsmBootReady === true, { timeout: 10000 });
+  } catch {
+    const loginError = await page.locator("#loginError").textContent().catch(() => "unavailable");
+    const diagnostics = { pageErrors, consoleErrors, loginError, ready: await page.evaluate(() => window.__nsmBootReady ?? false) };
+    throw new Error("Application bootstrap did not complete: " + JSON.stringify(diagnostics));
+  }
 
   // Public account center and language switch must be interactive before sign-in.
   await page.locator("#accountBtn").click();
@@ -136,6 +144,7 @@ try {
   await page.locator("#sidebar.open").waitFor();
 
   assert.deepEqual(pageErrors, [], "Browser console reported uncaught JavaScript errors");
+  assert.deepEqual(consoleErrors, [], "Browser console reported console errors");
   process.stdout.write("PASS: public account, language, manager login, mobile drawer, nav, quick actions, and authenticated language switch.\n");
 } finally {
   await context.close();
