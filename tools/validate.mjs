@@ -170,7 +170,7 @@ assert.ok(coachProvisioning.includes("coach_code?: string") && coachProvisioning
 assert.ok(html.includes('id="financeNav"') && html.includes('id="financeModule"') && html.includes('data-i18n="finance"'), "Manager finance navigation and module are missing");
 assert.ok(script.includes('currentProfile?.role!=="manager"') && script.includes("async function loadFinance") && script.includes('saveRow("finance_transactions"') && script.includes('saveRow("finance_dues"'), "Finance workspace must enforce manager access and support ledger/dues");
 const financeMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_finance_ledger.sql", import.meta.url), "utf8");
-assert.ok(financeMigration.includes("alter table public.finance_dues enable row level security") && financeMigration.includes("finance_transactions_manager_insert") && financeMigration.includes("nsm_validate_finance_due_payment") && financeMigration.includes("nsm_sync_finance_due_paid"), "Manager-only finance RLS and due payment synchronization are required");
+assert.ok(financeMigration.includes("alter table public.finance_dues enable row level security") && financeMigration.includes("finance_transactions_manager_insert") && financeMigration.includes("nsm_validate_finance_due_payment") && financeMigration.includes("nsm_validate_finance_due_owner") && financeMigration.includes("Player does not belong to this club") && financeMigration.includes("nsm_sync_finance_due_paid"), "Manager-only finance RLS and due payment synchronization are required");
 assert.ok(serviceWorker.includes('nsm-shell-v4'), "PWA cache must refresh after the finance release");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
