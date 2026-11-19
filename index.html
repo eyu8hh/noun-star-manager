@@ -1372,11 +1372,43 @@ $("publicLangBtn").addEventListener("click",()=>{lang=lang==="ar"?"fr":"ar";loca
 $("publicPostForm").addEventListener("submit",async e=>{e.preventDefault();if(!publicSiteAdmin)return;const btn=$("publicPostSubmit");btn.disabled=true;$("publicPostMessage").textContent="جارٍ حفظ المنشور...";try{const publishAt=$("publicPostPublishAt").value?new Date($("publicPostPublishAt").value).toISOString():new Date().toISOString(),expiresAt=$("publicPostExpiresAt").value?new Date($("publicPostExpiresAt").value).toISOString():null;const image=$("publicPostImage").value.trim();if(image&&!/^https:\/\//i.test(image))throw Error("استخدم رابط صورة HTTPS آمناً.");await saveRow("public_posts",{owner_id:session.user.id,content_type:$("publicPostType").value,audience:$("publicPostAudience").value,title:$("publicPostTitle").value.trim(),body:$("publicPostBody").value.trim(),image_url:image||null,publish_at:publishAt,expires_at:expiresAt,is_published:$("publicPostPublished").checked,notify_audience:$("publicPostNotify").checked});$("publicPostForm").reset();$("publicPostPublished").checked=true;$("publicPostMessage").textContent="تم حفظ المنشور.";await loadPublicPostsAdmin();await loadPublicHome()}catch(err){$("publicPostMessage").textContent=err.message||"تعذر حفظ المنشور. تحقق من صلاحياتك وتواريخ النشر."}finally{btn.disabled=false}});
 $("publicPostsAdminList").addEventListener("click",async e=>{const toggle=e.target.closest("[data-toggle-public-post]"),del=e.target.closest("[data-delete-public-post]");if(!publicSiteAdmin||(!toggle&&!del))return;try{if(del&&confirm("هل تريد حذف هذا المنشور؟"))await deleteRow("public_posts",del.dataset.deletePublicPost);else if(toggle)await saveRow("public_posts",{is_published:toggle.dataset.published!=="true"},toggle.dataset.togglePublicPost);await loadPublicPostsAdmin();await loadPublicHome()}catch{$("publicPostMessage").textContent="تعذر تحديث المنشور."}});
 
-$("dashboardTeamFilter").addEventListener("change",loadDashboard);$("logoutBtn").addEventListener("click",()=>logout());$("langBtn").addEventListener("click",()=>{lang=lang==="ar"?"fr":"ar";localStorage.setItem("nsm_lang",lang);applyLang();if(currentPage!=="dashboard")setPage(currentPage)});
-$("themeBtn").addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("nsm_theme",document.body.classList.contains("light")?"light":"dark")});
-$("menuBtn").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
-$("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-page]");if(b)setPage(b.dataset.page)});
-document.addEventListener("click",e=>{const b=e.target.closest("[data-goto]");if(!b||b.disabled)return;const page=b.dataset.goto;if(page==="settings"&&currentProfile?.role!=="manager")return;setPage(page);},true);
+$("dashboardTeamFilter").addEventListener("change",loadDashboard);
+// One capture-phase router owns the shell controls. This keeps mobile taps working
+// even when buttons contain nested icons/text and prevents duplicate toggle handlers.
+document.addEventListener("click",event=>{
+ const origin=event.target;
+ const b=origin instanceof Element?origin.closest("button"):null;
+ if(!b)return;
+ const id=b.id;
+ if(id==="menuBtn"){
+  event.preventDefault();event.stopImmediatePropagation();
+  $("sidebar").classList.toggle("open");return;
+ }
+ if(id==="logoutBtn"){
+  event.preventDefault();event.stopImmediatePropagation();logout();return;
+ }
+ if(id==="refreshBtn"){
+  event.preventDefault();event.stopImmediatePropagation();refreshCurrentView(true);return;
+ }
+ if(id==="langBtn"){
+  event.preventDefault();event.stopImmediatePropagation();
+  lang=lang==="ar"?"fr":"ar";localStorage.setItem("nsm_lang",lang);applyLang();
+  if(currentPage!=="dashboard")setPage(currentPage);return;
+ }
+ if(id==="themeBtn"){
+  event.preventDefault();event.stopImmediatePropagation();
+  document.body.classList.toggle("light");
+  localStorage.setItem("nsm_theme",document.body.classList.contains("light")?"light":"dark");return;
+ }
+ const nav=b.closest("#nav button[data-page]");
+ const quick=b.closest("[data-goto]");
+ if(nav||quick){
+  event.preventDefault();event.stopImmediatePropagation();
+  const page=(nav||quick).dataset.page||(nav||quick).dataset.goto;
+  if(!page||((page==="settings"||page==="finance"||page==="clubResources"||page==="reports")&&currentProfile?.role!=="manager"))return;
+  setPage(page);
+ }
+},true);
 if(localStorage.getItem("nsm_theme")==="light")document.body.classList.add("light");
 $("publicLangBtn").textContent=lang==="ar"?"FR":"AR";
 try{const saved=JSON.parse(localStorage.getItem("nsm_session")||"null");if(saved?.refresh_token){session=saved;if(!saved.expires_at||saved.expires_at*1000<Date.now()+60000){refreshSession().then(showApp).catch(err=>showStaffBootstrapError(err))}else{showApp().catch(err=>showStaffBootstrapError(err))}}else{localStorage.removeItem("nsm_session");applyLang();loadPublicHome();updatePublicAccountUI()}}catch(err){showStaffBootstrapError(err)}
