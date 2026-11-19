@@ -152,6 +152,7 @@ try {
   assert.equal(managerGridColumns, 2, "Manager shortcuts must use a two-column mobile bento grid");
   await page.locator("#menuBtn").click();
   await page.locator("#sidebar.open").waitFor();
+  assert.equal(await page.locator(".workspace-navigation").evaluate((el) => getComputedStyle(el).overflowY), "auto", "The mobile navigation list must scroll independently of the account footer");
   assert.equal(await page.locator("#menuBtn").getAttribute("aria-expanded"), "true");
   await page.locator('#nav button[data-page="players"]').click();
   await page.locator("#sidebar:not(.open)").waitFor();
