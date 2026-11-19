@@ -252,6 +252,19 @@ body.light .form-field input,body.light .form-field select,body.light .form-fiel
     <div class="section-head"><h3 data-i18n="suspensionList">سجل الإيقافات</h3><span id="suspensionsCount">0</span></div><div id="suspensionsTable" class="data-table-wrap"></div>
   </div>
   <div id="settingsModule" class="hidden">
+    <div id="managerBootstrapCard" class="card hidden" style="margin-bottom:14px;border:1px solid var(--accent)">
+      <h3>تأسيس حساب مدير النادي</h3>
+      <p class="table-sub">خطوة إعداد أولية لمرة واحدة: أنشئ حساب المدير المستقل. بعد نجاحها سيتحول الحساب الحالي تلقائياً إلى حساب مدرب، مع الحفاظ على كلمة مروره وبيانات النادي.</p>
+      <form id="managerBootstrapForm">
+        <div class="form-grid">
+          <div class="form-field full"><label for="managerSetupToken">رمز التأسيس لمرة واحدة</label><input id="managerSetupToken" type="password" autocomplete="off" minlength="64" maxlength="64" required placeholder="ألصق الرمز الذي استلمته"></div>
+          <div class="form-field"><label for="managerSetupName">اسم مدير النادي</label><input id="managerSetupName" maxlength="100" required placeholder="الاسم الكامل"></div>
+          <div class="form-field"><label for="managerSetupPassword">كلمة مرور حساب المدير الجديد (12 حرفاً على الأقل)</label><input id="managerSetupPassword" type="password" minlength="12" maxlength="72" autocomplete="new-password" required></div>
+        </div>
+        <div class="editor-footer"><button class="primary-btn" id="managerSetupSubmit" type="submit">إنشاء حساب المدير ونقل الصلاحيات</button></div>
+        <p id="managerSetupMessage" class="table-sub" aria-live="polite"></p>
+      </form>
+    </div>
     <div id="publicContentManagerCard" class="card hidden" style="margin-bottom:14px">
       <h3>إدارة المحتوى العام</h3><p class="table-sub">انشر أخبار النادي والإعلانات والفعاليات والمسابقات للجمهور. لا تظهر هذه الأدوات إلا للحساب المعتمد لإدارة الموقع العام.</p>
       <form id="publicPostForm"><div class="form-grid">
@@ -756,6 +769,22 @@ $("playerAccountForm").addEventListener("submit",async e=>{
  try{const res=await fetch(CONFIG.supabaseUrl+"/functions/v1/nsm-create-player",{method:"POST",headers:{apikey:CONFIG.publishableKey,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({player_id:$("accountPlayerChoice").value,player_code:$("newPlayerCode").value.trim(),password:$("newPlayerPassword").value})});const data=await res.json();if(!res.ok)throw Error(data.error||"PLAYER_CREATE_FAILED");$("playerAccountForm").reset();msg.textContent="تم إنشاء الحساب. رمز الدخول: "+data.player_code+" — سلّم اللاعب كلمة المرور المؤقتة بأمان.";await loadPlayers()}catch(err){msg.textContent="تعذر إنشاء الحساب. تحقق من الرمز وكلمة المرور وربط اللاعب."}finally{if(btn)btn.disabled=false}
 });
 
+$("managerBootstrapForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ if(currentProfile?.role!=="manager"||!session?.access_token)return;
+ const btn=$("managerSetupSubmit"),msg=$("managerSetupMessage");
+ const setupToken=$("managerSetupToken").value.trim(),displayName=$("managerSetupName").value.trim(),password=$("managerSetupPassword").value;
+ btn.disabled=true;msg.textContent="جارٍ إعداد حساب المدير ونقل ملكية مساحة النادي بأمان...";
+ try{
+  const response=await fetch(CONFIG.supabaseUrl+"/functions/v1/nsm-bootstrap-manager",{method:"POST",headers:{apikey:CONFIG.publishableKey,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({setup_token:setupToken,display_name:displayName,password})});
+  const data=await response.json();
+  if(!response.ok)throw Error(data.error||"MANAGER_SETUP_FAILED");
+  $("managerSetupToken").value="";$("managerSetupPassword").value="";
+  msg.textContent="اكتمل الإعداد. رمز المدير الجديد: "+data.manager_code+" — رمز حسابك السابق بعد تحويله إلى مدرب: "+data.coach_code+". احتفظ بالرمزين في مكان آمن.";
+  await login(data.manager_code,password);await showApp();setPage("settings");
+ }catch(err){msg.textContent=err.message||"تعذر إتمام إعداد حساب المدير. لم يتم تأكيد نجاح العملية."}
+ finally{btn.disabled=false}
+});
 async function showModule(page){
  ["clubsModule","playersModule","matchesModule","competitionsModule","trainingModule","healthModule","statisticsModule","disciplineModule","settingsModule","playerPortalModule"].forEach(id=>$(id).classList.add("hidden"));$("modulePlaceholder").classList.remove("hidden");
  if(page==="playerPortal"){ $("modulePlaceholder").classList.add("hidden");$("playerPortalModule").classList.remove("hidden");try{await loadPlayerPortal()}catch{ $("playerPortalProfile").textContent=tr("loadError") }}
@@ -829,7 +858,8 @@ async function loadCurrentProfile(){
   const rows=await api("/rest/v1/profiles?id=eq."+session.user.id+"&select=role,display_name");currentProfile=rows[0]||null;
   const adminRows=await api("/rest/v1/public_site_admins?select=user_id&user_id=eq."+session.user.id);publicSiteAdmin=adminRows.length>0;
   const isPlayer=currentProfile?.role==="player";$("playerPortalNav").classList.toggle("hidden",!isPlayer);document.querySelectorAll("#nav button:not(#playerPortalNav)").forEach(b=>b.classList.toggle("hidden",isPlayer));
-  $("coachManagementCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("playerAccountCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("audiencePollManagerCard").classList.toggle("hidden",!publicSiteAdmin);
+  $("coachManagementCard").classList.toggle("hidden",currentProfile?.role!=="manager");
+  $("managerBootstrapCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("playerAccountCard").classList.toggle("hidden",currentProfile?.role!=="manager");$("audiencePollManagerCard").classList.toggle("hidden",!publicSiteAdmin);
   if(publicSiteAdmin)loadAudiencePollAdmin();if(currentProfile?.role==="manager"){$("monthlyVotesManagerCard").classList.remove("hidden");loadMonthlyVotesAdmin()}else $("monthlyVotesManagerCard").classList.add("hidden");
   $("playerRequestsManagerCard").classList.toggle("hidden",currentProfile?.role!=="manager");
   $("publicContentManagerCard").classList.toggle("hidden",!publicSiteAdmin);if(publicSiteAdmin)loadPublicPostsAdmin();
