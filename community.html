@@ -16,6 +16,8 @@ async function render(){try{const polls=await api("audience_polls?select=id,titl
 function showResults(card,rows){const total=rows.reduce((n,x)=>n+Number(x.vote_count||0),0);card.querySelector(".results").innerHTML='<h3>النتائج الحالية · '+total+' صوت</h3>'+rows.map(x=>{const n=Number(x.vote_count||0),pct=total?Math.round(n/total*100):0;return '<div class="result"><div class="result-head"><span>'+esc(x.label)+'</span><b>'+pct+'% ('+n+')</b></div><div class="bar"><i style="width:'+pct+'%"></i></div></div>'}).join("")}
 render();
 })();
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}))}
 </script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(()=>{}))}</script>
+
 </body></html>
