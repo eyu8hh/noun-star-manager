@@ -13,9 +13,14 @@ create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null default '',
   preferred_language text not null default 'ar' check (preferred_language in ('ar','fr')),
+  role text not null default 'coach' check (role in ('manager','coach','player')),
+  coach_code text,
+  club_owner_id uuid references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+create unique index if not exists profiles_coach_code_unique on public.profiles(lower(coach_code)) where coach_code is not null;
+create index if not exists profiles_club_owner_id_idx on public.profiles(club_owner_id) where club_owner_id is not null;
 
 create table public.clubs (
   id uuid primary key default gen_random_uuid(),
@@ -33,6 +38,15 @@ create table public.teams (
   age_category text, season text, is_active boolean not null default true,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
   unique(owner_id,club_id,name)
+);
+create table public.team_coaches (
+  id uuid primary key default gen_random_uuid(),
+  owner_id uuid not null references auth.users(id) on delete cascade,
+  team_id uuid not null references public.teams(id) on delete cascade,
+  coach_user_id uuid not null references auth.users(id) on delete cascade,
+  assignment_type text not null default 'head' check (assignment_type in ('head','assistant')),
+  assigned_at timestamptz not null default now(),
+  unique(team_id,coach_user_id)
 );
 create table public.players (
   id uuid primary key default gen_random_uuid(),
