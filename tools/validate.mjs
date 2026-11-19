@@ -94,6 +94,7 @@ const drillMigration = readFileSync(new URL("../supabase/migrations/20261118_tra
 const competitionMigration = readFileSync(new URL("../supabase/migrations/20261118_competition_manual_results.sql", import.meta.url), "utf8");
 const suspensionMigration = readFileSync(new URL("../supabase/migrations/20261118_reversible_suspension_accounting.sql", import.meta.url), "utf8");
 const mediaMigration = readFileSync(new URL("../supabase/migrations/20261119_club_media_gallery.sql", import.meta.url), "utf8");
+const mediaTuningMigration = readFileSync(new URL("../supabase/migrations/20261119_club_media_policy_tuning.sql", import.meta.url), "utf8");
 assert.ok(manualMigration.includes("'manual'"), "Manual match-stat migration is missing");
 assert.ok(drillMigration.includes("training_drills") && drillMigration.includes("builtin_drill_key"), "Training drill migration is missing");
 assert.ok(competitionMigration.includes("remaining_matches"), "Competition migration is missing");
@@ -101,6 +102,7 @@ assert.ok(schema.includes("'suspensions','suspension_match_log','settings'"), "S
 assert.ok(schema.includes("nsm_suspension_log_refs") && schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension ledger ownership or trigger execution is not secured");
 assert.ok(suspensionMigration.includes("grant select,insert,update,delete on table public.suspension_match_log") && suspensionMigration.includes("nsm_suspension_log_refs"), "Suspension ledger migration is missing owner-scoped backup permissions");
 assert.ok(mediaMigration.includes("public.club_media") && mediaMigration.includes("noun-star-media") && mediaMigration.includes("consent_confirmed"), "Public media gallery migration or consent safeguards are missing");
+assert.ok(mediaTuningMigration.includes("drop policy if exists nsm_club_media_manager_read") && mediaTuningMigration.includes("club_media_created_by_idx"), "Media gallery policy tuning or foreign-key index is missing");
 assert.ok(script.includes('"suspension_match_log"'), "Backup/restore must include the suspension ledger");
 
 
