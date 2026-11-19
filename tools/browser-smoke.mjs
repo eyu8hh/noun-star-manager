@@ -145,11 +145,19 @@ try {
   // Manager: dashboard, drawer, sidebar navigation, quick actions, and language.
   await staffLogin("manager", "M-1234");
   await page.locator("#managerDashboardPanel:not(.hidden)").waitFor();
+  assert.equal(await page.locator("#nav .nav-group").count(), 4, "Navigation must be grouped by purpose, not rendered as one undifferentiated list");
+  assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
+  assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
+  const managerGridColumns = await page.locator(".manager-bento-grid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+  assert.equal(managerGridColumns, 2, "Manager shortcuts must use a two-column mobile bento grid");
   await page.locator("#menuBtn").click();
   await page.locator("#sidebar.open").waitFor();
+  assert.equal(await page.locator("#menuBtn").getAttribute("aria-expanded"), "true");
   await page.locator('#nav button[data-page="players"]').click();
   await page.locator("#sidebar:not(.open)").waitFor();
   await page.locator("#playersModule:not(.hidden)").waitFor();
+  assert.equal(await page.locator('#nav button[data-page="players"]').getAttribute("aria-current"), "page");
+  assert.equal(await page.locator("#menuBtn").getAttribute("aria-expanded"), "false");
   await page.locator("#menuBtn").click();
   await page.locator('#nav button[data-page="dashboard"]').click();
   await page.locator("#dashboardPage:not(.hidden)").waitFor();
@@ -157,6 +165,7 @@ try {
   await page.locator("#matchesModule:not(.hidden)").waitFor();
   await page.locator("#langBtn").click();
   await page.waitForFunction(() => document.documentElement.dir === "ltr");
+  assert.equal(await page.locator('[data-i18n="navAdmin"]').textContent(), "ADMINISTRATION");
   await staffLogout();
 
   // Coach: manager-only workspaces must remain hidden; training remains usable.
