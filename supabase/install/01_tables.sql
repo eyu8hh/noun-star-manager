@@ -56,9 +56,28 @@ create table public.players (
   primary_position text, birth_date date, phone text, photo_url text,
   availability text not null default 'available'
     check (availability in ('available','injured','suspended','unavailable')),
-  notes text, created_at timestamptz not null default now(),
+  notes text, user_id uuid references auth.users(id) on delete set null, login_code text,
+  created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+create unique index if not exists players_user_id_unique on public.players(user_id) where user_id is not null;
+create unique index if not exists players_login_code_unique on public.players(lower(login_code)) where login_code is not null;
+create table public.player_profile_change_requests (
+ id uuid primary key default gen_random_uuid(),
+ owner_id uuid not null references auth.users(id) on delete cascade,
+ player_id uuid not null references public.players(id) on delete cascade,
+ field_key text not null check (field_key in ('full_name','shirt_number','primary_position','birth_date','phone','notes')),
+ current_value text,
+ proposed_value text not null check (length(trim(proposed_value)) > 0 and length(proposed_value) <= 2000),
+ reason text not null default '' check (length(reason) <= 1000),
+ status text not null default 'pending' check (status in ('pending','approved','rejected')),
+ reviewed_by uuid references auth.users(id) on delete set null,
+ reviewed_at timestamptz,
+ review_note text check (review_note is null or length(review_note) <= 1000),
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create index if not exists player_change_requests_owner_status_idx on public.player_profile_change_requests(owner_id,status,created_at desc);
+create index if not exists player_change_requests_player_idx on public.player_profile_change_requests(player_id,created_at desc);
 create table public.team_players (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
