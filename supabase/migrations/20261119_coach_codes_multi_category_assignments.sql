@@ -36,4 +36,35 @@ create policy nsm_coach_update_own_assignments on public.team_coaches for update
 );
 drop policy if exists nsm_coach_delete_own_assignments on public.team_coaches;
 create policy nsm_coach_delete_own_assignments on public.team_coaches for delete to authenticated using (coach_user_id=(select auth.uid()));
+
+drop policy if exists nsm_coach_read_team_players on public.team_players;
+create policy nsm_coach_read_team_players on public.team_players for select to authenticated
+using (exists(select 1 from public.team_coaches tc where tc.team_id=team_players.team_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_players on public.players;
+create policy nsm_coach_read_players on public.players for select to authenticated
+using (exists(select 1 from public.team_players tp join public.team_coaches tc on tc.team_id=tp.team_id where tp.player_id=players.id and tp.is_current=true and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_matches on public.matches;
+create policy nsm_coach_read_matches on public.matches for select to authenticated
+using (exists(select 1 from public.team_coaches tc where tc.team_id=matches.team_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_match_lineups on public.match_lineups;
+create policy nsm_coach_read_match_lineups on public.match_lineups for select to authenticated
+using (exists(select 1 from public.matches m join public.team_coaches tc on tc.team_id=m.team_id where m.id=match_lineups.match_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_match_events on public.match_events;
+create policy nsm_coach_read_match_events on public.match_events for select to authenticated
+using (exists(select 1 from public.matches m join public.team_coaches tc on tc.team_id=m.team_id where m.id=match_events.match_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_training_sessions on public.training_sessions;
+create policy nsm_coach_read_training_sessions on public.training_sessions for select to authenticated
+using (exists(select 1 from public.team_coaches tc where tc.team_id=training_sessions.team_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_training_attendance on public.training_attendance;
+create policy nsm_coach_read_training_attendance on public.training_attendance for select to authenticated
+using (exists(select 1 from public.training_sessions s join public.team_coaches tc on tc.team_id=s.team_id where s.id=training_attendance.session_id and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_injuries on public.injuries;
+create policy nsm_coach_read_injuries on public.injuries for select to authenticated
+using (exists(select 1 from public.team_players tp join public.team_coaches tc on tc.team_id=tp.team_id where tp.player_id=injuries.player_id and tp.is_current=true and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_absences on public.absences;
+create policy nsm_coach_read_absences on public.absences for select to authenticated
+using (exists(select 1 from public.team_players tp join public.team_coaches tc on tc.team_id=tp.team_id where tp.player_id=absences.player_id and tp.is_current=true and tc.coach_user_id=(select auth.uid())));
+drop policy if exists nsm_coach_read_suspensions on public.suspensions;
+create policy nsm_coach_read_suspensions on public.suspensions for select to authenticated
+using (exists(select 1 from public.team_players tp join public.team_coaches tc on tc.team_id=tp.team_id where tp.player_id=suspensions.player_id and tp.is_current=true and tc.coach_user_id=(select auth.uid())));
 commit;
