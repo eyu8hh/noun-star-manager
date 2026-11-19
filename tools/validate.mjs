@@ -147,6 +147,7 @@ assert.ok(playerPortalCode.includes('selectRows("player_profile_change_requests"
 assert.ok(playerPortalCode.includes('selectRows("player_evaluations"') || script.includes("async function loadPlayerEvaluations"), "Player portal must expose evaluation history");
 assert.ok(script.includes('async function login(identifier,password)') && script.includes('@login.nounstar.club') && script.includes('@fans.nounstar.club'), "Staff/player/fan identifier login mapping is missing");
 assert.ok(html.includes("publicPostsFeed") && html.includes("accountModal") && html.includes("joinFansBtn"), "Public-first homepage and unified account center are missing");
+assert.ok(script.includes('document.addEventListener("click",event=>') && script.includes('event.target.closest?.("#accountBtn")') && !script.includes('$("accountBtn").addEventListener("click"'), "Account center must use early delegated click handling so the icon and its inner content remain clickable");
 assert.ok(html.includes("publicMatchesFeed") && html.includes("matchPublic") && script.includes("nsm_public_match_feed"), "Explicitly published public match schedule/results are missing");
 assert.ok(script.includes("nsm-create-fan") && script.includes("loadFanNotifications") && script.includes("publicSiteAdmin"), "Fan registration, in-app notifications, or gated publishing tools are missing");
 assert.ok(schema.includes("audience_members") && schema.includes("public_site_admins") && schema.includes("public_posts") && schema.includes("audience_notifications"), "Public community schema is incomplete");
