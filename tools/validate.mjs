@@ -135,4 +135,20 @@ assert.ok(manifest.icons?.length >= 1, "PWA manifest needs an app icon");
 const serviceWorker = readFileSync(new URL("../service-worker.js", import.meta.url), "utf8");
 new Function("self", "caches", "fetch", "URL", serviceWorker);
 assert.ok(html.includes('rel="manifest"') && community.includes('rel="manifest"'), "Both app surfaces must link to the PWA manifest");
+
+const playerPortalStart = script.indexOf("async function loadPlayerPortal()");
+const playerPortalEnd = script.indexOf('$("playerMonthlyVoteForm")', playerPortalStart);
+assert.ok(playerPortalStart >= 0 && playerPortalEnd > playerPortalStart, "Player portal loader is missing or incomplete");
+const playerPortalCode = script.slice(playerPortalStart, playerPortalEnd);
+assert.ok(playerPortalCode.includes('selectRows("players","&user_id=eq."+session.user.id)'), "Player portal must load only the signed-in player's profile");
+assert.ok(playerPortalCode.includes('selectRows("player_profile_change_requests"'), "Player portal must show its correction request history");
+assert.ok(playerPortalCode.includes('selectRows("player_evaluations"') || script.includes("async function loadPlayerEvaluations"), "Player portal must expose evaluation history");
+assert.ok(script.includes('async function login(identifier,password)') && script.includes('@login.nounstar.club'), "Player/coach identifier login mapping is missing");
+assert.ok(script.includes('currentProfile?.role==="player"') && script.includes('setPage("playerPortal")'), "Player accounts must be routed to the read-only portal");
+assert.ok(script.includes('playerCorrectionForm").addEventListener("submit"') && script.includes('saveRow("player_profile_change_requests"'), "Player corrections must be submitted as review requests, not direct profile edits");
+assert.ok(schema.includes("nsm_player_read_own_profile") && schema.includes("nsm_player_change_request_insert") && schema.includes("nsm_player_read_own_team_details"), "Player profile, correction, and team read policies are required");
+const playerAccountFunction = readFileSync(new URL("../supabase/functions/nsm-create-player/index.ts", import.meta.url), "utf8");
+assert.ok(playerAccountFunction.includes('profile?.role!=="manager"') && playerAccountFunction.includes('.eq("owner_id",data.user.id)'), "Player account creation must be manager-only and owner-scoped");
+assert.ok(playerAccountFunction.includes('role:"player"') && playerAccountFunction.includes('user_id:user.user.id'), "Player account must be linked to the existing player record");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
