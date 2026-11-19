@@ -49,7 +49,7 @@ drop policy if exists nsm_monthly_votes_read on public.player_monthly_votes;
 create policy nsm_monthly_votes_read on public.player_monthly_votes for select to authenticated using (owner_id=(select auth.uid()) or exists(select 1 from public.players p where p.id=voter_player_id and p.user_id=(select auth.uid())) or exists(select 1 from public.players p where p.id=candidate_player_id and p.user_id=(select auth.uid())));
 drop policy if exists nsm_monthly_votes_insert on public.player_monthly_votes;
 create policy nsm_monthly_votes_insert on public.player_monthly_votes for insert to authenticated with check (
- exists(select 1 from public.players voter where voter.id=voter_player_id and voter.user_id=(select auth.uid()) and voter.owner_id=owner_id)
+ exists(select 1 from public.players voter where voter.id=voter_player_id and voter.user_id=(select auth.uid()) and voter.owner_id=player_monthly_votes.owner_id)
  and exists(select 1 from public.players candidate where candidate.id=candidate_player_id and candidate.owner_id=owner_id)
  and not exists(select 1 from public.player_monthly_votes v where v.owner_id=owner_id and v.month_start=player_monthly_votes.month_start and v.voter_player_id=voter_player_id)
 );
