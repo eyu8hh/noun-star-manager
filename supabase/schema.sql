@@ -1272,3 +1272,14 @@ create policy nsm_gallery_manager_delete on storage.objects for delete to authen
 -- Keep the public gallery's SELECT policy as the single read path for authenticated managers too.
 drop policy if exists nsm_club_media_manager_read on public.club_media;
 create index if not exists club_media_created_by_idx on public.club_media(created_by);
+
+
+-- Harden role helper RPC grants and trigger function search path.
+-- Tighten direct API execution of profile-role trigger helpers.
+revoke execute on function public.nsm_guard_profile_role_change() from public,anon,authenticated;
+grant execute on function public.nsm_guard_profile_role_change() to service_role;
+revoke execute on function public.nsm_protect_profile_role() from public,anon,authenticated;
+grant execute on function public.nsm_protect_profile_role() to service_role;
+alter function public.nsm_protect_profile_role() set search_path=public,pg_temp;
+revoke execute on function public.nsm_set_profile_role(uuid,text) from public,anon;
+grant execute on function public.nsm_set_profile_role(uuid,text) to authenticated,service_role;
