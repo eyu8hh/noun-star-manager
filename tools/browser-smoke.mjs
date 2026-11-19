@@ -157,13 +157,13 @@ try {
   await page.locator("#sidebar:not(.open)").waitFor();
   await page.locator("#playersModule:not(.hidden)").waitFor();
   await page.locator("#addPlayerBtn:not(.hidden)").waitFor();
+  assert.equal(await page.locator('#nav button[data-page="players"]').getAttribute("aria-current"), "page");
   await page.locator('#nav button[data-page="competitions"]').click();
   await page.locator("#competitionsModule:not(.hidden)").waitFor();
   await page.locator("#addCompetitionBtn:not(.hidden)").waitFor();
   await page.locator('#nav button[data-page="discipline"]').click();
   await page.locator("#disciplineModule:not(.hidden)").waitFor();
   await page.locator("#disciplineSettingsCard:not(.hidden)").waitFor();
-  assert.equal(await page.locator('#nav button[data-page="players"]').getAttribute("aria-current"), "page");
   assert.equal(await page.locator("#menuBtn").getAttribute("aria-expanded"), "false");
   await page.locator("#menuBtn").click();
   await page.locator('#nav button[data-page="dashboard"]').click();
