@@ -183,6 +183,12 @@ assert.ok(html.includes('id="managerCoachAssignmentCard"') && html.includes('id=
 assert.ok(script.includes("async function loadManagerCoachAssignments") && script.includes('currentProfile?.role==="coach"&&(page==="clubs"||page==="finance"||page==="clubResources"||page==="reports")'), "Manager/coach workspace separation is missing");
 const managerAccessMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_controls_coach_assignments.sql", import.meta.url), "utf8");
 assert.ok(managerAccessMigration.includes("drop policy if exists nsm_coach_insert_own_assignments") && managerAccessMigration.includes("tc.coach_user_id = (select auth.uid())"), "Coach assignments must be manager-controlled and team reads assignment-scoped");
+const coachWriteMigration = readFileSync(new URL("../supabase/migrations/20261119_coach_team_write_permissions.sql", import.meta.url), "utf8");
+assert.ok(coachWriteMigration.includes("nsm_coach_can_write_team") && coachWriteMigration.includes("nsm_normalize_assigned_coach_owner") && coachWriteMigration.includes("Related record belongs to another owner"), "Assigned-coach write access must preserve club ownership and cross-owner reference checks");
+for (const table of ["matches","match_lineups","match_events","training_sessions","training_attendance","injuries","absences","suspensions"]) {
+  assert.ok(coachWriteMigration.includes("nsm_coach_manage_assigned_" + table), "Assigned coach write policy is missing for " + table);
+  assert.ok(coachWriteMigration.includes("a_nsm_coach_owner_" + table), "Assigned coach owner normalization trigger is missing for " + table);
+}
 const coachProvisioning = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
 assert.ok(coachProvisioning.includes("coach_code?: string") && coachProvisioning.includes("club_owner_id: managerId") && coachProvisioning.includes("coach_code: coachCode"), "Manager-created coach accounts must use coach codes and belong to the manager's club");
 assert.ok(html.includes('id="financeNav"') && html.includes('id="financeModule"') && html.includes('data-i18n="finance"'), "Manager finance navigation and module are missing");
