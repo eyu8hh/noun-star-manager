@@ -107,7 +107,7 @@ try {
   await page.locator("#accountBtn").click();
   await page.locator("#accountModal:not(.hidden)").waitFor();
   await page.locator("#closeAccountModal").click();
-  await page.locator("#accountModal.hidden").waitFor();
+  await page.locator("#accountModal").waitFor({ state: "hidden" });
 
   await page.locator("#publicLangBtn").click();
   await page.waitForFunction(() => document.documentElement.dir === "ltr");
