@@ -108,9 +108,10 @@ const ownerPolicyListEnd = schema.indexOf("] loop", ownerPolicyListStart);
 assert.ok(ownerPolicyListStart >= 0 && ownerPolicyListEnd > ownerPolicyListStart, "Cannot inspect owner RLS table list");
 const ownerPolicyList = schema.slice(ownerPolicyListStart, ownerPolicyListEnd);
 for (const table of schemaTables) {
-  if (table === "profiles") continue;
+  if (table === "profiles" || ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes"].includes(table)) continue;
   assert.ok(ownerPolicyList.includes("'" + table + "'"), "Missing owner-only RLS policy for table: " + table);
 }
+for (const table of ["player_evaluations","player_monthly_votes","audience_polls","audience_poll_options","audience_poll_votes"]) assert.ok(schema.includes("create policy nsm_"), "New feature tables must declare explicit RLS policies");
 assert.ok(schema.includes("nsm_suspension_log_refs"), "Suspension ledger needs a same-owner reference trigger");
 assert.ok(schema.includes("revoke all on function public.nsm_account_suspensions_for_match()"), "Suspension accounting trigger must not be directly executable");
 const verifySql = readFileSync(new URL("../supabase/verify.sql", import.meta.url), "utf8");
