@@ -56,9 +56,28 @@ create table public.players (
   primary_position text, birth_date date, phone text, photo_url text,
   availability text not null default 'available'
     check (availability in ('available','injured','suspended','unavailable')),
-  notes text, created_at timestamptz not null default now(),
+  notes text, user_id uuid references auth.users(id) on delete set null, login_code text,
+  created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+create unique index if not exists players_user_id_unique on public.players(user_id) where user_id is not null;
+create unique index if not exists players_login_code_unique on public.players(lower(login_code)) where login_code is not null;
+create table public.player_profile_change_requests (
+ id uuid primary key default gen_random_uuid(),
+ owner_id uuid not null references auth.users(id) on delete cascade,
+ player_id uuid not null references public.players(id) on delete cascade,
+ field_key text not null check (field_key in ('full_name','shirt_number','primary_position','birth_date','phone','notes')),
+ current_value text,
+ proposed_value text not null check (length(trim(proposed_value)) > 0 and length(proposed_value) <= 2000),
+ reason text not null default '' check (length(reason) <= 1000),
+ status text not null default 'pending' check (status in ('pending','approved','rejected')),
+ reviewed_by uuid references auth.users(id) on delete set null,
+ reviewed_at timestamptz,
+ review_note text check (review_note is null or length(review_note) <= 1000),
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create index if not exists player_change_requests_owner_status_idx on public.player_profile_change_requests(owner_id,status,created_at desc);
+create index if not exists player_change_requests_player_idx on public.player_profile_change_requests(player_id,created_at desc);
 create table public.team_players (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
@@ -402,7 +421,7 @@ revoke all on function public.nsm_account_suspensions_for_match() from public,an
 
 -- Updated-at triggers
 do $$ declare t text; begin
-  foreach t in array array['profiles','clubs','teams','team_coaches','players','competitions','matches','training_sessions','training_drills','settings'] loop
+  foreach t in array array['profiles','clubs','teams','team_coaches','players','player_profile_change_requests','competitions','matches','training_sessions','training_drills','settings'] loop
     execute format('create trigger nsm_touch before update on public.%I for each row execute function public.nsm_touch_updated_at()',t);
   end loop;
 end $$;
@@ -410,7 +429,7 @@ end $$;
 -- Private row-level access. The profile uses its Auth UUID; all other tables use owner_id.
 do $$ declare t text; begin
   foreach t in array array[
-    'profiles','clubs','teams','team_coaches','players','team_players','player_team_history','competitions',
+    'profiles','clubs','teams','team_coaches','players','player_profile_change_requests','team_players','player_team_history','competitions',
     'competition_teams','matches','match_lineups','match_events','training_sessions',
     'training_attendance','training_drills','training_session_drills','injuries','absences','suspensions','suspension_match_log','settings'
   ] loop
@@ -433,6 +452,15 @@ for each row execute function public.nsm_protect_profile_role();
 
 create policy nsm_manager_read_club_coaches on public.profiles for select to authenticated
 using (role='coach' and club_owner_id=(select auth.uid()));
+create policy nsm_player_read_own_profile on public.players for select to authenticated using (user_id=(select auth.uid()));
+create policy nsm_player_read_own_team on public.team_players for select to authenticated using (exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())));
+create policy nsm_player_read_own_team_details on public.teams for select to authenticated using (exists(select 1 from public.team_players tp join public.players p on p.id=tp.player_id where tp.team_id=teams.id and p.user_id=(select auth.uid()) and tp.is_current=true));
+create policy nsm_player_change_request_read on public.player_profile_change_requests for select to authenticated using (exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())) or owner_id=(select auth.uid()));
+create policy nsm_player_change_request_insert on public.player_profile_change_requests for insert to authenticated with check (status='pending' and reviewed_by is null and reviewed_at is null and exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid()) and p.owner_id=owner_id));
+create policy nsm_player_change_request_manager_update on public.player_profile_change_requests for update to authenticated using (owner_id=(select auth.uid())) with check (owner_id=(select auth.uid()));
+create or replace function public.nsm_touch_change_request() returns trigger language plpgsql set search_path = '' as $ begin new.updated_at:=now(); return new; end $;
+create trigger nsm_touch_change_request before update on public.player_profile_change_requests for each row execute function public.nsm_touch_change_request();
+
 create policy nsm_profile_self on public.profiles for all to authenticated
 using (id = (select auth.uid())) with check (id = (select auth.uid()));
 do $$ declare t text; begin
