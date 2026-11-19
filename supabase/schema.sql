@@ -569,6 +569,7 @@ alter table public.audience_poll_votes enable row level security;
 grant select,insert,update,delete on public.audience_polls to authenticated;
 grant select,insert,update,delete on public.audience_poll_options to authenticated;
 grant select,insert on public.audience_poll_votes to anon,authenticated;
+grant select on public.audience_polls,public.audience_poll_options to anon;
 drop policy if exists nsm_audience_poll_public_read on public.audience_polls;
 create policy nsm_audience_poll_public_read on public.audience_polls for select to anon,authenticated using (is_published=true and now() between starts_at and ends_at or owner_id=(select auth.uid()));
 drop policy if exists nsm_audience_poll_owner_write on public.audience_polls;
