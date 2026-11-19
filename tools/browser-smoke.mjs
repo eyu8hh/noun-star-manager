@@ -75,6 +75,15 @@ await page.route("https://fatjyhoscjtwthbwiefo.supabase.co/**", async (route) =>
     return;
   }
 
+  if (path === "/rest/v1/club_media") {
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([{
+      id: "gallery-test-1", media_type: "match", title: "Browser Gallery Test",
+      caption: "Lightbox interaction fixture", storage_path: "public/test-gallery.jpg",
+      created_at: "2026-11-19T12:00:00Z", visibility: "public", consent_confirmed: true
+    }]) });
+    return;
+  }
+
   if (path === "/rest/v1/profiles") {
     await route.fulfill({
       status: 200,
@@ -124,6 +133,13 @@ try {
   await page.waitForFunction(() => document.documentElement.dir === "ltr");
   await page.locator("#publicLangBtn").click();
   await page.waitForFunction(() => document.documentElement.dir === "rtl");
+  await page.locator("#publicMediaFeed [data-open-gallery]").first().waitFor();
+  await page.locator("#publicMediaFeed [data-open-gallery]").first().click();
+  await page.locator("#publicGalleryLightbox[open]").waitFor();
+  assert.equal(await page.locator("#galleryLightboxTitle").textContent(), "Browser Gallery Test");
+  assert.equal(await page.locator("#galleryLightboxCounter").textContent(), "1 / 1");
+  await page.locator("#galleryLightboxClose").click();
+  await page.locator("#publicGalleryLightbox").waitFor({ state: "hidden" });
 
   async function staffLogin(role, code) {
     activeRole = role;
