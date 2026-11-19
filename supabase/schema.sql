@@ -478,6 +478,20 @@ revoke all on function public.nsm_assert_related_owner() from public,anon,authen
 revoke all on function public.nsm_touch_updated_at() from public,anon,authenticated;
 revoke all on function public.nsm_account_suspensions_for_match() from public,anon,authenticated;
 
+drop policy if exists nsm_player_read_own_lineups on public.match_lineups;
+create policy nsm_player_read_own_lineups on public.match_lineups for select to authenticated using(exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())));
+drop policy if exists nsm_player_read_own_match_events on public.match_events;
+create policy nsm_player_read_own_match_events on public.match_events for select to authenticated using(exists(select 1 from public.players p where p.id=match_events.player_id and p.user_id=(select auth.uid())) or exists(select 1 from public.players p where p.id=match_events.related_player_id and p.user_id=(select auth.uid())));
+drop policy if exists nsm_player_read_own_matches on public.matches;
+create policy nsm_player_read_own_matches on public.matches for select to authenticated using(exists(select 1 from public.match_lineups ml join public.players p on p.id=ml.player_id where ml.match_id=matches.id and p.user_id=(select auth.uid())));
+drop policy if exists nsm_player_read_own_training_attendance on public.training_attendance;
+create policy nsm_player_read_own_training_attendance on public.training_attendance for select to authenticated using(exists(select 1 from public.players p where p.id=player_id and p.user_id=(select auth.uid())));
+drop policy if exists nsm_player_read_own_training_sessions on public.training_sessions;
+create policy nsm_player_read_own_training_sessions on public.training_sessions for select to authenticated using(exists(select 1 from public.training_attendance ta join public.players p on p.id=ta.player_id where ta.session_id=training_sessions.id and p.user_id=(select auth.uid())));
+create or replace function public.nsm_public_poll_results(p_poll_id uuid) returns table(option_id uuid,label text,vote_count bigint) language sql stable security definer set search_path='' as $$ select o.id,o.label,count(v.id)::bigint from public.audience_poll_options o join public.audience_polls p on p.id=o.poll_id left join public.audience_poll_votes v on v.option_id=o.id and v.poll_id=p.id where p.id=p_poll_id and p.is_published=true and now() between p.starts_at and p.ends_at group by o.id,o.label,o.sort_order order by o.sort_order,o.label $$;
+revoke all on function public.nsm_public_poll_results(uuid) from public;
+grant execute on function public.nsm_public_poll_results(uuid) to anon,authenticated;
+
 -- Player development, internal awards and public audience voting.
 create table if not exists public.player_evaluations (
  id uuid primary key default gen_random_uuid(),
