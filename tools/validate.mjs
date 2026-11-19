@@ -215,7 +215,10 @@ assert.ok(script.includes('table==="equipment_items"&&movementItems.has(x.id))x.
 assert.ok(script.includes("playerFinancePanel") && script.includes("playerProfilePrintBtn"), "Player dossier must include print and manager-only finance detail");
 assert.ok(resourcesMigration.includes("nsm_apply_equipment_movement") && resourcesMigration.includes("nsm_create_sponsor_finance_entry") && resourcesMigration.includes("t||'_manager_select'"), "Resource inventory, sponsor finance link, or manager-only RLS is missing");
 assert.ok(html.includes('id="clubResourcesNav"') && html.includes('id="clubResourcesModule"') && script.includes('page==="clubResources"') && script.includes('currentProfile?.role!=="manager"'), "Club resources manager navigation is missing");
-assert.ok(serviceWorker.includes('nsm-shell-v25'), "PWA cache must refresh after mobile interaction fixes");
+assert.ok(script.includes("function toast(") && script.includes("nsmToastRegion") && script.includes("function showSkeleton"), "Accessible toast feedback and skeleton loading helpers are required");
+assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
+assert.ok(html.includes("@keyframes nsmShimmer") && html.includes("cubic-bezier(.2,.85,.25,1.15)") && html.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
+assert.ok(serviceWorker.includes('nsm-shell-v26'), "PWA cache must refresh after mobile interaction fixes");
 assert.ok(serviceWorker.includes('cache:"no-store"'), "PWA navigation must bypass stale browser HTTP cache");
 assert.ok(script.indexOf('$("loginForm").addEventListener("submit",async e=>') < script.indexOf("const translations=") && html.includes('id="loginForm" class="public-form" onsubmit="return false"'), "Professional login must bind before optional modules and never fall through to native form navigation");
 assert.ok(script.includes('$("playerProfilePrintBtn").addEventListener("click",()=>window.print())') && script.includes('selectRows("finance_dues","&player_id=eq."+id+"&order=due_date.desc")'), "Printable player dossier or manager-only player finance detail is missing");
