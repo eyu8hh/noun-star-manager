@@ -78,3 +78,11 @@ Settings also provide an opt-in demo dataset and a separately confirmed full tea
 
 ## Deployment
 A manual GitHub Pages deployment workflow is included at .github/workflows/deploy-pages.yml. First select GitHub Actions under repository Settings → Pages → Build and deployment, then run the workflow from the Actions tab. Full Supabase and deployment steps are in docs/DEPLOYMENT.md. The workflow is manual so the site is not published before the owner enables Pages and applies the database schema.
+
+## Player portal and profile correction workflow
+- A manager can create a player login from the Players module. The player receives a private sign-in code prefixed with `P-` and a temporary password.
+- Player accounts are linked to the existing `players.user_id` record. The player portal is read-only: players can view their own profile and current team, but cannot directly edit player records or administrative data.
+- Players can submit a correction request for their name, shirt number, position, birth date, phone, or notes, with the current value, proposed value, and reason.
+- The club manager reviews requests in Settings. Approval applies the proposed field value to the player record; rejection records the decision and optional note. Players can track request status.
+- The `player_profile_change_requests` table is protected by row-level security. Players can read and submit requests only for their linked player record; club owners can review requests for their own records.
+- Creating a player account requires the deployed `nsm-create-player` Edge Function. The source is maintained in `supabase/functions/nsm-create-player/index.ts`.
