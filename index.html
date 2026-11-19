@@ -1377,7 +1377,7 @@ $("dashboardTeamFilter").addEventListener("change",loadDashboard);$("logoutBtn")
 $("themeBtn").addEventListener("click",()=>{document.body.classList.toggle("light");localStorage.setItem("nsm_theme",document.body.classList.contains("light")?"light":"dark")});
 $("menuBtn").addEventListener("click",()=>$("sidebar").classList.toggle("open"));
 $("nav").addEventListener("click",e=>{const b=e.target.closest("button[data-page]");if(b)setPage(b.dataset.page)});
-document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>setPage(b.dataset.goto)));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-goto]");if(!b||b.disabled)return;const page=b.dataset.goto;if(page==="settings"&&currentProfile?.role!=="manager")return;setPage(page);},true);
 if(localStorage.getItem("nsm_theme")==="light")document.body.classList.add("light");
 $("publicLangBtn").textContent=lang==="ar"?"FR":"AR";
 try{const saved=JSON.parse(localStorage.getItem("nsm_session")||"null");if(saved?.refresh_token){session=saved;if(!saved.expires_at||saved.expires_at*1000<Date.now()+60000){refreshSession().then(showApp).catch(err=>showStaffBootstrapError(err))}else{showApp().catch(err=>showStaffBootstrapError(err))}}else{localStorage.removeItem("nsm_session");applyLang();loadPublicHome();updatePublicAccountUI()}}catch(err){showStaffBootstrapError(err)}
