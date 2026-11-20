@@ -371,6 +371,11 @@
 </div>
 <div id="notificationsModule" class="hidden">
  <div class="module-toolbar"><div><h3>مركز الإشعارات</h3><p class="table-sub">تنبيهات مبنية على الاستحقاقات والمخزون والمواعيد الفعلية.</p></div><button class="secondary-btn" id="markAllNotificationsRead" type="button">تحديد الكل كمقروء</button></div>
+ <section class="card push-settings-card" aria-labelledby="pushSettingsTitle">
+  <div class="push-settings-copy"><div class="push-settings-icon" aria-hidden="true">♧</div><div><h3 id="pushSettingsTitle">إشعارات الهاتف</h3><p class="table-sub">استقبل تنبيهات NOUN STAR حتى عندما يكون التطبيق مغلقاً.</p><p id="pushStatusText" class="push-status-text" role="status" aria-live="polite">تحقق من حالة الإشعارات...</p></div></div>
+  <div class="push-settings-actions"><button class="primary-btn" id="enablePushBtn" type="button">تفعيل إشعارات الهاتف</button><button class="secondary-btn" id="testPushBtn" type="button" disabled>إرسال إشعار تجريبي</button><button class="danger-btn" id="disablePushBtn" type="button" disabled>إيقاف هذا الجهاز</button></div>
+  <p class="push-settings-note">على iPhone: افتح الموقع من Safari وأضفه إلى الشاشة الرئيسية أولاً، ثم فعّل الإشعارات من التطبيق المثبّت.</p>
+ </section>
  <div id="notificationsList" class="notification-list"></div>
 </div>
 <div id="reportsModule" class="hidden">
