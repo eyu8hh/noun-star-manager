@@ -555,7 +555,7 @@ $("restoreFile").addEventListener("change",async e=>{
   for(const table of order){
    const rows=data.tables[table];if(!Array.isArray(rows)||!rows.length)continue;
    const clean=rows.map(row=>{const x={...row};if("owner_id" in x)x.owner_id=session.user.id;if(table==="settings")x.owner_id=session.user.id;if(table==="club_media")x.created_by=session.user.id;if(table==="equipment_items"&&movementItems.has(x.id))x.quantity_on_hand=0;return x});
-   const conflict=table==="settings"?"owner_id":"id";
+   const conflict=table==="settings"?"owner_id":table==="club_notifications"?"owner_id,source_key":"id";
    await api("/rest/v1/"+table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(clean)});
   }
   $("backupMessage").textContent="تمت الاستعادة بنجاح. نسخة الأمان السابقة محفوظة على جهازك.";await loadDashboard();
