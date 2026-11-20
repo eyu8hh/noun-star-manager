@@ -301,4 +301,9 @@ assert.ok(script.includes('function buildBackupSnapshot') && script.includes('"c
 assert.ok(script.includes('downloadBackupSnapshot(safety,"pre-restore")') && script.includes('data.user_id!==session.user.id'), "Restore must validate the owning club and download a safety backup first");
 assert.ok(script.includes('id==="reportExcelBtn"') || script.includes('$("reportExcelBtn").addEventListener'), "Excel export must be wired");
 
+
+assert.ok(html.includes('id="financeSearch"') && html.includes('id="financeTypeFilter"') && html.includes('id="financePeriodFilter"') && html.includes('id="financeClearFilters"'), "Finance transactions must have search, type, period, and clear filters");
+assert.ok(script.includes('function renderFinanceTransactions') && script.includes('function renderFinanceTrend') && script.includes('data-finance-edit-transaction') && script.includes('writeClubLog(wasEditing?'), "Finance ledger must support filtering, trend charts, editing, and audit logging");
+assert.ok(css.includes(".finance-filter-bar") && css.includes(".finance-trend-chart"), "Finance filters and trend chart must be responsive");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
