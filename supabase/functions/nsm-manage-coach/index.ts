@@ -44,7 +44,7 @@ Deno.serve(async (req: Request) => {
       const { data, error: authError } = await admin.auth.admin.getUserById(coach.id);
       if (authError) throw authError;
       const until = data.user?.banned_until ?? null;
-      return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()), is_protected: String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty" };
+      return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()), is_protected: coach.id === "c1d40ffb-6dfa-4728-9823-48148e9d0d16" || String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty" };
     }));
     const { data: detached, error: detachedError } = await admin.from("profiles")
       .select("id,display_name,coach_code,created_at").eq("role", "coach").is("club_owner_id", null)
@@ -93,7 +93,7 @@ Deno.serve(async (req: Request) => {
     const { data: coaches, error: listError } = await admin.from("profiles")
       .select("id").eq("role", "coach").eq("club_owner_id", managerId);
     if (listError) return json({ error: "Could not load club coaches" }, 500);
-    const ids = (coaches ?? []).filter((coach) => String(coach.coach_code ?? "").trim().toLowerCase() !== "c-qwerty").map((coach) => coach.id);
+    const ids = (coaches ?? []).filter((coach) => coach.id !== "c1d40ffb-6dfa-4728-9823-48148e9d0d16" && String(coach.coach_code ?? "").trim().toLowerCase() !== "c-qwerty").map((coach) => coach.id);
     if (!ids.length) return json({ success: true, action, removed_count: 0 });
     const banResults = await Promise.all(ids.map((id) =>
       admin.auth.admin.updateUserById(id, { ban_duration: "876000h" })
@@ -120,7 +120,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Coach account not found in this club" }, 404);
   }
 
-  if (String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty" && ["freeze", "remove"].includes(action)) {
+  if ((coach.id === "c1d40ffb-6dfa-4728-9823-48148e9d0d16" || String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty") && ["freeze", "remove"].includes(action)) {
     return json({ error: "This coach account is protected by the club manager and cannot be frozen or removed." }, 403);
   }
 
