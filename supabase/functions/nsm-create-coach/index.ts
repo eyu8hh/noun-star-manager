@@ -66,6 +66,37 @@ Deno.serve(async (req: Request) => {
     if (teamError || !team) return json({ error: "Selected team was not found in this club" }, 404);
   }
 
+  if (coachCode) {
+    const { data: reusable, error: reusableError } = await admin.from("profiles")
+      .select("id").eq("role", "coach").is("club_owner_id", null).eq("coach_code", coachCode).maybeSingle();
+    if (reusableError) return json({ error: "Could not check for a reusable coach account" }, 500);
+    if (reusable) {
+      const { error: authUpdateError } = await admin.auth.admin.updateUserById(reusable.id, {
+        email, password, email_confirm: true, ban_duration: "none",
+        user_metadata: { display_name: displayName },
+      });
+      if (authUpdateError) return json({ error: authUpdateError.message || "Could not reactivate coach account" }, 400);
+      const { error: profileUpdateError } = await admin.from("profiles")
+        .update({ display_name: displayName, role: "coach", club_owner_id: managerId, coach_code: coachCode })
+        .eq("id", reusable.id).eq("role", "coach").is("club_owner_id", null);
+      if (profileUpdateError) {
+        await admin.auth.admin.updateUserById(reusable.id, { ban_duration: "876000h" });
+        return json({ error: "Could not reattach the coach profile: " + profileUpdateError.message }, 500);
+      }
+      if (teamId) {
+        const { error: assignmentError } = await admin.from("team_coaches").insert({
+          owner_id: managerId, team_id: teamId, coach_user_id: reusable.id, assignment_type: assignmentType,
+        });
+        if (assignmentError) {
+          await admin.from("profiles").update({ club_owner_id: null }).eq("id", reusable.id).eq("club_owner_id", managerId);
+          await admin.auth.admin.updateUserById(reusable.id, { ban_duration: "876000h" });
+          return json({ error: "Could not assign reactivated coach to team: " + assignmentError.message }, 500);
+        }
+      }
+      return json({ id: reusable.id, display_name: displayName, role: "coach", coach_code: coachCode, team_id: teamId || null, reused: true }, 200);
+    }
+  }
+
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
     password,
