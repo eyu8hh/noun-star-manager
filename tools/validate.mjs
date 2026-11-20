@@ -230,7 +230,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v46'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v47'), "PWA cache must refresh after extracting the application script");
 assert.ok(serviceWorker.includes('self.addEventListener("push"') && serviceWorker.includes('self.addEventListener("notificationclick"') && serviceWorker.includes("requested.origin===self.location.origin"), "PWA push notifications must display safely and keep click navigation on the app origin");
 assert.ok(html.includes('id="enablePushBtn"') && html.includes('id="testPushBtn"') && html.includes('id="disablePushBtn"'), "Notifications center must expose phone push controls");
 assert.ok(script.includes('pushRequest("public-key")') && script.includes('pushManager.subscribe') && script.includes('pushRequest("subscribe"'), "Manager app must securely register a Web Push subscription");
@@ -266,6 +266,9 @@ assert.ok(script.includes('button.classList.toggle("hidden",!nav||nav.classList.
 assert.ok(css.includes(".top-shortcuts") && css.includes(".top-utilities") && css.includes(".top-back-btn:disabled"), "Topbar controls must use the shared responsive style system");
 
 assert.ok(script.includes('candidateEmails.push("coach+"+code.slice(2)+"@login.nounstar.club","coach+"+code+"@login.nounstar.club")'), "Coach login must support both normalized and legacy full-code email formats");
+assert.ok(script.includes('"coach+c-"+code+"@login.nounstar.club"') && script.includes('code==="ACCOUNT_DISABLED"'), "Coach login must accept legacy codes without the c- prefix and explain disabled accounts");
+assert.ok(script.includes('b.classList.toggle("active",opened)') && script.includes('$("moreNavBtn").classList.remove("active")'), "More control must retain a visible active state while its sheet is open and reset when closed");
+assert.ok(css.includes("#moreNavBtn[aria-expanded=\"true\"]") && css.includes("#moreNavBtn:active svg"), "Mobile More icon must remain high-contrast and fully visible while tapped or expanded");
 assert.ok(html.includes('id="managerDetachedCoachCard"') && script.includes('manageCoaches("restore"'), "Manager must be able to restore detached coach accounts");
 assert.ok(coachManagementFunction.includes('action === "restore"') && coachManagementFunction.includes('ban_duration: "none"') && coachManagementFunction.includes('club_owner_id: managerId'), "Coach restoration must reactivate sign-in and reattach the profile to the verified manager");
 assert.ok(coachCreationFunction.includes('coachCode.replace(/^c-/, "")') && coachCreationFunction.includes('coachCode.startsWith("m-")'), "New coach accounts must use a login-compatible email and reserve the manager prefix");
