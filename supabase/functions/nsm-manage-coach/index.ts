@@ -91,7 +91,7 @@ Deno.serve(async (req: Request) => {
 
   if (action === "remove_all") {
     const { data: coaches, error: listError } = await admin.from("profiles")
-      .select("id").eq("role", "coach").eq("club_owner_id", managerId);
+      .select("id,coach_code").eq("role", "coach").eq("club_owner_id", managerId);
     if (listError) return json({ error: "Could not load club coaches" }, 500);
     const ids = (coaches ?? []).filter((coach) => coach.id !== "c1d40ffb-6dfa-4728-9823-48148e9d0d16" && String(coach.coach_code ?? "").trim().toLowerCase() !== "c-qwerty").map((coach) => coach.id);
     if (!ids.length) return json({ success: true, action, removed_count: 0 });
