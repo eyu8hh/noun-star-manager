@@ -229,7 +229,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v39'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v40'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -284,5 +284,13 @@ assert.ok(script.includes('value="late"') && script.includes('function updateAtt
 assert.ok(script.includes('late:"متأخر"') && script.includes('late:"En retard"') && script.includes('إجمالي اللاعبين: "+rows.length'), "Attendance labels and WhatsApp report must include late status and total roster");
 assert.ok(css.includes(".attendance-bulk-actions") && css.includes(".attendance-counters"), "Attendance bulk actions and counters must be styled");
 assert.ok(readFileSync(new URL("../supabase/migrations/20261120_training_attendance_late_status.sql", import.meta.url), "utf8").includes("'late'::text"), "Attendance late status migration must be committed");
+
+
+assert.ok(html.includes('id="calendarModule"') && html.includes('id="calendarEventForm"') && html.includes('id="notificationsModule"') && html.includes('id="notificationsBtn"'), "Manager calendar and notification center UI must exist");
+assert.ok(script.includes('async function loadCalendar') && script.includes('async function loadNotifications') && script.includes('async function syncManagerNotifications'), "Calendar and notification workflows must be implemented");
+assert.ok(script.includes('saveRow("club_events"') && script.includes('club_notifications?on_conflict=owner_id,source_key') && script.includes('read_at=is.null'), "Calendar CRUD and idempotent notification generation/read state must use Supabase");
+assert.ok(script.includes('page==="calendar"') && script.includes('page==="notifications"') && script.includes('role!=="manager"'), "Calendar and notifications must be manager-only");
+assert.ok(readFileSync(new URL("../supabase/migrations/20261120_calendar_and_manager_notifications.sql", import.meta.url), "utf8").includes("enable row level security") && readFileSync(new URL("../supabase/migrations/20261120_calendar_creator_index.sql", import.meta.url), "utf8").includes("club_events_created_by_idx"), "Calendar and notification migrations must be present with RLS and FK index");
+assert.ok(css.includes(".notification-list") && css.includes(".notification-badge"), "Notification center and unread badge must be styled");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
