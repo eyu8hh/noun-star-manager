@@ -310,4 +310,10 @@ assert.ok(css.includes(".finance-filter-bar") && css.includes(".finance-trend-ch
 assert.ok(script.includes('financeIncomeAll') && script.includes('financeExpenseAll') && script.includes('financeNetAll'), "Finance overview must show lifetime totals and net balance");
 assert.ok(script.includes('writeClubLog("إضافة استحقاق مالي"') && script.includes('writeClubLog("قبض دفعة اشتراك"'), "Finance dues and payment operations must be included in the audit log");
 
+
+assert.ok(html.includes('id="sponsorSearch"') && html.includes('id="sponsorStatusFilter"') && html.includes('id="clubSponsorLogo"'), "Sponsor management must support search, status, and logo URL");
+assert.ok(html.includes('id="equipmentSearch"') && html.includes('id="equipmentCategoryFilter"') && html.includes('id="equipmentStockFilter"'), "Equipment inventory must support search, category, and stock-level filters");
+assert.ok(script.includes('function renderSponsorResourceTable') && script.includes('function renderEquipmentResourceTable') && script.includes('logo_url:$("clubSponsorLogo").value.trim()'), "Sponsor and inventory filters must render from real Supabase rows");
+assert.ok(css.includes(".resource-filter-bar") && css.includes(".low-stock-label"), "Sponsor and inventory filters must have responsive styles");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
