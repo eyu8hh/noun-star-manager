@@ -464,6 +464,9 @@ async function loadManagerCoachAssignments(){
  $("managerAssignTeam").innerHTML='<option value="">اختر الفئة</option>'+teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+(t.age_category?" · "+esc(t.age_category):"")+'</option>').join("");
 
  $("coachManagementCount").textContent=coaches.length+" مدربين مسجلين";$("coachBulkResetBtn").disabled=!coaches.length;$("coachBulkResetBtn").textContent=coaches.length?"إزالة جميع المدربين ("+coaches.length+")":"لا يوجد مدربون لإزالتهم";
+
+ const detachedCoaches=coachResult.detached_coaches||[];
+ $("managerDetachedCoachList").innerHTML=detachedCoaches.length?detachedCoaches.map(c=>'<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||"مدرب سابق")+'</b><span>'+esc(c.coach_code||"بدون معرف")+'</span><span class="coach-state is-frozen">غير مرتبط بالنادي</span></div><button type="button" class="secondary-btn" data-coach-action="restore" data-coach-id="'+esc(c.id)+'">استعادة الحساب</button></div>').join(""):'<div class="empty-state">لا توجد حسابات مدربين سابقة للاستعادة.</div>';
  $("managerCoachManagementList").innerHTML=coaches.length?coaches.map(c=>{
   const status=c.is_frozen?'<span class="coach-state is-frozen">مجمد</span>':'<span class="coach-state is-active">نشط</span>';
   const action=c.is_frozen
@@ -484,6 +487,7 @@ $("managerCoachManagementList").addEventListener("click",async e=>{
  const b=e.target.closest("[data-coach-action]");if(!b||currentProfile?.role!=="manager")return;
  const action=b.dataset.coachAction,coachId=b.dataset.coachId;
  const prompts={
+  restore:"سيتم إعادة تفعيل هذا الحساب وربطه بالنادي. ستبقى كلمة المرور كما هي، وسيتغير معرف m- القديم إلى c- لتفادي التعارض مع معرف المدير.",
   "remove-all":"سيتم إيقاف جميع حسابات المدربين الحالية وفصلها عن النادي، مع الاحتفاظ بسجلاتهم التاريخية. لن يتأثر حساب المدير أو اللاعبون. هل تريد المتابعة؟",
   freeze:"سيتم إيقاف دخول هذا المدرب مؤقتاً مع الاحتفاظ ببياناته وتكليفاته. هل تريد المتابعة؟",
   unfreeze:"سيتم إعادة تفعيل دخول هذا المدرب. هل تريد المتابعة؟",
