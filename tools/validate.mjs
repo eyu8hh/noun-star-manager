@@ -295,4 +295,10 @@ assert.ok(script.includes('page==="calendar"') && script.includes('page==="notif
 assert.ok(readFileSync(new URL("../supabase/migrations/20261120_calendar_and_manager_notifications.sql", import.meta.url), "utf8").includes("enable row level security") && readFileSync(new URL("../supabase/migrations/20261120_calendar_creator_index.sql", import.meta.url), "utf8").includes("club_events_created_by_idx"), "Calendar and notification migrations must be present with RLS and FK index");
 assert.ok(css.includes(".notification-list") && css.includes(".notification-badge"), "Notification center and unread badge must be styled");
 
+
+assert.ok(html.includes('id="reportExcelBtn"'), "Reports center must offer Excel export in addition to CSV and print");
+assert.ok(script.includes('function buildBackupSnapshot') && script.includes('"club_events","club_notifications"') && script.includes('"team_coaches"'), "Full backup must include calendar, notifications, and coach assignments");
+assert.ok(script.includes('downloadBackupSnapshot(safety,"pre-restore")') && script.includes('data.user_id!==session.user.id'), "Restore must validate the owning club and download a safety backup first");
+assert.ok(script.includes('id==="reportExcelBtn"') || script.includes('$("reportExcelBtn").addEventListener'), "Excel export must be wired");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
