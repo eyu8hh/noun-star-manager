@@ -55,7 +55,27 @@ let pageHistory=[];
 function tr(k){return translations[lang][k]||k}
 function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=tr(el.dataset.i18n));document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>el.placeholder=tr(el.dataset.i18nPlaceholder));document.querySelectorAll("[data-i18n-title]").forEach(el=>el.title=tr(el.dataset.i18nTitle));$("langBtn").textContent=lang==="ar"?"FR":"AR";$("pageTitle").textContent=tr(currentPage==="dashboard"?"dashboard":pageKeys[currentPage]||"dashboard");if(typeof renderDrillLibrary==="function"&&currentPage==="training")renderDrillLibrary();if(typeof activeDrill!=="undefined"&&activeDrill){renderDrillDetailText();renderDrillStep()}updateTopbarControls()}
 const pageKeys={playerPortal:"playerPortal",clubs:"clubsTeams",players:"players",matches:"matches",competitions:"competitions",training:"training",statistics:"statistics",health:"health",discipline:"discipline",finance:"finance",clubResources:"clubResources",reports:"reports",calendar:"التقويم",notifications:"الإشعارات",settings:"settings"};
-const pageIcons={clubs:"⌂",players:"♙",matches:"⚽",competitions:"♜",training:"◷",statistics:"▥",health:"✚",discipline:"⚑",finance:"د.م",clubResources:"⚒",reports:"▤",calendar:"▦",notifications:"♧",settings:"⚙"};
+const pageIcons={dashboard:"layout-dashboard",playerPortal:"user-round",clubs:"users",players:"user-round",matches:"goal",competitions:"trophy",training:"calendar-check",statistics:"chart-no-axes-column-increasing",health:"heart-pulse",discipline:"shield-alert",finance:"wallet",clubResources:"package",reports:"file-chart-column",calendar:"calendar-days",notifications:"bell",settings:"settings"};
+const iconShapes={
+ "layout-dashboard":'<rect x="3" y="3" width="7" height="7" rx="1.4"/><rect x="14" y="3" width="7" height="7" rx="1.4"/><rect x="3" y="14" width="7" height="7" rx="1.4"/><rect x="14" y="14" width="7" height="7" rx="1.4"/>',
+ "user-round":'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ "users":'<path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v6m-3-3h6"/>',
+ "goal":'<circle cx="12" cy="12" r="9"/><path d="m12 3 2.5 5.5L21 12l-6.5 3.5L12 21l-2.5-5.5L3 12l6.5-3.5z"/>',
+ "trophy":'<path d="M8 21h8m-4-4v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v2a4 4 0 0 0 4 4m9-6h3v2a4 4 0 0 1-4 4"/>',
+ "calendar-check":'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18m-13 5 2 2 4-4"/>',
+ "chart-no-axes-column-increasing":'<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="13" y="8" width="3" height="10" rx="1"/><rect x="19" y="4" width="2" height="14" rx="1"/>',
+ "heart-pulse":'<path d="M20.8 8.6c0 5.4-8.8 11.4-8.8 11.4S3.2 14 3.2 8.6A4.6 4.6 0 0 1 12 6.4a4.6 4.6 0 0 1 8.8 2.2Z"/><path d="M3 12h4l2-3 3 6 2-3h7"/>',
+ "shield-alert":'<path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="M12 8v4m0 4h.01"/>',
+ "wallet":'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18m-5 5h2M7 5V3h10v2"/>',
+ "package":'<path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8M12 13v9"/>',
+ "file-chart-column":'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 17v-3m4 3v-6m4 6v-5"/>',
+ "calendar-days":'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>',
+ "bell":'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 13h4"/>',
+ "settings":'<circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.7 1l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.7-1l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-2l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.7-1l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.7 1l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 2Z"/>'
+};
+function iconMarkup(name,size=18){return '<svg viewBox="0 0 24 24" width="'+size+'" height="'+size+'" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(iconShapes[name]||iconShapes["layout-dashboard"])+'</svg>'}
+function renderNavIcons(){document.querySelectorAll("#nav button[data-page] .nav-ico").forEach(node=>{const page=node.closest("button")?.dataset.page;node.innerHTML=iconMarkup(pageIcons[page]||"layout-dashboard",18);node.setAttribute("aria-hidden","true")})}
+renderNavIcons();
 let refreshInProgress=false;
 async function refreshCurrentView(force=false){
  if(!session||refreshInProgress)return;
@@ -115,7 +135,7 @@ function setPage(page,focus=null,options={}){
  currentPage=page;settingsFocus=nextFocus;
  const dash=page==="dashboard";$("dashboardPage").classList.toggle("hidden",!dash);$("modulePage").classList.toggle("hidden",dash);
  $("pageTitle").textContent=page==="clubResources"?"موارد النادي":tr(dash?"dashboard":pageKeys[page]||"dashboard");
- $("moduleHeading").textContent=page==="clubResources"?"موارد النادي":tr(pageKeys[page]||"dashboard");$("moduleIcon").textContent=pageIcons[page]||"◈";
+ $("moduleHeading").textContent=page==="clubResources"?"موارد النادي":tr(pageKeys[page]||"dashboard");$("moduleIcon").innerHTML=iconMarkup(pageIcons[page]||"layout-dashboard",28);
  document.querySelectorAll("#nav button").forEach(b=>{const active=b.dataset.page===page;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
 document.querySelectorAll("[data-bottom-page]").forEach(b=>{const active=b.dataset.bottomPage===page;b.classList.toggle("active",active);if(active)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});$("moreSheet").classList.add("hidden");$("moreNavBtn").setAttribute("aria-expanded","false");
  $("sidebar").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");updateTopbarControls();if(!dash&&session)showModule(page);
