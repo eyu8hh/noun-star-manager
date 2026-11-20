@@ -233,7 +233,7 @@ assert.ok(serviceWorker.includes('nsm-shell-v36'), "PWA cache must refresh after
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
-assert.ok(script.includes('managerCoachManagementCard').toString() && script.includes('ids:["coachManagementCard","managerCoachManagementCard","managerCoachAssignmentCard"]'), "Coach management panel must appear in focused settings");
+assert.ok(script.includes('managerCoachManagementCard').toString() && script.includes('ids:["coachManagementCard","managerCoachManagementCard","managerDetachedCoachCard","managerCoachAssignmentCard"]'), "Coach management panel must appear in focused settings");
 assert.ok(coachManagementFunction.includes('action === "remove_all"') && coachManagementFunction.includes('ban_duration: "876000h"'), "Bulk coach reset must disable sign-in before detaching coaches");
 
 const coachCreationFunction = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
