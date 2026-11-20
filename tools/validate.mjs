@@ -232,9 +232,9 @@ assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
 assert.ok(serviceWorker.includes('nsm-shell-v46'), "PWA cache must refresh after extracting the application script");
 assert.ok(serviceWorker.includes('self.addEventListener("push"') && serviceWorker.includes('self.addEventListener("notificationclick"') && serviceWorker.includes("requested.origin===self.location.origin"), "PWA push notifications must display safely and keep click navigation on the app origin");
-assert.ok(indexHtml.includes('id="enablePushBtn"') && indexHtml.includes('id="testPushBtn"') && indexHtml.includes('id="disablePushBtn"'), "Notifications center must expose phone push controls");
-assert.ok(appJs.includes('pushRequest("public-key")') && appJs.includes('pushManager.subscribe') && appJs.includes('pushRequest("subscribe"'), "Manager app must securely register a Web Push subscription");
-assert.ok(appJs.includes('nsmPage=') || appJs.includes('get("nsmPage")'), "Push notification clicks must route to the relevant app section");
+assert.ok(html.includes('id="enablePushBtn"') && html.includes('id="testPushBtn"') && html.includes('id="disablePushBtn"'), "Notifications center must expose phone push controls");
+assert.ok(script.includes('pushRequest("public-key")') && script.includes('pushManager.subscribe') && script.includes('pushRequest("subscribe"'), "Manager app must securely register a Web Push subscription");
+assert.ok(script.includes('nsmPage=') || script.includes('get("nsmPage")'), "Push notification clicks must route to the relevant app section");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
