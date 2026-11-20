@@ -237,7 +237,7 @@ assert.ok(script.includes('managerCoachManagementCard').toString() && script.inc
 assert.ok(coachManagementFunction.includes('action === "remove_all"') && coachManagementFunction.includes('ban_duration: "876000h"'), "Bulk coach reset must disable sign-in before detaching coaches");
 
 const coachCreationFunction = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
-assert.ok(coachManagementFunction.includes('update({ club_owner_id: null })') && !coachManagementFunction.includes('update({ club_owner_id: null, coach_code: null })'), "Coach reset must preserve the coach code for safe account reactivation");
+assert.ok(coachManagementFunction.includes('update({ club_owner_id: null })') && !coachManagementFunction.includes('update({ club_owner_id: null })'), "Coach reset must preserve the coach code for safe account reactivation");
 assert.ok(coachCreationFunction.includes('const { data: reusable, error: reusableError }') && coachCreationFunction.includes('ban_duration: "none"') && coachCreationFunction.includes('reused: true'), "Coach creation must safely reactivate a previously detached account with its original code");
 
 
