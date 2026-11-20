@@ -121,7 +121,7 @@ document.querySelectorAll("[data-bottom-page]").forEach(b=>{const active=b.datas
  $("sidebar").classList.remove("open");$("menuBtn").setAttribute("aria-expanded","false");updateTopbarControls();if(!dash&&session)showModule(page);
 }
 
-let clubsData=[],teamsData=[],playersData=[],membershipsData=[],editingClub=null,editingTeam=null,editingPlayer=null,selectedPlayerPhoto=null;
+let clubsData=[],teamsData=[],playersData=[],membershipsData=[],playerDuesData=[],editingClub=null,editingTeam=null,editingPlayer=null,selectedPlayerPhoto=null;
 const esc=s=>String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 async function selectRows(table,query=""){return api("/rest/v1/"+table+"?select=*"+query,{method:"GET"});}
 async function saveRow(table,body,id=null){return api("/rest/v1/"+table+(id?"?id=eq."+encodeURIComponent(id):""),{method:id?"PATCH":"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify(body)});}
@@ -139,26 +139,29 @@ function renderClubs(){
 }
 function resetClubForm(){editingClub=null;$("clubForm").reset();$("clubEditorTitle").textContent=tr("addClub")}
 function resetTeamForm(){editingTeam=null;$("teamForm").reset();$("teamEditorTitle").textContent=tr("addTeam")}
-async function loadPlayers(){showSkeleton("playersTable",4);const canManage=currentProfile?.role==="manager";$("addPlayerBtn").classList.toggle("hidden",!canManage);if(!canManage)closeEditor("playerEditor");try{[playersData,teamsData,clubsData,membershipsData]=await Promise.all([selectRows("players","&order=full_name.asc"),selectRows("teams","&order=name.asc"),selectRows("clubs","&order=name.asc"),selectRows("team_players","&is_current=eq.true")]);if($("accountPlayerChoice"))$("accountPlayerChoice").innerHTML=playersData.filter(p=>!p.user_id).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");renderPlayers()}catch(e){$("playersTable").innerHTML='<div class="empty-state">'+esc(tr("loadError"))+'</div>';throw e}}
+async function loadPlayers(){showSkeleton("playersTable",4);const canManage=currentProfile?.role==="manager";$("addPlayerBtn").classList.toggle("hidden",!canManage);$("playerFilterPayment").classList.toggle("hidden",!canManage);if(!canManage)closeEditor("playerEditor");try{[playersData,teamsData,clubsData,membershipsData]=await Promise.all([selectRows("players","&order=full_name.asc"),selectRows("teams","&order=name.asc"),selectRows("clubs","&order=name.asc"),selectRows("team_players","&is_current=eq.true")]);playerDuesData=canManage?await selectRows("finance_dues","&limit=2000"):[];if($("accountPlayerChoice"))$("accountPlayerChoice").innerHTML=playersData.filter(p=>!p.user_id).map(p=>'<option value="'+esc(p.id)+'">'+esc(p.full_name)+'</option>').join("");renderPlayers()}catch(e){$("playersTable").innerHTML='<div class="empty-state">'+esc(tr("loadError"))+'</div>';throw e}}
 function renderPlayers(){
- const q=$("playerSearch").value.trim().toLocaleLowerCase(),pos=$("playerFilterPosition").value,teamFilter=$("playerFilterTeam").value;
- const order={GK:0,DF:1,MF:2,FW:3};
- const filtered=playersData.filter(p=>{const current=membershipsData.find(m=>m.player_id===p.id);return (!q||p.full_name.toLocaleLowerCase().includes(q)||String(p.shirt_number||"").includes(q))&&(!pos||p.primary_position===pos)&&(!teamFilter||current?.team_id===teamFilter)}).sort((a,b)=>(order[a.primary_position]??9)-(order[b.primary_position]??9)||a.full_name.localeCompare(b.full_name));
+ const q=$("playerSearch").value.trim().toLocaleLowerCase(),pos=$("playerFilterPosition").value,teamFilter=$("playerFilterTeam").value,availability=$("playerFilterAvailability").value,paymentFilter=$("playerFilterPayment").value,sort=$("playerSortOrder").value;
+ const duesByPlayer=new Map();
+ playerDuesData.forEach(d=>{const item=duesByPlayer.get(d.player_id)||{due:0,paid:0};item.due+=Number(d.amount_due||0);item.paid+=Number(d.amount_paid||0);duesByPlayer.set(d.player_id,item)});
+ const paymentState=id=>{const d=duesByPlayer.get(id);if(!d||d.due<=0)return "none";if(d.paid>=d.due)return "paid";return d.paid>0?"partial":"unpaid"};
+ const filtered=playersData.filter(p=>{const current=membershipsData.find(m=>m.player_id===p.id);return (!q||p.full_name.toLocaleLowerCase().includes(q)||String(p.shirt_number||"").includes(q))&&(!pos||p.primary_position===pos)&&(!teamFilter||current?.team_id===teamFilter)&&(!availability||p.availability===availability)&&(!paymentFilter||paymentState(p.id)===paymentFilter)});
+ filtered.sort((a,b)=>sort==="date"?(b.created_at||"").localeCompare(a.created_at||""):sort==="shirt"?(Number(a.shirt_number||999)-Number(b.shirt_number||999)||a.full_name.localeCompare(b.full_name)):a.full_name.localeCompare(b.full_name));
  $("playersCount").textContent=filtered.length;
  $("playerTeam").innerHTML='<option value="">'+esc(tr("chooseTeam"))+'</option>'+teamsData.map(t=>'<option value="'+t.id+'">'+esc(t.name)+' — '+esc(clubsData.find(c=>c.id===t.club_id)?.name||"")+'</option>').join("");
  const filterValue=$("playerFilterTeam").value;
  $("playerFilterTeam").innerHTML='<option value="">'+esc(tr("allTeams"))+'</option>'+teamsData.map(t=>'<option value="'+t.id+'">'+esc(t.name)+'</option>').join("");
  $("playerFilterTeam").value=filterValue;
- const canManagePlayers=currentProfile?.role==="manager",statusLabel={available:tr("available"),injured:tr("injured"),suspended:tr("suspended"),unavailable:tr("unavailable")},rows=[];let lastPosition=null;
- filtered.forEach(p=>{const position=p.primary_position||"none";if(position!==lastPosition){rows.push('<tr class="group-row"><td colspan="6">'+esc(position==="none"?tr("noPosition"):tr(position))+'</td></tr>');lastPosition=position}
- const link=membershipsData.find(m=>m.player_id===p.id),tm=teamsData.find(t=>t.id===link?.team_id);
- rows.push('<tr><td><span class="table-title">'+esc(p.full_name)+'</span>'+(p.phone?'<span class="table-sub">'+esc(p.phone)+'</span>':"")+'</td><td>'+esc(p.shirt_number||"—")+'</td><td>'+esc(p.primary_position?tr(p.primary_position):"—")+'</td><td>'+esc(tm?.name||tr("unassigned"))+'</td><td><span class="status-pill">'+esc(statusLabel[p.availability]||"—")+'</span></td><td><div class="row-actions"><button data-view-player="'+p.id+'">'+esc(tr("playerProfile"))+'</button>'+(canManagePlayers?'<button data-edit-player="'+p.id+'">'+esc(tr("edit"))+'</button><button class="danger" data-delete-player="'+p.id+'">'+esc(tr("delete"))+'</button>':"")+'</div></td></tr>');
+ const canManagePlayers=currentProfile?.role==="manager",statusLabel={available:tr("available"),injured:tr("injured"),suspended:tr("suspended"),unavailable:tr("unavailable")},paymentLabel={paid:"مدفوع",partial:"جزئي",unpaid:"غير مدفوع",none:"دون استحقاق"},rows=[];
+ filtered.forEach(p=>{const link=membershipsData.find(m=>m.player_id===p.id),tm=teamsData.find(t=>t.id===link?.team_id);
+ rows.push('<tr><td><span class="table-title">'+esc(p.full_name)+'</span>'+(p.phone?'<span class="table-sub">'+esc(p.phone)+'</span>':"")+'</td><td>'+esc(p.shirt_number||"—")+'</td><td>'+esc(p.primary_position?tr(p.primary_position):"—")+'</td><td>'+esc(tm?.name||tr("unassigned"))+'</td><td><span class="status-pill">'+esc(statusLabel[p.availability]||"—")+'</span></td>'+(canManagePlayers?'<td><span class="payment-state payment-'+paymentState(p.id)+'">'+paymentLabel[paymentState(p.id)]+'</span></td>':"")+'<td><div class="row-actions"><button data-view-player="'+p.id+'">'+esc(tr("playerProfile"))+'</button>'+(canManagePlayers?'<button data-edit-player="'+p.id+'">'+esc(tr("edit"))+'</button><button class="danger" data-delete-player="'+p.id+'">'+esc(tr("delete"))+'</button>':"")+'</div></td></tr>');
  });
- $("playersTable").innerHTML=tableHtml(["nameCol","numberCol","position","teamCol","statusCol","actions"],rows);
+ $("playersTable").innerHTML=filtered.length?'<table class="data-table"><thead><tr><th>'+esc(tr("nameCol"))+'</th><th>'+esc(tr("numberCol"))+'</th><th>'+esc(tr("position"))+'</th><th>'+esc(tr("teamCol"))+'</th><th>'+esc(tr("statusCol"))+'</th>'+(canManagePlayers?'<th>الأداء</th>':"")+'<th>'+esc(tr("actions"))+'</th></tr></thead><tbody>'+rows.join("")+'</tbody></table>':'<div class="empty-state"><b>لا توجد نتائج مطابقة</b>غيّر كلمات البحث أو امسح الفلاتر.</div>';
 }
 $("playerSearch").addEventListener("input",renderPlayers);
 $("playerFilterPosition").addEventListener("change",renderPlayers);
 $("playerFilterTeam").addEventListener("change",renderPlayers);
+$("playerFilterAvailability").addEventListener("change",renderPlayers);$("playerFilterPayment").addEventListener("change",renderPlayers);$("playerSortOrder").addEventListener("change",renderPlayers);$("clearPlayerFilters").addEventListener("click",()=>{$("playerSearch").value="";$("playerFilterPosition").value="";$("playerFilterTeam").value="";$("playerFilterAvailability").value="";$("playerFilterPayment").value="";$("playerSortOrder").value="name";renderPlayers()});
 
 let matchesData=[],competitionsData=[],editingMatch=null,finishingMatch=null;
 async function loadMatches(){showSkeleton("matchesTable",4);try{[matchesData,teamsData,competitionsData]=await Promise.all([selectRows("matches","&order=match_date.desc"),selectRows("teams","&order=name.asc"),selectRows("competitions","&order=name.asc")]);renderMatches()}catch(e){$("matchesTable").innerHTML='<div class="empty-state">'+esc(tr("loadError"))+'</div>';throw e}}
