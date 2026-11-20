@@ -265,7 +265,7 @@ assert.ok(script.includes("function goBack(") && script.includes("pageHistory.pu
 assert.ok(script.includes('button.classList.toggle("hidden",!nav||nav.classList.contains("hidden"))'), "Topbar shortcuts must inherit role-based navigation visibility");
 assert.ok(css.includes(".top-shortcuts") && css.includes(".top-utilities") && css.includes(".top-back-btn:disabled"), "Topbar controls must use the shared responsive style system");
 
-assert.ok(script.includes('candidateEmails.push("coach+"+code.slice(2)+"@login.nounstar.club","coach+"+code+"@login.nounstar.club")'), "Coach login must support both normalized and legacy full-code email formats");
+assert.ok(script.includes('candidateEmails.push("coach+"+code+"@login.nounstar.club","coach+"+code.slice(2)+"@login.nounstar.club")'), "Coach login must try the exact stored full-code email before the normalized legacy email");
 assert.ok(script.includes('"coach+c-"+code+"@login.nounstar.club"') && script.includes('code==="ACCOUNT_DISABLED"'), "Coach login must accept legacy codes without the c- prefix and explain disabled accounts");
 assert.ok(script.includes('b.classList.toggle("active",opened)') && script.includes('$("moreNavBtn").classList.remove("active")'), "More control must retain a visible active state while its sheet is open and reset when closed");
 assert.ok(css.includes("#moreNavBtn[aria-expanded=\"true\"]") && css.includes("#moreNavBtn:active svg"), "Mobile More icon must remain high-contrast and fully visible while tapped or expanded");
