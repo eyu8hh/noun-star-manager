@@ -209,7 +209,7 @@ try {
   await page.locator("#financeClearFilters").click();
   assert.equal(await page.locator("#financePeriodFilter").inputValue(), "all");
   await page.locator("#financeSortOrder").selectOption("amount");
-  await page.locator("#financeTxnCancelEdit").waitFor();
+  await page.locator("#financeTxnCancelEdit").waitFor({ state: "attached" });
   const topbarWidth = await page.locator(".topbar").evaluate(el => ({scroll:el.scrollWidth,client:el.clientWidth}));
   assert.ok(topbarWidth.scroll <= topbarWidth.client + 1, "Topbar must not create horizontal overflow on mobile: " + JSON.stringify(topbarWidth));
   const managerGridColumns = await page.locator(".manager-bento-grid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
