@@ -403,7 +403,7 @@
         <div class="form-field"><label for="clubSponsorName">اسم الراعي / الشريك</label><input id="clubSponsorName" required maxlength="120"></div>
         <div class="form-field"><label for="clubSponsorContact">الشخص المسؤول</label><input id="clubSponsorContact" maxlength="100"></div>
         <div class="form-field"><label for="clubSponsorPhone">الهاتف</label><input id="clubSponsorPhone" type="tel" maxlength="40"></div>
-        <div class="form-field"><label for="clubSponsorEmail">البريد الإلكتروني</label><input id="clubSponsorEmail" type="email" maxlength="160"></div>
+        <div class="form-field"><label for="clubSponsorEmail">البريد الإلكتروني</label><input id="clubSponsorEmail" type="email" maxlength="160"></div><div class="form-field"><label for="clubSponsorAddress">العنوان</label><input id="clubSponsorAddress" maxlength="200"></div><div class="form-field"><label for="clubSponsorLogo">رابط الشعار</label><input id="clubSponsorLogo" type="url" maxlength="1000" placeholder="https://..."></div>
         <div class="form-field full"><label for="clubSponsorNotes">ملاحظات</label><textarea id="clubSponsorNotes" rows="2" maxlength="1000"></textarea></div>
       </div><div class="editor-footer"><button class="primary-btn" type="submit">إضافة الراعي</button></div><p id="clubSponsorMessage" class="table-sub" aria-live="polite"></p></form>
       <div class="divider"></div>
@@ -426,7 +426,7 @@
         <div class="form-field"><label for="clubSponsorPaymentMethod">طريقة الأداء</label><select id="clubSponsorPaymentMethod"><option value="cash">نقداً</option><option value="bank">إيداع بنكي</option><option value="transfer">تحويل</option><option value="other">أخرى</option></select></div>
         <div class="form-field full"><label for="clubSponsorPaymentNotes">ملاحظات</label><input id="clubSponsorPaymentNotes" maxlength="500"></div>
       </div><div class="editor-footer"><button class="primary-btn" type="submit">تسجيل الدفعة</button></div><p id="clubSponsorPaymentMessage" class="table-sub" aria-live="polite"></p></form>
-      <div id="clubSponsorsTable" class="data-table-wrap"></div><div class="section-head"><h4>الاتفاقيات</h4></div><div id="clubAgreementsTable" class="data-table-wrap"></div><div class="section-head"><h4>دفعات الرعاية</h4></div><div id="clubSponsorPaymentsTable" class="data-table-wrap"></div>
+      <div class="resource-filter-bar"><input id="sponsorSearch" class="search-field" type="search" placeholder="ابحث عن راعٍ..."><select id="sponsorStatusFilter" class="search-field"><option value="">كل الحالات</option><option value="active">نشط</option><option value="inactive">غير نشط</option></select></div><div id="clubSponsorsTable" class="data-table-wrap"></div><div class="section-head"><h4>الاتفاقيات</h4></div><div id="clubAgreementsTable" class="data-table-wrap"></div><div class="section-head"><h4>دفعات الرعاية</h4></div><div id="clubSponsorPaymentsTable" class="data-table-wrap"></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="section-head" style="margin-top:0"><div><h3>المعدات والمخزون</h3><p class="table-sub">تتبع الكميات الداخلة والخارجة والحد الأدنى للمخزون. يمنع النظام صرف كمية غير متوفرة.</p></div></div>
@@ -448,7 +448,7 @@
         <div class="form-field"><label for="clubMovementTeam">الفئة (اختياري)</label><select id="clubMovementTeam"></select></div>
         <div class="form-field full"><label for="clubMovementNotes">ملاحظات</label><input id="clubMovementNotes" maxlength="500"></div>
       </div><div class="editor-footer"><button class="primary-btn" type="submit">حفظ حركة المخزون</button></div><p id="clubMovementMessage" class="table-sub" aria-live="polite"></p></form>
-      <div id="clubEquipmentTable" class="data-table-wrap"></div><div class="section-head"><h4>سجل حركات المخزون</h4></div><div id="clubEquipmentMovementsTable" class="data-table-wrap"></div>
+      <div class="resource-filter-bar"><input id="equipmentSearch" class="search-field" type="search" placeholder="ابحث عن معدة..."><select id="equipmentCategoryFilter" class="search-field"><option value="">كل التصنيفات</option><option value="training">معدات تدريب</option><option value="medical">معدات طبية</option><option value="match">معدات مباريات</option><option value="office">لوازم إدارية</option><option value="general">عام</option></select><select id="equipmentStockFilter" class="search-field"><option value="">كل مستويات المخزون</option><option value="low">منخفض</option><option value="ok">كافٍ</option></select></div><div id="clubEquipmentTable" class="data-table-wrap"></div><div class="section-head"><h4>سجل حركات المخزون</h4></div><div id="clubEquipmentMovementsTable" class="data-table-wrap"></div>
     </div>
     <div class="card" style="margin-bottom:14px">
       <div class="section-head" style="margin-top:0"><div><h3>الأطقم والقمصان</h3><p class="table-sub">تعريف أطقم النادي وتسجيل تسليم القمصان للاعبين مع المقاس ورقم القميص وحالة الإرجاع.</p></div></div>
