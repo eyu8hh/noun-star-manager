@@ -325,3 +325,17 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
  #moreNavBtn:active,#moreNavBtn[aria-expanded="true"],#moreNavBtn.active,#moreNavBtn:focus-visible{color:#fff!important;background:#2947c7!important;opacity:1!important}
  #moreNavBtn:active svg,#moreNavBtn[aria-expanded="true"] svg,#moreNavBtn.active svg,#moreNavBtn:focus-visible svg{opacity:1!important;stroke:#fff!important}
 }
+
+/* Keep the More control and its icon fully opaque on touch devices. */
+@media(max-width:760px){
+ .bottom-nav #moreNavBtn,
+ .bottom-nav #moreNavBtn:active,
+ .bottom-nav #moreNavBtn:focus,
+ .bottom-nav #moreNavBtn:focus-visible,
+ .bottom-nav #moreNavBtn[aria-expanded="true"],
+ .bottom-nav #moreNavBtn.active{opacity:1!important;filter:none!important;color:#fff!important;background:#2947c7!important;}
+ .bottom-nav #moreNavBtn svg,
+ .bottom-nav #moreNavBtn svg *{opacity:1!important;visibility:visible!important;filter:none!important;stroke:#fff!important;fill:none!important;}
+ .bottom-nav #moreNavBtn span{opacity:1!important;visibility:visible!important;color:#fff!important;}
+ .bottom-nav #moreNavBtn:active{transform:none!important;}
+}
