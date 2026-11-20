@@ -232,12 +232,12 @@ assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("o
 assert.ok(serviceWorker.includes('nsm-shell-v35'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
-assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
+assert.ok(script.includes('action === "remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
 assert.ok(script.includes('managerCoachManagementCard').toString() && script.includes('ids:["coachManagementCard","managerCoachManagementCard","managerCoachAssignmentCard"]'), "Coach management panel must appear in focused settings");
 assert.ok(coachManagementFunction.includes('action === "remove_all"') && coachManagementFunction.includes('ban_duration: "876000h"'), "Bulk coach reset must disable sign-in before detaching coaches");
 
 
-const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
+
 assert.ok(html.includes('id="managerCoachManagementCard"') && html.includes('id="managerCoachManagementList"'), "Manager settings must include the coach account management panel");
 assert.ok(script.includes('manageCoaches("list")') && script.includes('data-coach-action="remove"') && script.includes('data-coach-action="freeze"'), "Coach management UI must expose listing, freezing, and removal actions");
 assert.ok(coachManagementFunction.includes('manager?.role !== "manager"') && coachManagementFunction.includes('.eq("club_owner_id", managerId)') && coachManagementFunction.includes('ban_duration'), "Coach management Edge Function must verify manager ownership and manage sign-in bans");
