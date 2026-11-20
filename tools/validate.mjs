@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { strict as assert } from "node:assert";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const css = readFileSync(new URL("../assets/css/app.css", import.meta.url), "utf8");
+assert.ok(html.includes('<link rel="stylesheet" href="./assets/css/app.css">'), "Main app must load its extracted local stylesheet");
+assert.ok(!/<style\\b/i.test(html), "Main app must not retain an embedded style block after CSS extraction");
 const start = html.indexOf("<script>");
 const end = html.indexOf("</script>", start);
 assert.ok(start >= 0 && end > start, "Expected one inline application script");
@@ -81,10 +84,10 @@ assert.ok(script.includes("importDrillBankFile") && script.includes("downloadJso
 assert.ok(script.includes("builtInDrills.push(...extraOriginalDrills)"), "Expanded original drill bank is not registered");
 assert.ok(!html.includes('id="loadDemoData"') && !html.includes('id="clearAllData"'), "Demo data controls must stay removed");
 assert.ok(!script.includes("insertDemoRow") && !script.includes("clearCoachTeamData"), "Demo data mutation helpers must stay removed");
-assert.ok(html.includes("@font-face") && html.includes("data:font/woff2;base64,"), "Cairo and Barlow fonts must be embedded in the single HTML file");
-assert.ok(html.includes('font-family:"Cairo"') && html.includes('font-family:"Barlow Condensed"'), "Both embedded font families must be declared");
+assert.ok(css.includes("@font-face") && css.includes("data:font/woff2;base64,"), "Cairo and Barlow fonts must remain embedded in the local stylesheet");
+assert.ok(css.includes('font-family:"Cairo"') && css.includes('font-family:"Barlow Condensed"'), "Both embedded font families must be declared in the local stylesheet");
 assert.ok(!/sb_secret_|service_role/i.test(html), "A secret or service-role key must never be embedded in the public HTML");
-assert.ok(!html.includes("fonts.googleapis.com") && !html.includes("fonts.gstatic.com"), "The single-file app must not depend on remote font requests");
+assert.ok(!css.includes("fonts.googleapis.com") && !css.includes("fonts.gstatic.com") && !html.includes("fonts.googleapis.com") && !html.includes("fonts.gstatic.com"), "The PWA must not depend on remote font requests");
 assert.ok(readFileSync(new URL("../LICENSES/Cairo-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Cairo font license is missing");
 assert.ok(readFileSync(new URL("../LICENSES/Barlow-Condensed-OFL.txt", import.meta.url), "utf8").includes("SIL OPEN FONT LICENSE"), "Barlow Condensed font license is missing");
 assert.ok(schema.includes("selection_status in ('starter','substitute','not_selected','manual')"), "Schema must support manual match-stat rows");
@@ -224,8 +227,8 @@ assert.ok(script.includes("canManagePlayers?") && script.includes('$("addPlayerB
 assert.ok(script.includes("const canManage=currentProfile?.role===\"manager\"") && script.includes("data-edit-comp") && script.includes("data-delete-entry"), "Competition editing and standings management must be manager-only while coaches can read standings");
 assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canManageDisciplineSettings") && script.includes('if(currentProfile?.role!=="manager")return;'), "Discipline threshold settings must be manager-only");
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
-assert.ok(html.includes("@keyframes nsmShimmer") && html.includes("cubic-bezier(.2,.85,.25,1.15)") && html.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
-assert.ok(html.includes(".workspace-navigation{flex:1 1 auto") && html.includes("overflow-y:auto") && html.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
+assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
+assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
 assert.ok(serviceWorker.includes('nsm-shell-v30'), "PWA cache must refresh after gallery viewer changes");
 assert.ok(html.includes('id="publicGalleryLightbox"') && html.includes('id="galleryLightboxImage"') && html.includes('data-open-gallery'), "Public media gallery must provide an accessible image lightbox and carousel controls");
 assert.ok(script.includes("function openPublicGallery(") && script.includes("function movePublicGallery(") && script.includes("galleryLightboxPrev") && script.includes("galleryLightboxNext"), "Public media gallery navigation handlers are required");
