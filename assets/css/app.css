@@ -293,3 +293,9 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
  .calendar-agenda-actions{width:100%;padding-inline-start:56px}
  .calendar-agenda-actions button{flex:1}
 }
+
+/* Unified navigation icon language */
+.nav-ico{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;font-size:0;line-height:0}
+.nav-ico svg{display:block;width:18px;height:18px;overflow:visible}
+#moduleIcon{display:grid;place-items:center}
+#moduleIcon svg{display:block;stroke:currentColor;fill:none}
