@@ -210,7 +210,8 @@ try {
   assert.equal(await page.locator("#financePeriodFilter").inputValue(), "all");
   await page.locator("#financeSortOrder").selectOption("amount");
   await page.locator("#financeTxnCancelEdit").waitFor({ state: "attached" });
-  await page.locator('[data-top-page="clubResources"]:not(.hidden)').click();
+  await page.locator("#moreNavBtn").click();
+  await page.locator('#moreSheet [data-goto="clubResources"]').click();
   await page.locator("#clubResourcesModule:not(.hidden)").waitFor();
   await page.locator("#sponsorSearch").fill("test");
   await page.locator("#equipmentSearch").fill("ball");
