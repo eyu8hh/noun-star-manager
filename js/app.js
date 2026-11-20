@@ -943,6 +943,82 @@ $("calendarEventsList").addEventListener("click",async e=>{
 });
 $("calendarGrid").addEventListener("click",e=>{const edit=e.target.closest("[data-calendar-edit]"),open=e.target.closest("[data-calendar-open]");if(edit){$("calendarEventsList").querySelector('[data-calendar-edit="'+CSS.escape(edit.dataset.calendarEdit)+'"]')?.click()}else if(open){setPage(open.dataset.calendarOpen==="match"?"matches":"training")}});
 $("calendarEventCancel").classList.add("hidden");
+const PUSH_FUNCTION_URL=CONFIG.supabaseUrl+"/functions/v1/nsm-push";
+async function pushRequest(action,extra={}){
+ if(!session?.access_token)throw Error("NO_SESSION");
+ const response=await fetch(PUSH_FUNCTION_URL,{method:"POST",headers:{apikey:CONFIG.publishableKey,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},body:JSON.stringify({action,...extra})});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(data.error||"PUSH_HTTP_"+response.status);
+ return data;
+}
+function pushBase64ToBytes(value){
+ const padding="=".repeat((4-value.length%4)%4),base64=(value+padding).replace(/-/g,"+").replace(/_/g,"/");
+ const raw=atob(base64),output=new Uint8Array(raw.length);
+ for(let i=0;i<raw.length;i++)output[i]=raw.charCodeAt(i);
+ return output;
+}
+async function refreshPushStatus(){
+ const status=$("pushStatusText"),enable=$("enablePushBtn"),test=$("testPushBtn"),disable=$("disablePushBtn");
+ if(!status||!enable||!test||!disable)return;
+ if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window)){
+  status.textContent="هذا المتصفح لا يدعم إشعارات الويب. جرّب Chrome أو Safari بإصدار حديث.";
+  enable.disabled=true;test.disabled=true;disable.disabled=true;return;
+ }
+ try{
+  const result=await pushRequest("status");
+  const permission=Notification.permission;
+  status.textContent=result.enabled
+   ?"الإشعارات مفعّلة على "+result.devices+" جهاز/أجهزة. حالة إذن المتصفح: "+(permission==="granted"?"مسموح":permission==="denied"?"محظور":"لم يُحدد")
+   :permission==="denied"?"الإشعارات محظورة من إعدادات المتصفح. اسمح بها يدوياً ثم أعد المحاولة."
+   :"لم يتم تفعيل إشعارات الهاتف على هذا الجهاز بعد.";
+  enable.disabled=permission==="denied"||!window.isSecureContext;
+  test.disabled=!result.enabled;
+  disable.disabled=!result.enabled;
+ }catch(error){
+  status.textContent="تعذر التحقق من حالة الإشعارات. تحقق من الاتصال ثم أعد المحاولة.";
+  enable.disabled=false;test.disabled=true;disable.disabled=true;
+ }
+}
+async function enablePhonePush(){
+ const button=$("enablePushBtn");button.disabled=true;
+ try{
+  if(!window.isSecureContext)throw Error("يجب فتح الموقع عبر HTTPS.");
+  if(!("serviceWorker" in navigator)||!("PushManager" in window)||!("Notification" in window))throw Error("المتصفح لا يدعم Web Push.");
+  const permission=await Notification.requestPermission();
+  if(permission!=="granted")throw Error("لم يتم السماح بالإشعارات. تحقق من إعدادات المتصفح.");
+  const registration=await navigator.serviceWorker.ready;
+  const {publicKey}=await pushRequest("public-key");
+  let subscription=await registration.pushManager.getSubscription();
+  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushBase64ToBytes(publicKey)});
+  await pushRequest("subscribe",{subscription:subscription.toJSON()});
+  toast("تم تفعيل إشعارات الهاتف على هذا الجهاز.");
+  await refreshPushStatus();
+ }catch(error){toast(error.message||"تعذر تفعيل الإشعارات.","error");await refreshPushStatus()}
+ finally{button.disabled=false}
+}
+async function disablePhonePush(){
+ const button=$("disablePushBtn");button.disabled=true;
+ try{
+  const registration=await navigator.serviceWorker.ready,subscription=await registration.pushManager.getSubscription();
+  if(subscription){
+   await pushRequest("unsubscribe",{endpoint:subscription.endpoint});
+   await subscription.unsubscribe();
+  }
+  toast("تم إيقاف إشعارات هذا الجهاز.");
+  await refreshPushStatus();
+ }catch(error){toast(error.message||"تعذر إيقاف الإشعارات.","error");await refreshPushStatus()}
+ finally{button.disabled=false}
+}
+async function sendPushTest(){
+ const button=$("testPushBtn");button.disabled=true;
+ try{await pushRequest("test");toast("تم إرسال إشعار تجريبي. تحقق من إشعارات هاتفك.");}
+ catch(error){toast(error.message==="NO_SUBSCRIPTION"?"فعّل إشعارات الهاتف أولاً.":"تعذر إرسال الإشعار التجريبي.","error")}
+ finally{button.disabled=false;await refreshPushStatus()}
+}
+$("enablePushBtn").addEventListener("click",enablePhonePush);
+$("disablePushBtn").addEventListener("click",disablePhonePush);
+$("testPushBtn").addEventListener("click",sendPushTest);
+
 async function syncManagerNotifications(dues=null,items=null,events=null,sessions=null,agreements=null){
  if(currentProfile?.role!=="manager")return;
  const [d,i,e,t,a]=await Promise.all([dues?Promise.resolve(dues):selectRows("finance_dues","&limit=1000"),items?Promise.resolve(items):selectRows("equipment_items","&limit=1000"),events?Promise.resolve(events):selectRows("club_events","&order=starts_at.asc&limit=500"),sessions?Promise.resolve(sessions):selectRows("training_sessions","&order=session_date.asc&limit=500"),agreements?Promise.resolve(agreements):selectRows("sponsor_agreements","&limit=1000")]);
@@ -964,6 +1040,7 @@ async function loadNotifications(){
  managerNotifications=await selectRows("club_notifications","&dismissed_at=is.null&order=created_at.desc&limit=100");
  $("notificationsList").innerHTML=managerNotifications.length?managerNotifications.map(x=>'<article class="notification-item '+(x.read_at?"is-read":"is-unread")+'"><div class="notification-copy"><b>'+esc(x.title)+'</b><p>'+esc(x.body)+'</p><small>'+esc(new Date(x.created_at).toLocaleString(lang==="ar"?"ar-MA":"fr-FR",{dateStyle:"medium",timeStyle:"short"}))+'</small></div><div class="notification-actions"><button data-notification-open="'+x.id+'">فتح</button>'+(!x.read_at?'<button data-notification-read="'+x.id+'">مقروء</button>':"")+'<button data-notification-dismiss="'+x.id+'">إخفاء</button></div></article>').join(""):'<div class="empty-state">لا توجد إشعارات حالياً. ستظهر هنا التنبيهات المرتبطة بالسجلات الفعلية.</div>';
  await refreshNotificationBadge();
+ await refreshPushStatus();
 }
 $("notificationsList").addEventListener("click",async e=>{const read=e.target.closest("[data-notification-read]"),dismiss=e.target.closest("[data-notification-dismiss]"),open=e.target.closest("[data-notification-open]");if(!read&&!dismiss&&!open)return;const id=(read||dismiss||open).dataset.notificationRead||(read||dismiss||open).dataset.notificationDismiss||(read||dismiss||open).dataset.notificationOpen;try{if(!dismiss)await api("/rest/v1/club_notifications?id=eq."+id,{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({read_at:new Date().toISOString()})});else await api("/rest/v1/club_notifications?id=eq."+id,{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({dismissed_at:new Date().toISOString()})});if(open){const item=managerNotifications.find(x=>x.id===id),target=item?.category==="finance"?"finance":item?.category==="inventory"?"clubResources":item?.category==="schedule"?"calendar":"clubResources";setPage(target);return}await loadNotifications()}catch{toast("تعذر تحديث الإشعار","error")}});
 $("markAllNotificationsRead").addEventListener("click",async()=>{try{await api("/rest/v1/club_notifications?read_at=is.null&dismissed_at=is.null",{method:"PATCH",headers:{"Prefer":"return=minimal"},body:JSON.stringify({read_at:new Date().toISOString()})});await loadNotifications()}catch{toast("تعذر تحديث الإشعارات","error")}});
@@ -1156,7 +1233,13 @@ async function showApp(){
   }
   audienceMember=null;
   if(currentProfile.role==="player")setPage("playerPortal");
-  else{setPage("dashboard");try{await loadDashboard()}catch(err){$("syncStatusTop").textContent=tr("syncFailed");console.error("dashboard",err)}}
+  else{
+   const requestedPage=new URLSearchParams(location.search).get("nsmPage");
+   const allowedPushPages=["dashboard","matches","training","calendar","finance","clubResources","notifications"];
+   const initialPage=currentProfile.role==="manager"&&allowedPushPages.includes(requestedPage)?requestedPage:"dashboard";
+   setPage(initialPage);
+   try{await loadDashboard()}catch(err){$("syncStatusTop").textContent=tr("syncFailed");console.error("dashboard",err)}
+  }
  }catch(err){$("appView").classList.add("hidden");$("loginView").classList.remove("hidden");$("loginError").textContent=tr("loginFailed");throw err}
 }
 async function loadCurrentProfile(){
