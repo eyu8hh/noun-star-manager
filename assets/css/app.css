@@ -143,3 +143,13 @@ html[dir="ltr"] .nav button:hover{transform:translateX(2px)}
  .top-utilities .icon-btn,.top-utilities .ghost-btn{width:33px;min-width:33px;height:33px;min-height:33px}
 }
 @media(prefers-reduced-motion:reduce){.top-shortcut,.top-back-btn .back-arrow{transition:none!important}}
+
+.coach-management-list{display:grid;gap:10px}
+.coach-manage-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.coach-manage-info{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}
+.coach-manage-info>b{font-weight:800}
+.coach-manage-info>span:not(.coach-state){color:var(--muted);font-size:12px}
+.coach-state{font-size:11px;font-weight:800;border-radius:99px;padding:4px 9px}
+.coach-state.is-active{color:#16845b;background:rgba(54,197,139,.13)}
+.coach-state.is-frozen{color:#a56c12;background:rgba(242,189,76,.18)}
+@media(max-width:640px){.coach-manage-row{align-items:flex-start;flex-direction:column}.coach-manage-row .row-actions{width:100%;display:flex;flex-wrap:wrap}.coach-manage-row .row-actions button{flex:1}}
