@@ -4,7 +4,7 @@ import { strict as assert } from "node:assert";
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const css = readFileSync(new URL("../assets/css/app.css", import.meta.url), "utf8");
 assert.ok(html.includes('<link rel="stylesheet" href="./assets/css/app.css">'), "Main app must load its extracted local stylesheet");
-assert.ok(!/<style\\b/i.test(html), "Main app must not retain an embedded style block after CSS extraction");
+assert.ok(!/<style\b/i.test(html), "Main app must not retain an embedded style block after CSS extraction");
 const start = html.indexOf("<script>");
 const end = html.indexOf("</script>", start);
 assert.ok(start >= 0 && end > start, "Expected one inline application script");
