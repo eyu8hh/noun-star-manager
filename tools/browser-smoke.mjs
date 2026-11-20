@@ -115,6 +115,7 @@ await page.route("https://fatjyhoscjtwthbwiefo.supabase.co/**", async (route) =>
 
 try {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+  assert.equal(await page.locator('script[src="./js/app.js"]').count(), 1, "Main app must load one external classic application script");
   const stylesheetState = await page.locator('link[rel="stylesheet"][href="./assets/css/app.css"]').evaluate((link) => ({ loaded: Boolean(link.sheet), rules: link.sheet?.cssRules?.length ?? 0 }));
   assert.ok(stylesheetState.loaded && stylesheetState.rules > 0, "Extracted application stylesheet must load and expose CSS rules");
   try {
