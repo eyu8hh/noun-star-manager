@@ -204,6 +204,11 @@ try {
   await page.locator("#sidebar:not(.open)").waitFor();
   await page.locator("#playersModule:not(.hidden)").waitFor();
   await page.locator("#addPlayerBtn:not(.hidden)").waitFor();
+  await page.locator("#playerFilterAvailability").waitFor();
+  await page.locator("#playerFilterPayment:not(.hidden)").waitFor();
+  await page.locator("#playerSortOrder").selectOption("shirt");
+  await page.locator("#clearPlayerFilters").click();
+  assert.equal(await page.locator("#playerSortOrder").inputValue(), "name");
   assert.equal(await page.locator('#nav button[data-page="players"]').getAttribute("aria-current"), "page");
   await page.locator("#menuBtn").click();
   await page.locator('#nav button[data-page="competitions"]').click();
@@ -242,6 +247,7 @@ try {
   await page.locator('#nav button[data-page="players"]').click();
   await page.locator("#playersModule:not(.hidden)").waitFor();
   await page.locator("#addPlayerBtn").waitFor({ state: "hidden" });
+  await page.locator("#playerFilterPayment").waitFor({ state: "hidden" });
   await page.locator("#playerEditor").waitFor({ state: "hidden" });
   await page.locator("#menuBtn").click();
   await page.locator('#nav button[data-page="competitions"]').click();
