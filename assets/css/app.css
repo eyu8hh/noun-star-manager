@@ -106,3 +106,40 @@ html[dir="ltr"] .nav button:hover{transform:translateX(2px)}
  .nsm-toast{opacity:1;transform:none}
 }
 
+
+/* Unified top app bar: contextual back, role-aware shortcuts and utility actions. */
+.topbar{align-items:center;gap:16px}
+.topbar-leading{display:flex;align-items:center;gap:9px;min-width:0}
+.top-heading{min-width:0}
+.top-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:0}
+.top-shortcuts,.top-utilities{display:flex;align-items:center;gap:6px}
+.top-shortcuts{padding:4px;border:1px solid var(--line);border-radius:14px;background:#ffffff05}
+.top-shortcut{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 10px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
+.top-shortcut svg,.top-utilities svg,.topbar-leading svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.top-shortcut:hover,.top-shortcut.active{color:var(--text);background:#2947c71c;border-color:#2947c755}
+.top-shortcut.active{color:#8da4ff}
+.top-shortcut:focus-visible,.top-back-btn:focus-visible,.top-utilities button:focus-visible,.topbar-leading button:focus-visible{outline:2px solid #6d89ff;outline-offset:2px}
+.top-utilities .icon-btn{display:grid;place-items:center;padding:0}
+.top-back-btn:disabled{opacity:.38;cursor:not-allowed}
+.top-back-btn .back-arrow{transition:transform .18s ease}
+.top-actions .table-sub{white-space:nowrap}
+@media(max-width:760px){
+ .topbar{align-items:stretch;gap:10px;margin-bottom:20px}
+ .topbar-leading{width:100%;min-height:42px}
+ .top-actions{width:100%;justify-content:space-between;gap:7px}
+ .top-shortcuts{gap:3px;padding:3px;flex:1;min-width:0;justify-content:space-around}
+ .top-shortcut{width:36px;min-width:36px;height:36px;min-height:36px;padding:0}
+ .top-shortcut span{display:none}
+ .top-shortcut svg{width:18px;height:18px}
+ .top-utilities{gap:4px;flex:0 0 auto}
+ .top-utilities .icon-btn,.top-utilities .ghost-btn{width:36px;min-width:36px;height:36px;min-height:36px;padding:0}
+ .top-actions #syncStatusTop{display:none}
+}
+@media(max-width:360px){
+ .topbar-leading{gap:6px}
+ .top-shortcuts{gap:1px}
+ .top-shortcut{width:32px;min-width:32px}
+ .top-utilities{gap:3px}
+ .top-utilities .icon-btn,.top-utilities .ghost-btn{width:33px;min-width:33px;height:33px;min-height:33px}
+}
+@media(prefers-reduced-motion:reduce){.top-shortcut,.top-back-btn .back-arrow{transition:none!important}}
