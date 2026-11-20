@@ -53,7 +53,9 @@
 - [x] Add monthly and weekly calendar views combining club events, scheduled matches, and training sessions, with team/type filters and local-time-safe editing.
 - [x] Add idempotent in-app manager notifications for due payments, low inventory, calendar events, and upcoming training; support unread count, mark read, dismiss, and opening the linked section.
 - [x] Prepare the service worker to display incoming push notifications and route notification taps safely within the app origin.
-- [ ] Complete real Web Push delivery to mobile devices: subscription storage, VAPID secrets, and server-side event/reminder triggers. The receiver alone does not send notifications.
+- [x] Add per-device Web Push subscriptions, VAPID keys stored in Supabase Vault, authenticated manager controls, test notifications, and a one-minute server-side delivery schedule.
+- [x] Add notification delivery claims and stale-subscription cleanup to prevent repeated sends and prune expired browser endpoints.
+- [ ] Verify an end-to-end notification on a real Android/iPhone device and tune delivery preferences after the first live test.
 - [x] Unify sidebar and module navigation icons with a consistent SVG stroke system.
 - [x] Add quick search filters to clubs, teams, matches, competitions, training sessions, injuries, absences, card summaries, and suspensions.
 
