@@ -82,6 +82,8 @@ function applySettingsFocus(){
  root.querySelectorAll(":scope > *").forEach(el=>{if(el===banner)return;const id=el.id;el.classList.toggle("settings-focus-hidden",!view.ids.includes(id));});
 }
 function updateTopbarControls(){
+ $("bottomNav").classList.toggle("hidden",currentProfile?.role==="player");
+ document.querySelectorAll("#moreSheet [data-goto]").forEach(button=>{const target=document.querySelector('#nav button[data-page="'+button.dataset.goto+'"]');button.classList.toggle("hidden",!target||target.classList.contains("hidden"))});
  $("bottomFinanceNav").classList.toggle("hidden",currentProfile?.role!=="manager");$("moreResourcesItem").classList.toggle("hidden",currentProfile?.role!=="manager");$("moreReportsItem").classList.toggle("hidden",currentProfile?.role!=="manager");
  const back=$("backBtn");
  if(back){
