@@ -317,3 +317,11 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
 .push-settings-actions button{min-height:40px}
 .push-settings-note{font-size:11px;line-height:1.7;color:var(--muted);margin:0}
 @media(max-width:620px){.push-settings-actions{display:grid;grid-template-columns:1fr}.push-settings-actions button{width:100%}}
+
+/* High-contrast, persistent feedback for the mobile More control. */
+@media(max-width:760px){
+ #moreNavBtn{color:var(--text);opacity:1;-webkit-tap-highlight-color:transparent;transition:background-color .18s ease,color .18s ease,transform .18s ease}
+ #moreNavBtn svg{opacity:1;stroke:currentColor;stroke-width:2.1}
+ #moreNavBtn:active,#moreNavBtn[aria-expanded="true"],#moreNavBtn.active,#moreNavBtn:focus-visible{color:#fff!important;background:#2947c7!important;opacity:1!important}
+ #moreNavBtn:active svg,#moreNavBtn[aria-expanded="true"] svg,#moreNavBtn.active svg,#moreNavBtn:focus-visible svg{opacity:1!important;stroke:#fff!important}
+}
