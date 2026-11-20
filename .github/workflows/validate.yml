@@ -5,6 +5,7 @@ on:
     paths:
       - "index.html"
       - "assets/**"
+      - "js/**"
       - "tools/validate.mjs"
       - "service-worker.js"
       - "tools/browser-smoke.mjs"
@@ -17,6 +18,9 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "assets/**"
+      - "js/**"
+      - "service-worker.js"
       - "tools/validate.mjs"
       - "tools/browser-smoke.mjs"
       - ".github/workflows/validate.yml"
