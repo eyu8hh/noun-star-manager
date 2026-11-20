@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "assets/**"
       - "tools/validate.mjs"
       - "service-worker.js"
       - "tools/browser-smoke.mjs"

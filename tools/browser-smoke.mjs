@@ -115,6 +115,8 @@ await page.route("https://fatjyhoscjtwthbwiefo.supabase.co/**", async (route) =>
 
 try {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+  const stylesheetState = await page.locator('link[rel="stylesheet"][href="./assets/css/app.css"]').evaluate((link) => ({ loaded: Boolean(link.sheet), rules: link.sheet?.cssRules?.length ?? 0 }));
+  assert.ok(stylesheetState.loaded && stylesheetState.rules > 0, "Extracted application stylesheet must load and expose CSS rules");
   try {
     await page.waitForFunction(() => window.__nsmBootReady === true, null, { timeout: 10000 });
   } catch {
