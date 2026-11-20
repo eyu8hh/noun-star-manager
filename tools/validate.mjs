@@ -306,4 +306,8 @@ assert.ok(html.includes('id="financeSearch"') && html.includes('id="financeTypeF
 assert.ok(script.includes('function renderFinanceTransactions') && script.includes('function renderFinanceTrend') && script.includes('data-finance-edit-transaction') && script.includes('writeClubLog(wasEditing?'), "Finance ledger must support filtering, trend charts, editing, and audit logging");
 assert.ok(css.includes(".finance-filter-bar") && css.includes(".finance-trend-chart"), "Finance filters and trend chart must be responsive");
 
+
+assert.ok(script.includes('financeIncomeAll') && script.includes('financeExpenseAll') && script.includes('financeNetAll'), "Finance overview must show lifetime totals and net balance");
+assert.ok(script.includes('writeClubLog("إضافة استحقاق مالي"') && script.includes('writeClubLog("قبض دفعة اشتراك"'), "Finance dues and payment operations must be included in the audit log");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
