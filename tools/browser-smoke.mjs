@@ -167,7 +167,6 @@ try {
   assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
   assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
   assert.equal(await page.locator("#backBtn").isDisabled(), true, "Back must be disabled at the first page");
-  await page.locator("#topShortcutPlayers").count().then(async count=>{ if(count) return; });
   await page.locator('[data-top-page="players"]:not(.hidden)').click();
   await page.locator("#playersModule:not(.hidden)").waitFor();
   assert.equal(await page.locator("#backBtn").isDisabled(), false, "Back must activate after in-app navigation");
