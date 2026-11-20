@@ -50,7 +50,9 @@
 
 ## Phase 6 — Calendar and notifications
 - [x] Add manager calendar events in PostgreSQL with manager-only RLS, date indexes, and CRUD UI.
-- [x] Add idempotent manager notifications for due payments, low inventory, calendar events, and upcoming training; support unread count, mark read, dismiss, and opening the linked section.
+- [x] Add monthly and weekly calendar views combining club events, scheduled matches, and training sessions, with team/type filters and local-time-safe editing.
+- [x] Add idempotent in-app manager notifications for due payments, low inventory, calendar events, and upcoming training; support unread count, mark read, dismiss, and opening the linked section.
+- [ ] Add real Web Push delivery to mobile devices, including subscription storage, VAPID secrets, and a server-side event/reminder trigger. Browser notification permission alone is not background push.
 
 ## Phase 7 — QA and handoff
 - [ ] Test core create/edit/delete workflows, demo loading/reset, and related-record cleanup in a real browser and live Supabase project.
