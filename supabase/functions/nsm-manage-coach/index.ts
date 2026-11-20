@@ -49,6 +49,28 @@ Deno.serve(async (req: Request) => {
     return json({ coaches: results });
   }
 
+
+  if (action === "remove_all") {
+    const { data: coaches, error: listError } = await admin.from("profiles")
+      .select("id").eq("role", "coach").eq("club_owner_id", managerId);
+    if (listError) return json({ error: "Could not load club coaches" }, 500);
+    const ids = (coaches ?? []).map((coach) => coach.id);
+    if (!ids.length) return json({ success: true, action, removed_count: 0 });
+    const banResults = await Promise.all(ids.map((id) =>
+      admin.auth.admin.updateUserById(id, { ban_duration: "876000h" })
+    ));
+    const failed = banResults.findIndex((result) => result.error);
+    if (failed !== -1) return json({ error: "Some coach accounts could not be disabled. No club assignments were changed.", disabled_count: banResults.filter((result) => !result.error).length }, 500);
+    const { error: assignmentError } = await admin.from("team_coaches")
+      .delete().in("coach_user_id", ids).eq("owner_id", managerId);
+    if (assignmentError) return json({ error: "Coach sign-in was disabled, but assignments could not all be detached. Retry the reset." }, 500);
+    const { error: profileError } = await admin.from("profiles")
+      .update({ club_owner_id: null })
+      .in("id", ids).eq("role", "coach").eq("club_owner_id", managerId);
+    if (profileError) return json({ error: "Coach sign-in was disabled and assignments detached, but club removal did not finish. Retry the reset." }, 500);
+    return json({ success: true, action, removed_count: ids.length, preserved_accounts: true });
+  }
+
   const coachId = String(input.coach_id ?? "");
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(coachId)) {
     return json({ error: "Invalid coach account" }, 400);
@@ -74,7 +96,7 @@ Deno.serve(async (req: Request) => {
       .delete().eq("coach_user_id", coachId).eq("owner_id", managerId);
     if (assignmentError) return json({ error: "Account disabled, but assignments could not be detached. Retry the removal." }, 500);
     const { error: profileError } = await admin.from("profiles")
-      .update({ club_owner_id: null, coach_code: null }).eq("id", coachId).eq("role", "coach").eq("club_owner_id", managerId);
+      .update({ club_owner_id: null }).eq("id", coachId).eq("role", "coach").eq("club_owner_id", managerId);
     if (profileError) return json({ error: "Account disabled and assignments detached, but club removal did not finish. Retry the removal." }, 500);
     return json({ success: true, action, preserved_account: true });
   }

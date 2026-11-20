@@ -208,7 +208,7 @@ assert.equal((html.match(/class="nav-group"/g)||[]).length, 4, "Workspace naviga
 assert.ok(html.includes('class="quick-grid manager-bento-grid"') && html.includes('aria-controls="sidebar"') && html.includes('aria-expanded="false"'), "Manager bento dashboard and accessible mobile drawer controls are required");
 assert.ok(script.includes('setAttribute("aria-current","page")') && script.includes('setAttribute("aria-expanded",String(opened))'), "Navigation state must be exposed accessibly");
 assert.ok(script.includes("Route shell interactions at the window capture phase") && script.includes('id==="menuBtn"') && script.includes('id==="langBtn"') && script.includes('id==="themeBtn"') && script.includes('matches("#nav button[data-page]")') && script.includes("setPage(page,focus);") && script.includes("function applySettingsFocus") && html.includes('data-settings-focus="coaches"') && html.includes('data-settings-focus="requests"') && html.includes('data-settings-focus="public"'), "Mobile shell controls and navigation must use the central capture-phase click router");
-assert.ok(script.includes("settingsFocusBanner") && script.includes("settings-focus-hidden") && script.includes('ids:["coachManagementCard","managerCoachAssignmentCard"]') && script.includes('ids:["playerRequestsManagerCard"]'), "Dashboard management shortcuts must open focused, isolated settings views");
+assert.ok(script.includes("settingsFocusBanner") && script.includes("settings-focus-hidden") && script.includes('ids:["coachManagementCard","managerCoachManagementCard","managerCoachAssignmentCard"]') && script.includes('ids:["playerRequestsManagerCard"]'), "Dashboard management shortcuts must open focused, isolated settings views");
 assert.ok(script.includes("async function loadReports") && script.includes('$("reportCsvBtn").addEventListener') && script.includes('$("reportPrintBtn").addEventListener') && script.includes('currentProfile?.role!=="manager"&&(page==="finance"||page==="clubResources"||page==="reports")'), "Manager reports center must be manager-only and support CSV/print exports");
 assert.ok(script.includes('await login($("email").value.trim(),$("password").value);await showApp()') && script.includes("showApp().catch(err=>showStaffBootstrapError(err))") && script.includes("throw err"), "Authentication bootstrap must await profile loading, preserve valid sessions, and surface failures");
 const financeMigration = readFileSync(new URL("../supabase/migrations/20261119_manager_finance_ledger.sql", import.meta.url), "utf8");
@@ -229,9 +229,20 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v34'), "PWA cache must refresh after extracting the application script");
-
+assert.ok(serviceWorker.includes('nsm-shell-v35'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
+assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
+assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
+assert.ok(script.includes('managerCoachManagementCard').toString() && script.includes('ids:["coachManagementCard","managerCoachManagementCard","managerCoachAssignmentCard"]'), "Coach management panel must appear in focused settings");
+assert.ok(coachManagementFunction.includes('action === "remove_all"') && coachManagementFunction.includes('ban_duration: "876000h"'), "Bulk coach reset must disable sign-in before detaching coaches");
+
+const coachCreationFunction = readFileSync(new URL("../supabase/functions/nsm-create-coach/index.ts", import.meta.url), "utf8");
+assert.ok(coachManagementFunction.includes('update({ club_owner_id: null })') && !coachManagementFunction.includes('update({ club_owner_id: null, coach_code: null })'), "Coach reset must preserve the coach code for safe account reactivation");
+assert.ok(coachCreationFunction.includes('const { data: reusable, error: reusableError }') && coachCreationFunction.includes('ban_duration: "none"') && coachCreationFunction.includes('reused: true'), "Coach creation must safely reactivate a previously detached account with its original code");
+
+
+
+
 assert.ok(html.includes('id="managerCoachManagementCard"') && html.includes('id="managerCoachManagementList"'), "Manager settings must include the coach account management panel");
 assert.ok(script.includes('manageCoaches("list")') && script.includes('data-coach-action="remove"') && script.includes('data-coach-action="freeze"'), "Coach management UI must expose listing, freezing, and removal actions");
 assert.ok(coachManagementFunction.includes('manager?.role !== "manager"') && coachManagementFunction.includes('.eq("club_owner_id", managerId)') && coachManagementFunction.includes('ban_duration'), "Coach management Edge Function must verify manager ownership and manage sign-in bans");
