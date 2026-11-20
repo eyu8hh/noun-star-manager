@@ -229,7 +229,14 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v33'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v34'), "PWA cache must refresh after extracting the application script");
+
+const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
+assert.ok(html.includes('id="managerCoachManagementCard"') && html.includes('id="managerCoachManagementList"'), "Manager settings must include the coach account management panel");
+assert.ok(script.includes('manageCoaches("list")') && script.includes('data-coach-action="remove"') && script.includes('data-coach-action="freeze"'), "Coach management UI must expose listing, freezing, and removal actions");
+assert.ok(coachManagementFunction.includes('manager?.role !== "manager"') && coachManagementFunction.includes('.eq("club_owner_id", managerId)') && coachManagementFunction.includes('ban_duration'), "Coach management Edge Function must verify manager ownership and manage sign-in bans");
+assert.ok(coachManagementFunction.includes('club_owner_id: null') && coachManagementFunction.includes('preserved_account: true'), "Coach removal must detach the account without hard-deleting its historical identity");
+
 assert.ok(html.includes('id="publicGalleryLightbox"') && html.includes('id="galleryLightboxImage"') && script.includes('data-open-gallery'), "Public media gallery must provide an accessible image lightbox and carousel controls");
 assert.ok(script.includes("function openPublicGallery(") && script.includes("function movePublicGallery(") && script.includes("galleryLightboxPrev") && script.includes("galleryLightboxNext"), "Public media gallery navigation handlers are required");
 
