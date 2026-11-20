@@ -529,16 +529,16 @@ async function loadManagerCoachAssignments(){
  $("managerAssignCoach").innerHTML='<option value="">اختر المدرب</option>'+staff.map(c=>'<option value="'+esc(c.id)+'" '+(c.is_frozen?"disabled":"")+' >'+esc(c.role==="manager"?"المدير · مدرب الفريق الأول":(c.display_name||c.coach_code||"مدرب"))+(c.is_frozen?" · مجمد":"")+'</option>').join("");
  $("managerAssignTeam").innerHTML='<option value="">اختر الفئة</option>'+teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+(t.age_category?" · "+esc(t.age_category):"")+'</option>').join("");
 
- $("coachManagementCount").textContent=coaches.length+" مدربين مسجلين";$("coachBulkResetBtn").disabled=!coaches.length;$("coachBulkResetBtn").textContent=coaches.length?"إزالة جميع المدربين ("+coaches.length+")":"لا يوجد مدربون لإزالتهم";
+ const protectedCount=coaches.filter(c=>c.is_protected).length;$("coachManagementCount").textContent=coaches.length+" مدربين مسجلين"+(protectedCount?" · "+protectedCount+" حساب محفوظ":"");$("coachBulkResetBtn").disabled=!coaches.some(c=>!c.is_protected);$("coachBulkResetBtn").textContent=coaches.some(c=>!c.is_protected)?"إزالة المدربين الآخرين ("+coaches.filter(c=>!c.is_protected).length+")":"لا يوجد مدربون آخرون لإزالتهم";
 
  const detachedCoaches=coachResult.detached_coaches||[];
  $("managerDetachedCoachList").innerHTML=detachedCoaches.length?detachedCoaches.map(c=>'<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||"مدرب سابق")+'</b><span>'+esc(c.coach_code||"بدون معرف")+'</span><span class="coach-state is-frozen">غير مرتبط بالنادي</span></div><button type="button" class="secondary-btn" data-coach-action="restore" data-coach-id="'+esc(c.id)+'">استعادة الحساب</button></div>').join(""):'<div class="empty-state">لا توجد حسابات مدربين سابقة للاستعادة.</div>';
  $("managerCoachManagementList").innerHTML=coaches.length?coaches.map(c=>{
-  const status=c.is_frozen?'<span class="coach-state is-frozen">مجمد</span>':'<span class="coach-state is-active">نشط</span>';
-  const action=c.is_frozen
+  const status=c.is_protected?'<span class="coach-state is-active">حساب محفوظ</span>':(c.is_frozen?'<span class="coach-state is-frozen">مجمد</span>':'<span class="coach-state is-active">نشط</span>');
+  const action=c.is_protected?'<span class="table-sub">محمي من الإزالة والتجميد</span>':(c.is_frozen
    ?'<button type="button" class="secondary-btn" data-coach-action="unfreeze" data-coach-id="'+esc(c.id)+'">إلغاء التجميد</button>'
-   :'<button type="button" class="secondary-btn" data-coach-action="freeze" data-coach-id="'+esc(c.id)+'">تجميد</button>';
-  return '<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||c.coach_code||"مدرب")+'</b><span>'+esc(c.coach_code||"—")+'</span>'+status+'</div><div class="row-actions">'+action+'<button type="button" class="danger" data-coach-action="remove" data-coach-id="'+esc(c.id)+'">حذف من النادي</button></div></div>';
+   :'<button type="button" class="secondary-btn" data-coach-action="freeze" data-coach-id="'+esc(c.id)+'">تجميد</button>');
+  return '<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||c.coach_code||"مدرب")+'</b><span>'+esc(c.coach_code||"—")+'</span>'+status+'</div><div class="row-actions">'+action+(c.is_protected?'':'<button type="button" class="danger" data-coach-action="remove" data-coach-id="'+esc(c.id)+'">حذف من النادي</button>')+'</div></div>';
  }).join(""):'<div class="empty-state">لا يوجد مدربون مسجلون حالياً.</div>';
 
  $("managerCoachAssignmentsList").innerHTML=assignments.length?assignments.map(a=>{
@@ -557,7 +557,7 @@ $("managerCoachManagementList").addEventListener("click",async e=>{
   "remove-all":"سيتم إيقاف جميع حسابات المدربين الحالية وفصلها عن النادي، مع الاحتفاظ بسجلاتهم التاريخية. لن يتأثر حساب المدير أو اللاعبون. هل تريد المتابعة؟",
   freeze:"سيتم إيقاف دخول هذا المدرب مؤقتاً مع الاحتفاظ ببياناته وتكليفاته. هل تريد المتابعة؟",
   unfreeze:"سيتم إعادة تفعيل دخول هذا المدرب. هل تريد المتابعة؟",
-  remove:"سيتم حذف المدرب من النادي وإيقاف حسابه وفصل تكليفاته. ستبقى سجلاته التاريخية محفوظة، ولن يُحذف حسابه نهائياً. هل تريد المتابعة؟"
+  remove:"سيتم حذف المدرب من النادي وإيقاف حسابه وفصل تكليفاته. ستبقى سجلاته التاريخية محفوظة. الحساب c-qwerty محمي دائماً. هل تريد المتابعة؟"
  };
  if(!confirm(prompts[action]||"هل تريد المتابعة؟"))return;
  b.disabled=true;
