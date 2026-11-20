@@ -48,7 +48,11 @@
 - [x] Injury/recovery records and dated absences; injury and suspension changes update player availability. Health archive/report refinements remain pending.
 - [x] Player statistics table and UTF-8 CSV export (goals, assists, cards, appearances, and lineup minutes; career/team history aggregation remains pending).
 
-## Phase 6 — QA and handoff
+## Phase 6 — Calendar and notifications
+- [x] Add manager calendar events in PostgreSQL with manager-only RLS, date indexes, and CRUD UI.
+- [x] Add idempotent manager notifications for due payments, low inventory, calendar events, and upcoming training; support unread count, mark read, dismiss, and opening the linked section.
+
+## Phase 7 — QA and handoff
 - [ ] Test core create/edit/delete workflows, demo loading/reset, and related-record cleanup in a real browser and live Supabase project.
 - [ ] Test match finish/reopen and suspension reversal.
 - [ ] Test Arabic/French switching and mobile layout at 400px.

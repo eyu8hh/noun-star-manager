@@ -160,6 +160,7 @@
         </nav>
         <span class="table-sub" id="syncStatusTop" aria-live="polite"></span>
         <div class="top-utilities">
+          <button class="icon-btn notification-bell" id="notificationsBtn" type="button" aria-label="الإشعارات" title="الإشعارات"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="notificationBadge" class="notification-badge hidden">0</span></button>
           <button class="icon-btn" id="refreshBtn" type="button" data-i18n-title="refresh" aria-label="تحديث"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9a7 7 0 0 1 11.6-2L20 12M4 12l2.8 5a7 7 0 0 0 11.6-2"/></svg></button>
           <button class="ghost-btn" id="langBtn" type="button">FR</button>
           <button class="icon-btn" id="themeBtn" type="button" aria-label="تغيير المظهر"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
@@ -177,7 +178,7 @@
     <div id="moreSheet" class="more-sheet hidden" aria-label="الأقسام الإضافية">
       <div class="more-sheet-head"><b>المزيد من الأقسام</b><button type="button" id="closeMoreSheet" aria-label="إغلاق">×</button></div>
       <div class="more-sheet-grid">
-       <button data-goto="clubs" type="button">الأندية والفرق</button><button data-goto="matches" type="button">المباريات</button><button data-goto="competitions" type="button">البطولات</button><button data-goto="statistics" type="button">الإحصائيات</button><button data-goto="health" type="button">الصحة</button><button data-goto="discipline" type="button">الانضباط</button><button data-goto="clubResources" id="moreResourcesItem" type="button">المعدات والرعاة</button><button data-goto="reports" id="moreReportsItem" type="button">التقارير</button><button data-goto="settings" type="button">الإعدادات</button>
+       <button data-goto="clubs" type="button">الأندية والفرق</button><button data-goto="matches" type="button">المباريات</button><button data-goto="competitions" type="button">البطولات</button><button data-goto="statistics" type="button">الإحصائيات</button><button data-goto="health" type="button">الصحة</button><button data-goto="discipline" type="button">الانضباط</button><button data-goto="clubResources" id="moreResourcesItem" type="button">المعدات والرعاة</button><button data-goto="reports" id="moreReportsItem" type="button">التقارير</button><button data-goto="calendar" id="moreCalendarItem" type="button">التقويم</button><button data-goto="notifications" id="moreNotificationsItem" type="button">الإشعارات</button><button data-goto="settings" type="button">الإعدادات</button>
       </div>
     </div>
     <section id="dashboardPage">
@@ -193,7 +194,7 @@
   <div id="dashboardAttendanceSummary" class="dashboard-empty">لا توجد حصص مسجلة بعد.</div>
  </div>
  <div class="dashboard-panel">
-  <div class="dashboard-panel-head"><div><h3>أقرب تدريب</h3><p>الموعد القادم المسجل في التقويم التدريبي</p></div><button class="text-action" data-goto="training" type="button">التدريبات</button></div>
+  <div class="dashboard-panel-head"><div><h3>أقرب موعد للفريق</h3><p>التدريب أو الموعد القادم المسجل</p></div><button class="text-action" data-goto="training" type="button">التدريبات</button></div>
   <div id="dashboardNextTraining" class="dashboard-empty">لا توجد مواعيد قادمة.</div>
  </div>
  <section id="dashboardFinancePanel" class="dashboard-panel dashboard-wide hidden">
@@ -346,7 +347,25 @@
   
 
   
-  <div id="reportsModule" class="hidden">
+  <div id="calendarModule" class="hidden">
+ <div class="module-toolbar"><div><h3>التقويم الإداري</h3><p class="table-sub">المواعيد الإدارية والتدريبات والالتزامات القادمة.</p></div><span class="welcome-tag">مدير النادي</span></div>
+ <div class="card" style="margin-bottom:14px"><h3 id="calendarFormTitle">إضافة موعد</h3><form id="calendarEventForm"><div class="form-grid">
+  <div class="form-field"><label for="calendarEventTitle">عنوان الموعد</label><input id="calendarEventTitle" required maxlength="160"></div>
+  <div class="form-field"><label for="calendarEventType">نوع الموعد</label><select id="calendarEventType"><option value="training">تدريب</option><option value="meeting">اجتماع</option><option value="match">مباراة / موعد رياضي</option><option value="financial_due">استحقاق مالي</option><option value="admin">إداري</option><option value="other">آخر</option></select></div>
+  <div class="form-field"><label for="calendarEventStart">البداية</label><input id="calendarEventStart" type="datetime-local" required></div>
+  <div class="form-field"><label for="calendarEventEnd">النهاية</label><input id="calendarEventEnd" type="datetime-local"></div>
+  <div class="form-field"><label for="calendarEventTeam">الفريق (اختياري)</label><select id="calendarEventTeam"><option value="">كل النادي</option></select></div>
+  <div class="form-field"><label for="calendarEventLocation">المكان</label><input id="calendarEventLocation" maxlength="160"></div>
+  <div class="form-field full"><label for="calendarEventNotes">ملاحظات</label><textarea id="calendarEventNotes" rows="2" maxlength="1200"></textarea></div>
+ </div><div class="editor-footer"><button class="primary-btn" id="calendarEventSave" type="submit">حفظ الموعد</button><button class="secondary-btn" id="calendarEventCancel" type="button">إلغاء التعديل</button></div><p id="calendarEventMessage" class="table-sub" aria-live="polite"></p></form></div>
+ <div class="module-toolbar"><div><h3>جدول المواعيد</h3><p class="table-sub">مرتبة حسب التاريخ، مع إمكانية التعديل والحذف.</p></div><select id="calendarTypeFilter" class="search-field"><option value="">كل الأنواع</option><option value="training">تدريب</option><option value="meeting">اجتماع</option><option value="match">مباراة</option><option value="financial_due">استحقاق مالي</option><option value="admin">إداري</option><option value="other">آخر</option></select></div>
+ <div id="calendarEventsList" class="data-table-wrap"></div>
+</div>
+<div id="notificationsModule" class="hidden">
+ <div class="module-toolbar"><div><h3>مركز الإشعارات</h3><p class="table-sub">تنبيهات مبنية على الاستحقاقات والمخزون والمواعيد الفعلية.</p></div><button class="secondary-btn" id="markAllNotificationsRead" type="button">تحديد الكل كمقروء</button></div>
+ <div id="notificationsList" class="notification-list"></div>
+</div>
+<div id="reportsModule" class="hidden">
     <div class="module-toolbar"><div><h3>مركز التقارير والمستندات</h3><p class="table-sub">لوحة موحدة لمؤشرات النادي الرياضية والتكوينية والمالية والموارد، مع الطباعة والحفظ PDF وتصدير CSV.</p></div><div class="module-actions"><button class="secondary-btn" id="reportPrintBtn" type="button">طباعة / حفظ PDF</button><button class="primary-btn" id="reportCsvBtn" type="button">تصدير CSV</button></div></div>
     <div class="card" id="reportFilterCard" style="margin-bottom:14px">
       <div class="section-head" style="margin-top:0"><div><h3>إعداد التقرير</h3><p class="table-sub">حدد الفترة والفئة ونوع التقرير قبل إنشاء النسخة.</p></div><span class="welcome-tag">خاص بالمدير</span></div>

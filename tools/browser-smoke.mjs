@@ -172,6 +172,16 @@ try {
   assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
   assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
   assert.equal(await page.locator("#backBtn").isDisabled(), true, "Back must be disabled at the first page");
+  await page.locator("#notificationsBtn:not(.hidden)").click();
+  await page.locator("#notificationsModule:not(.hidden)").waitFor();
+  await page.locator("#notificationsList").waitFor();
+  await page.locator("#moreNavBtn").click();
+  await page.locator("#moreSheet:not(.hidden)").waitFor();
+  await page.locator('#moreSheet [data-goto="calendar"]').click();
+  await page.locator("#calendarModule:not(.hidden)").waitFor();
+  await page.locator("#calendarEventForm").waitFor();
+  await page.locator('[data-bottom-page="dashboard"]').click();
+  await page.locator("#dashboardPage:not(.hidden)").waitFor();
   await page.locator("#moreNavBtn").click();
   await page.locator("#moreSheet:not(.hidden)").waitFor();
   await page.locator('#moreSheet [data-goto="statistics"]').click();
@@ -233,6 +243,7 @@ try {
   await staffLogin("coach", "C-1234");
   await page.locator("#managerDashboardPanel").waitFor({ state: "hidden" });
   await page.locator("#dashboardFinancePanel").waitFor({ state: "hidden" });
+  await page.locator("#notificationsBtn").waitFor({ state: "hidden" });
   await page.locator("#bottomFinanceNav").waitFor({ state: "hidden" });
   await page.locator("#financeNav").waitFor({ state: "hidden" });
   await page.locator('[data-top-page="finance"]').waitFor({ state: "hidden" });
