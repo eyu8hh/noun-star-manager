@@ -1109,10 +1109,11 @@ async function loadDashboardInsights(teams,players){
  $("dashboardFinancePanel").classList.toggle("hidden",!isManager);
  $("dashboardActivityPanel").classList.toggle("hidden",!isManager);
  $("dashboardAddFinance").classList.toggle("hidden",!isManager);
- const [memberships,sessions,attendance]=await Promise.all([
+ const [memberships,sessions,attendance,calendarEvents]=await Promise.all([
   selectRows("team_players","&is_current=eq.true&limit=2000"),
   selectRows("training_sessions","&order=session_date.desc&limit=40"),
-  selectRows("training_attendance","&limit=3000")
+  selectRows("training_attendance","&limit=3000"),
+  isManager?selectRows("club_events","&order=starts_at.asc&limit=500"):Promise.resolve([])
  ]);
  const categoryCounts=teams.map(team=>({name:team.name,count:memberships.filter(m=>m.team_id===team.id).length})).filter(x=>x.count>0);
  $("dashboardCategoryBreakdown").innerHTML=categoryCounts.length?categoryCounts.map(x=>'<div class="category-count"><span>'+esc(x.name)+'</span><b>'+x.count+'</b><i style="--bar:'+Math.round(x.count/Math.max(1,players.length)*100)+'%"></i></div>').join(""):'<div class="dashboard-empty">لا توجد ارتباطات لاعبين بفئات حتى الآن.</div>';
@@ -1125,10 +1126,10 @@ async function loadDashboardInsights(teams,players){
  const upcomingTraining=sessions.filter(x=>new Date(x.session_date)>=new Date()).map(x=>({title:x.title||"حصة تدريبية",starts_at:x.session_date,location:x.location,kind:"تدريب"}));const upcomingEvent=calendarEvents.filter(x=>new Date(x.starts_at)>=new Date()).map(x=>({title:x.title,starts_at:x.starts_at,location:x.location,kind:"موعد"}));const upcoming=[...upcomingTraining,...upcomingEvent].sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at))[0];
  $("dashboardNextTraining").innerHTML=upcoming?'<b>'+esc(upcoming.title)+'</b><span>'+esc(upcoming.kind+" · "+new Date(upcoming.starts_at).toLocaleString(lang==="ar"?"ar-MA":"fr-FR",{dateStyle:"medium",timeStyle:"short"}))+'</span><small>'+esc(upcoming.location||"لم يحدد المكان")+'</small>':'<div class="dashboard-empty">لا توجد مواعيد مستقبلية مسجلة.</div>';
  if(!isManager)return;
- const [transactions,dues,logs,equipmentItems,calendarEvents]=await Promise.all([
+ const [transactions,dues,logs,equipmentItems]=await Promise.all([
   selectRows("finance_transactions","&order=transaction_date.desc,created_at.desc&limit=1000"),
   selectRows("finance_dues","&order=created_at.desc&limit=1000"),
-  selectRows("club_activity_logs","&order=created_at.desc&limit=8"),selectRows("equipment_items","&limit=1000"),selectRows("club_events","&order=starts_at.asc&limit=500")
+  selectRows("club_activity_logs","&order=created_at.desc&limit=8"),selectRows("equipment_items","&limit=1000")
  ]);
  const income=transactions.filter(x=>x.kind==="income").reduce((n,x)=>n+Number(x.amount||0),0);
  const expense=transactions.filter(x=>x.kind==="expense").reduce((n,x)=>n+Number(x.amount||0),0);
