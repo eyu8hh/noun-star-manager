@@ -167,10 +167,56 @@
         </div>
       </div>
     </header>
+    <nav id="bottomNav" class="bottom-nav" aria-label="التنقل الرئيسي">
+      <button type="button" data-bottom-page="dashboard" class="active" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>الرئيسية</span></button>
+      <button type="button" data-bottom-page="players"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v8m-4-4h8"/></svg><span>اللاعبون</span></button>
+      <button type="button" data-bottom-page="training"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 12 2.5 2.5L16 9"/></svg><span>الحضور</span></button>
+      <button type="button" data-bottom-page="finance" id="bottomFinanceNav"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="15" rx="2"/><path d="M2 10h20m-5 5h2M6 5V3h12v2"/></svg><span>المالية</span></button>
+      <button type="button" id="moreNavBtn" aria-expanded="false" aria-controls="moreSheet"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg><span>المزيد</span></button>
+    </nav>
+    <div id="moreSheet" class="more-sheet hidden" aria-label="الأقسام الإضافية">
+      <div class="more-sheet-head"><b>المزيد من الأقسام</b><button type="button" id="closeMoreSheet" aria-label="إغلاق">×</button></div>
+      <div class="more-sheet-grid">
+       <button data-goto="clubs" type="button">الأندية والفرق</button><button data-goto="matches" type="button">المباريات</button><button data-goto="competitions" type="button">البطولات</button><button data-goto="statistics" type="button">الإحصائيات</button><button data-goto="health" type="button">الصحة</button><button data-goto="discipline" type="button">الانضباط</button><button data-goto="clubResources" id="moreResourcesItem" type="button">المعدات والرعاة</button><button data-goto="reports" id="moreReportsItem" type="button">التقارير</button><button data-goto="settings" type="button">الإعدادات</button>
+      </div>
+    </div>
     <section id="dashboardPage">
       <div class="welcome"><div><h2 data-i18n="welcomeTitle">Developing Future Champions</h2><p data-i18n="welcomeDesc">Elite Youth Development · Scouting &amp; Talent Identification · Guelmim | Morocco</p></div><div class="welcome-tag" data-i18n="privateSpace">مساحة المدرب الخاصة</div></div>
       <section id="managerDashboardPanel" class="card hidden" style="margin-bottom:14px"><div class="section-head" style="margin-top:0"><div><h3>مركز قيادة النادي</h3><p class="table-sub">إدارة الهيكلة والموارد البشرية ومتابعة شؤون النادي من مكان واحد.</p></div><span class="welcome-tag">صلاحيات المدير</span></div><div class="quick-grid manager-bento-grid"><button class="quick" data-goto="clubs"><span>⌂</span><b>إدارة الفرق والفئات</b></button><button class="quick" data-goto="settings" data-settings-focus="coaches"><span>♟</span><b>إدارة المدربين والحسابات</b></button><button class="quick" data-goto="settings" data-settings-focus="requests"><span>✓</span><b>طلبات اللاعبين والتصحيحات</b></button><button class="quick" data-goto="settings" data-settings-focus="public"><span>◉</span><b>النشر والتواصل مع الجمهور</b></button><button class="quick" data-goto="finance"><span>د.م</span><b>الإدارة المالية والاشتراكات</b></button><button class="quick" data-goto="clubResources"><span>⚒</span><b>المواسم والرعاة والمعدات والأطقم</b></button><button class="quick" data-goto="reports"><span>▤</span><b>التقارير والمستندات</b></button></div></section>
-      <div class="section-head"><h3 data-i18n="teamSnapshot">ملخص الفريق</h3><div style="display:flex;gap:8px;align-items:center"><select id="dashboardTeamFilter" class="search-field" style="max-width:180px"><option value="">كل الفرق</option></select><span id="syncStatus" data-i18n="connecting">جارٍ الاتصال...</span></div></div>
+      <section id="dashboardInsights" class="dashboard-insights" aria-label="ملخص الإدارة">
+ <div class="dashboard-panel dashboard-wide">
+  <div class="dashboard-panel-head"><div><h3>توزيع اللاعبين حسب الفئات</h3><p>الأعداد مأخوذة من اللاعبين والارتباطات الحالية بالفرق</p></div><button class="text-action" data-goto="players" type="button">عرض اللاعبين</button></div>
+  <div id="dashboardCategoryBreakdown" class="category-breakdown"><div class="empty-state">جارٍ تحميل التوزيع...</div></div>
+ </div>
+ <div class="dashboard-panel">
+  <div class="dashboard-panel-head"><div><h3>الحضور الأخير</h3><p id="dashboardAttendanceDate">آخر حصة مسجلة</p></div><button class="text-action" data-goto="training" type="button">سجل الحضور</button></div>
+  <div id="dashboardAttendanceSummary" class="dashboard-empty">لا توجد حصص مسجلة بعد.</div>
+ </div>
+ <div class="dashboard-panel">
+  <div class="dashboard-panel-head"><div><h3>أقرب تدريب</h3><p>الموعد القادم المسجل في التقويم التدريبي</p></div><button class="text-action" data-goto="training" type="button">التدريبات</button></div>
+  <div id="dashboardNextTraining" class="dashboard-empty">لا توجد مواعيد قادمة.</div>
+ </div>
+ <section id="dashboardFinancePanel" class="dashboard-panel dashboard-wide hidden">
+  <div class="dashboard-panel-head"><div><h3>الملخص المالي</h3><p>من سجل المعاملات والاستحقاقات الفعلية</p></div><button class="text-action" data-goto="finance" type="button">فتح المالية</button></div>
+  <div class="dashboard-finance-grid">
+   <div><span>المداخيل</span><b id="dashboardIncome">—</b></div><div><span>المصاريف</span><b id="dashboardExpense">—</b></div><div><span>صافي الرصيد</span><b id="dashboardNet">—</b></div><div><span>المستحقات المتبقية</span><b id="dashboardOutstanding">—</b></div>
+  </div>
+  <div class="dashboard-panel-subhead">آخر العمليات المالية</div><div id="dashboardRecentFinance" class="dashboard-list"></div>
+ </section>
+ <section id="dashboardActivityPanel" class="dashboard-panel dashboard-wide hidden">
+  <div class="dashboard-panel-head"><div><h3>آخر النشاطات الإدارية</h3><p>سجل النشاطات المحفوظ في قاعدة البيانات</p></div><button class="text-action" data-goto="clubResources" type="button">سجل الموارد</button></div>
+  <div id="dashboardRecentActivity" class="dashboard-list"></div>
+ </section>
+ <div class="dashboard-panel dashboard-wide">
+  <div class="dashboard-panel-head"><div><h3>اختصارات سريعة</h3><p>انتقل مباشرة إلى الإجراء المطلوب</p></div></div>
+  <div class="dashboard-shortcuts">
+   <button type="button" data-goto="players"><span class="dash-shortcut-icon">＋</span><b>إضافة لاعب</b><small>ملف لاعب جديد</small></button>
+   <button type="button" data-goto="training"><span class="dash-shortcut-icon">✓</span><b>تسجيل الحضور</b><small>إدارة حصة تدريبية</small></button>
+   <button type="button" data-goto="finance" id="dashboardAddFinance"><span class="dash-shortcut-icon">د.م</span><b>معاملة مالية</b><small>إضافة دخل أو مصروف</small></button>
+  </div>
+ </div>
+</section>
+<div class="section-head"><h3 data-i18n="teamSnapshot">ملخص الفريق</h3><div style="display:flex;gap:8px;align-items:center"><select id="dashboardTeamFilter" class="search-field" style="max-width:180px"><option value="">كل الفرق</option></select><span id="syncStatus" data-i18n="connecting">جارٍ الاتصال...</span></div></div>
       <div class="stats">
         <article class="stat"><div class="stat-top"><span data-i18n="players">اللاعبون</span><span class="stat-icon">♙</span></div><div class="stat-value" id="statPlayers">—</div><div class="stat-foot" data-i18n="registeredPlayers">إجمالي اللاعبين المسجلين</div></article>
         <article class="stat"><div class="stat-top"><span data-i18n="matchesPlayed">المباريات المنتهية</span><span class="stat-icon">⚽</span></div><div class="stat-value" id="statMatches">—</div><div class="stat-foot" data-i18n="finishedMatches">مباريات مكتملة</div></article>
