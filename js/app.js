@@ -505,11 +505,11 @@ let settingsRecord=null;
 async function loadSettings(){const isManager=currentProfile?.role==="manager",isCoach=currentProfile?.role==="coach";const rows=isManager?await selectRows("settings"):[];settingsRecord=rows[0]||null;$("settingsCoachName").value=isManager?(settingsRecord?.coach_name||""):(currentProfile?.display_name||"");$("settingsLanguage").value=isManager?(settingsRecord?.language||lang):lang;const settingsTitle=document.querySelector("#settingsModule h3[data-i18n='coachSettings']");if(settingsTitle)settingsTitle.textContent=isManager?"بيانات مدير النادي ومدرب الفريق الأول":"بيانات المدرب";const nameLabel=document.querySelector("#settingsForm label[data-i18n='coachName']");if(nameLabel)nameLabel.textContent=isManager?"اسم المدير / مدرب الفريق الأول":"اسم المدرب";$("coachManagementCard").classList.toggle("hidden",!isManager);$("managerCoachAssignmentCard").classList.toggle("hidden",!isManager);$("managerCoachManagementCard").classList.toggle("hidden",!isManager);$("managerDetachedCoachCard").classList.toggle("hidden",!isManager);$("coachWorkspaceCard").classList.toggle("hidden",!isCoach);$("backupCard").classList.toggle("hidden",!isManager);if(isManager){$("playerRequestsManagerCard").classList.remove("hidden");await loadPlayerRequestsForManager();await loadManagerCoachAssignments()}else $("playerRequestsManagerCard").classList.add("hidden");if(isCoach){const teams=await selectRows("teams","&order=name.asc");$("coachTeamChoice").innerHTML=teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+(t.age_category?" · "+esc(t.age_category):"")+"</option>").join("");$("coachAssignmentForm").classList.add("hidden");await loadCoachWorkspace(teams)}}
 async function loadCoachWorkspace(teams){const me=await selectRows("profiles","&id=eq."+session.user.id);$("myCoachCode").value=me[0]?.coach_code||"";const rows=await selectRows("team_coaches","&coach_user_id=eq."+session.user.id);$("coachAssignmentsList").innerHTML=rows.length?rows.map(x=>{const t=teams.find(z=>z.id===x.team_id);return '<div class="table-row"><span>'+esc(t?.name||"—")+' · '+esc(tr(x.assignment_type==="assistant"?"assistantCoach":"headCoach"))+'</span></div>'}).join(""):esc(tr("noCoachAssignments"))}
 
-async function manageCoaches(action,coachId=null){
+async function manageCoaches(action,coachId=null,extra={}){
  const response=await fetch(CONFIG.supabaseUrl+"/functions/v1/nsm-manage-coach",{
   method:"POST",
   headers:{apikey:CONFIG.publishableKey,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"},
-  body:JSON.stringify({action,coach_id:coachId})
+  body:JSON.stringify({action,coach_id:coachId,...extra})
  });
  const data=await response.json().catch(()=>({}));
  if(!response.ok)throw Error(data.error||"تعذر تنفيذ إجراء المدرب.");
@@ -538,7 +538,7 @@ async function loadManagerCoachAssignments(){
   const action=c.is_protected?'<span class="table-sub">محمي من الإزالة والتجميد</span>':(c.is_frozen
    ?'<button type="button" class="secondary-btn" data-coach-action="unfreeze" data-coach-id="'+esc(c.id)+'">إلغاء التجميد</button>'
    :'<button type="button" class="secondary-btn" data-coach-action="freeze" data-coach-id="'+esc(c.id)+'">تجميد</button>');
-  return '<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||c.coach_code||"مدرب")+'</b><span>'+esc(c.coach_code||"—")+'</span>'+status+'</div><div class="row-actions">'+action+(c.is_protected?'':'<button type="button" class="danger" data-coach-action="remove" data-coach-id="'+esc(c.id)+'">حذف من النادي</button>')+'</div></div>';
+  return '<div class="coach-manage-row"><div class="coach-manage-info"><b>'+esc(c.display_name||c.coach_code||"مدرب")+'</b><span>'+esc(c.coach_code||"—")+'</span>'+status+(c.is_protected?'<label class="coach-password-reset">تعيين كلمة مرور جديدة<input type="password" minlength="12" maxlength="128" autocomplete="new-password" data-coach-password="'+esc(c.id)+'" placeholder="12 حرفاً على الأقل"><button type="button" class="secondary-btn" data-coach-action="reset_password" data-coach-id="'+esc(c.id)+'">تعيين كلمة المرور</button></label>':'')+'</div><div class="row-actions">'+action+(c.is_protected?'':'<button type="button" class="danger" data-coach-action="remove" data-coach-id="'+esc(c.id)+'">حذف من النادي</button>')+'</div></div>';
  }).join(""):'<div class="empty-state">لا يوجد مدربون مسجلون حالياً.</div>';
 
  $("managerCoachAssignmentsList").innerHTML=assignments.length?assignments.map(a=>{
@@ -552,6 +552,7 @@ $("managerCoachAssignmentForm").addEventListener("submit",async e=>{e.preventDef
 $("managerCoachManagementList").addEventListener("click",async e=>{
  const b=e.target.closest("[data-coach-action]");if(!b||currentProfile?.role!=="manager")return;
  const action=b.dataset.coachAction,coachId=b.dataset.coachId;
+ if(action==="reset_password"){const field=document.querySelector('[data-coach-password="'+coachId+'"]');const password=field?.value||"";if(password.length<12){toast("أدخل كلمة مرور من 12 حرفاً على الأقل.","error");field?.focus();return;}if(!confirm("سيتم استبدال كلمة مرور حساب c-qwerty الحالية بالكلمة الجديدة وإلغاء أي تجميد. هل تريد المتابعة؟"))return;b.disabled=true;try{await manageCoaches("reset_password",coachId,{password});field.value="";toast("تم تحديث كلمة مرور c-qwerty. احتفظ بها وأرسلها للمدرب بشكل آمن.","success");}catch(err){toast(err.message||"تعذر تحديث كلمة المرور","error");b.disabled=false;}return;}
  const prompts={
   restore:"سيتم إعادة تفعيل هذا الحساب وربطه بالنادي. ستبقى كلمة المرور كما هي، وسيتغير معرف m- القديم إلى c- لتفادي التعارض مع معرف المدير.",
   "remove-all":"سيتم إيقاف جميع حسابات المدربين الحالية وفصلها عن النادي، مع الاحتفاظ بسجلاتهم التاريخية. لن يتأثر حساب المدير أو اللاعبون. هل تريد المتابعة؟",
