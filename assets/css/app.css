@@ -227,3 +227,5 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
 .notification-badge.hidden{display:none}
 .notification-list{display:grid;gap:10px}.notification-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}.notification-item.is-unread{border-inline-start:3px solid #2947c7}.notification-copy{min-width:0}.notification-copy>b{font-size:13px}.notification-copy>p{margin:5px 0;color:var(--muted);font-size:11px;line-height:1.7}.notification-copy>small{color:var(--muted);font-size:10px}.notification-actions{display:flex;gap:7px;flex-wrap:wrap}.notification-actions button{border:1px solid var(--line);border-radius:9px;background:#ffffff08;color:var(--text);padding:7px 10px;font:inherit;font-size:10px;white-space:nowrap}
 @media(max-width:640px){.notification-item{align-items:flex-start;flex-direction:column}.notification-actions{width:100%}.notification-actions button{flex:1}}
+
+#reportExcelBtn{white-space:nowrap}
