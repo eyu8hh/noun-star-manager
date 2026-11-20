@@ -230,7 +230,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v41'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v42'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -300,5 +300,14 @@ assert.ok(html.includes('id="reportExcelBtn"'), "Reports center must offer Excel
 assert.ok(script.includes('function buildBackupSnapshot') && script.includes('"club_events","club_notifications"') && script.includes('"team_coaches"'), "Full backup must include calendar, notifications, and coach assignments");
 assert.ok(script.includes('downloadBackupSnapshot(safety,"pre-restore")') && script.includes('data.user_id!==session.user.id'), "Restore must validate the owning club and download a safety backup first");
 assert.ok(script.includes('id==="reportExcelBtn"') || script.includes('$("reportExcelBtn").addEventListener'), "Excel export must be wired");
+
+
+assert.ok(html.includes('id="financeSearch"') && html.includes('id="financeTypeFilter"') && html.includes('id="financePeriodFilter"') && html.includes('id="financeClearFilters"'), "Finance transactions must have search, type, period, and clear filters");
+assert.ok(script.includes('function renderFinanceTransactions') && script.includes('function renderFinanceTrend') && script.includes('data-finance-edit-transaction') && script.includes('writeClubLog(wasEditing?'), "Finance ledger must support filtering, trend charts, editing, and audit logging");
+assert.ok(css.includes(".finance-filter-bar") && css.includes(".finance-trend-chart"), "Finance filters and trend chart must be responsive");
+
+
+assert.ok(script.includes('financeIncomeAll') && script.includes('financeExpenseAll') && script.includes('financeNetAll'), "Finance overview must show lifetime totals and net balance");
+assert.ok(script.includes('writeClubLog("إضافة استحقاق مالي"') && script.includes('writeClubLog("قبض دفعة اشتراك"'), "Finance dues and payment operations must be included in the audit log");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");

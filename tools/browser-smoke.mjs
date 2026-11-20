@@ -201,7 +201,17 @@ try {
   await page.locator("#matchesModule:not(.hidden)").waitFor();
   await page.locator("#backBtn").click();
   await page.locator("#dashboardPage:not(.hidden)").waitFor();
-  await page.locator('[data-top-page="finance"]:not(.hidden)').waitFor();
+  await page.locator('[data-top-page="finance"]:not(.hidden)').click();
+  await page.locator("#financeModule:not(.hidden)").waitFor();
+  await page.locator("#financeSearch").waitFor();
+  await page.locator("#financeTypeFilter").selectOption("expense");
+  await page.locator("#financePeriodFilter").selectOption("custom");
+  await page.locator("#financeClearFilters").click();
+  assert.equal(await page.locator("#financePeriodFilter").inputValue(), "all");
+  await page.locator("#financeSortOrder").selectOption("amount");
+  await page.locator("#financeTxnCancelEdit").waitFor({ state: "attached" });
+  await page.locator('[data-bottom-page="dashboard"]').click();
+  await page.locator("#dashboardPage:not(.hidden)").waitFor();
   const topbarWidth = await page.locator(".topbar").evaluate(el => ({scroll:el.scrollWidth,client:el.clientWidth}));
   assert.ok(topbarWidth.scroll <= topbarWidth.client + 1, "Topbar must not create horizontal overflow on mobile: " + JSON.stringify(topbarWidth));
   const managerGridColumns = await page.locator(".manager-bento-grid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
