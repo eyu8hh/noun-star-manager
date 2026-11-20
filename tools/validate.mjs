@@ -230,7 +230,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v47'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v48'), "PWA cache must refresh after extracting the application script");
 assert.ok(serviceWorker.includes('self.addEventListener("push"') && serviceWorker.includes('self.addEventListener("notificationclick"') && serviceWorker.includes("requested.origin===self.location.origin"), "PWA push notifications must display safely and keep click navigation on the app origin");
 assert.ok(html.includes('id="enablePushBtn"') && html.includes('id="testPushBtn"') && html.includes('id="disablePushBtn"'), "Notifications center must expose phone push controls");
 assert.ok(script.includes('pushRequest("public-key")') && script.includes('pushManager.subscribe') && script.includes('pushRequest("subscribe"'), "Manager app must securely register a Web Push subscription");
@@ -340,3 +340,6 @@ assert.ok(script.includes('action==="add-player"') && script.includes('action===
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
 
 assert.ok(script.includes("is_protected") && script.includes("حساب محفوظ"), "Protected coach account must remain visible and marked as preserved");
+
+assert.ok(script.includes('candidateEmails.push("coach+"+code+"@login.nounstar.club","coach+"+code.slice(2)+"@login.nounstar.club")'), "Coach login must try the exact stored c-prefixed email first");
+assert.ok(css.includes(".bottom-nav #moreNavBtn svg *{opacity:1!important") && css.includes(".bottom-nav #moreNavBtn span{opacity:1!important"), "More control icon and label must remain fully opaque on touch");
