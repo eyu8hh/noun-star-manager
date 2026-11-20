@@ -229,7 +229,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v37'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v39'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -271,5 +271,18 @@ assert.ok(script.includes("async function loadDashboardInsights") && script.incl
 assert.ok(html.includes('id="bottomNav"') && html.includes('id="moreSheet"') && html.includes('data-bottom-page="training"'), "Mobile bottom navigation and More sheet must be present");
 assert.ok(script.includes('id==="moreNavBtn"') && script.includes('document.querySelectorAll("[data-bottom-page]")'), "Bottom navigation and More sheet controls must be wired");
 assert.ok(css.includes(".dashboard-insights") && css.includes(".bottom-nav") && css.includes(".more-sheet"), "Dashboard and mobile navigation must have responsive styles");
+
+
+assert.ok(html.includes('id="playerFilterAvailability"') && html.includes('id="playerFilterPayment"') && html.includes('id="playerSortOrder"') && html.includes('id="clearPlayerFilters"'), "Player list must include administrative/payment filters, sorting, and clear controls");
+assert.ok(script.includes('selectRows("finance_dues","&limit=2000")') && script.includes('const paymentState=id=>') && script.includes('$("playerFilterPayment").classList.toggle("hidden",!canManage)'), "Payment state must be derived from real dues and restricted to managers");
+assert.ok(script.includes('sort==="date"') && script.includes('sort==="shirt"') && script.includes('clearPlayerFilters'), "Player sorting and filter reset must be wired");
+assert.ok(css.includes(".player-filter-bar") && css.includes(".payment-state"), "Player filters must have responsive visual states");
+
+
+assert.ok(html.includes('id="attendanceCounters"') && html.includes('data-attendance-bulk="present"') && html.includes('data-attendance-bulk="absent"'), "Attendance editor must include bulk actions and live status counters");
+assert.ok(script.includes('value="late"') && script.includes('function updateAttendanceCounters') && script.includes('attendance_status:el.value'), "Attendance must support the late state and persist selected states");
+assert.ok(script.includes('late:"متأخر"') && script.includes('late:"En retard"') && script.includes('إجمالي اللاعبين: "+rows.length'), "Attendance labels and WhatsApp report must include late status and total roster");
+assert.ok(css.includes(".attendance-bulk-actions") && css.includes(".attendance-counters"), "Attendance bulk actions and counters must be styled");
+assert.ok(readFileSync(new URL("../supabase/migrations/20261120_training_attendance_late_status.sql", import.meta.url), "utf8").includes("'late'::text"), "Attendance late status migration must be committed");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
