@@ -44,7 +44,7 @@ Deno.serve(async (req: Request) => {
       const { data, error: authError } = await admin.auth.admin.getUserById(coach.id);
       if (authError) throw authError;
       const until = data.user?.banned_until ?? null;
-      return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()) };
+      return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()), is_protected: String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty" };
     }));
     const { data: detached, error: detachedError } = await admin.from("profiles")
       .select("id,display_name,coach_code,created_at").eq("role", "coach").is("club_owner_id", null)
@@ -93,7 +93,7 @@ Deno.serve(async (req: Request) => {
     const { data: coaches, error: listError } = await admin.from("profiles")
       .select("id").eq("role", "coach").eq("club_owner_id", managerId);
     if (listError) return json({ error: "Could not load club coaches" }, 500);
-    const ids = (coaches ?? []).map((coach) => coach.id);
+    const ids = (coaches ?? []).filter((coach) => String(coach.coach_code ?? "").trim().toLowerCase() !== "c-qwerty").map((coach) => coach.id);
     if (!ids.length) return json({ success: true, action, removed_count: 0 });
     const banResults = await Promise.all(ids.map((id) =>
       admin.auth.admin.updateUserById(id, { ban_duration: "876000h" })
@@ -107,7 +107,7 @@ Deno.serve(async (req: Request) => {
       .update({ club_owner_id: null })
       .in("id", ids).eq("role", "coach").eq("club_owner_id", managerId);
     if (profileError) return json({ error: "Coach sign-in was disabled and assignments detached, but club removal did not finish. Retry the reset." }, 500);
-    return json({ success: true, action, removed_count: ids.length, preserved_accounts: true });
+    return json({ success: true, action, removed_count: ids.length, preserved_accounts: true, protected_accounts: (coaches ?? []).length - ids.length });
   }
 
   const coachId = String(input.coach_id ?? "");
@@ -115,9 +115,13 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Invalid coach account" }, 400);
   }
   const { data: coach, error: coachError } = await admin.from("profiles")
-    .select("id,role,club_owner_id").eq("id", coachId).maybeSingle();
+    .select("id,role,club_owner_id,coach_code").eq("id", coachId).maybeSingle();
   if (coachError || !coach || coach.role !== "coach" || coach.club_owner_id !== managerId || coachId === managerId) {
     return json({ error: "Coach account not found in this club" }, 404);
+  }
+
+  if (String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty" && ["freeze", "remove"].includes(action)) {
+    return json({ error: "This coach account is protected by the club manager and cannot be frozen or removed." }, 403);
   }
 
   if (action === "freeze" || action === "unfreeze") {
