@@ -46,9 +46,48 @@ Deno.serve(async (req: Request) => {
       const until = data.user?.banned_until ?? null;
       return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()) };
     }));
-    return json({ coaches: results });
+    const { data: detached, error: detachedError } = await admin.from("profiles")
+      .select("id,display_name,coach_code,created_at").eq("role", "coach").is("club_owner_id", null)
+      .order("created_at", { ascending: false });
+    if (detachedError) return json({ error: "Could not load detached coach accounts" }, 500);
+    const detachedResults = await Promise.all((detached ?? []).map(async (coach) => {
+      const { data, error: authError } = await admin.auth.admin.getUserById(coach.id);
+      if (authError) throw authError;
+      const until = data.user?.banned_until ?? null;
+      return { ...coach, is_frozen: Boolean(until && Date.parse(until) > Date.now()) };
+    }));
+    return json({ coaches: results, detached_coaches: detachedResults });
   }
 
+
+  if (action === "restore") {
+    const detachedId = String(input.coach_id ?? "");
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(detachedId)) {
+      return json({ error: "Invalid coach account" }, 400);
+    }
+    const { data: detachedCoach, error: detachedLookupError } = await admin.from("profiles")
+      .select("id,role,coach_code,club_owner_id").eq("id", detachedId).maybeSingle();
+    if (detachedLookupError || !detachedCoach || detachedCoach.role !== "coach" || detachedCoach.club_owner_id !== null) {
+      return json({ error: "Detached coach account not found" }, 404);
+    }
+    const oldCode = String(detachedCoach.coach_code ?? "").trim().toLowerCase();
+    const suffix = oldCode.replace(/^[cm]-/, "");
+    if (!/^[a-z0-9_-]{4,20}$/.test(suffix)) return json({ error: "Coach code needs manager review before restoration" }, 409);
+    const restoredCode = "c-" + suffix;
+    const restoredEmail = "coach+" + suffix + "@login.nounstar.club";
+    const { error: authRestoreError } = await admin.auth.admin.updateUserById(detachedId, {
+      email: restoredEmail, email_confirm: true, ban_duration: "none",
+    });
+    if (authRestoreError) return json({ error: authRestoreError.message || "Could not reactivate coach sign-in" }, 500);
+    const { error: profileRestoreError } = await admin.from("profiles").update({
+      club_owner_id: managerId, coach_code: restoredCode,
+    }).eq("id", detachedId).eq("role", "coach").is("club_owner_id", null);
+    if (profileRestoreError) {
+      await admin.auth.admin.updateUserById(detachedId, { ban_duration: "876000h" });
+      return json({ error: "Sign-in was re-enabled but club attachment failed; the account was frozen again. Retry restoration." }, 500);
+    }
+    return json({ success: true, action, coach_code: restoredCode });
+  }
 
   if (action === "remove_all") {
     const { data: coaches, error: listError } = await admin.from("profiles")
