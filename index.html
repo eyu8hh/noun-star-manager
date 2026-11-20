@@ -348,7 +348,7 @@
 
   
   <div id="calendarModule" class="hidden">
- <div class="module-toolbar"><div><h3>التقويم الإداري</h3><p class="table-sub">المواعيد الإدارية والتدريبات والالتزامات القادمة.</p></div><span class="welcome-tag">مدير النادي</span></div>
+ <div class="module-toolbar"><div><h3>تقويم النادي</h3><p class="table-sub">عرض موحد للمباريات والتدريبات والمواعيد الإدارية، مع الانتقال بين الأسابيع والأشهر.</p></div><span class="welcome-tag">مدير النادي</span></div>
  <div class="card" style="margin-bottom:14px"><h3 id="calendarFormTitle">إضافة موعد</h3><form id="calendarEventForm"><div class="form-grid">
   <div class="form-field"><label for="calendarEventTitle">عنوان الموعد</label><input id="calendarEventTitle" required maxlength="160"></div>
   <div class="form-field"><label for="calendarEventType">نوع الموعد</label><select id="calendarEventType"><option value="training">تدريب</option><option value="meeting">اجتماع</option><option value="match">مباراة / موعد رياضي</option><option value="financial_due">استحقاق مالي</option><option value="admin">إداري</option><option value="other">آخر</option></select></div>
@@ -358,8 +358,16 @@
   <div class="form-field"><label for="calendarEventLocation">المكان</label><input id="calendarEventLocation" maxlength="160"></div>
   <div class="form-field full"><label for="calendarEventNotes">ملاحظات</label><textarea id="calendarEventNotes" rows="2" maxlength="1200"></textarea></div>
  </div><div class="editor-footer"><button class="primary-btn" id="calendarEventSave" type="submit">حفظ الموعد</button><button class="secondary-btn" id="calendarEventCancel" type="button">إلغاء التعديل</button></div><p id="calendarEventMessage" class="table-sub" aria-live="polite"></p></form></div>
- <div class="module-toolbar"><div><h3>جدول المواعيد</h3><p class="table-sub">مرتبة حسب التاريخ، مع إمكانية التعديل والحذف.</p></div><select id="calendarTypeFilter" class="search-field"><option value="">كل الأنواع</option><option value="training">تدريب</option><option value="meeting">اجتماع</option><option value="match">مباراة</option><option value="financial_due">استحقاق مالي</option><option value="admin">إداري</option><option value="other">آخر</option></select></div>
- <div id="calendarEventsList" class="data-table-wrap"></div>
+ <div class="card calendar-card">
+  <div class="calendar-toolbar">
+   <div class="calendar-nav-controls"><button class="secondary-btn" id="calendarPrev" type="button" aria-label="الفترة السابقة">‹</button><button class="secondary-btn" id="calendarToday" type="button">اليوم</button><button class="secondary-btn" id="calendarNext" type="button" aria-label="الفترة التالية">›</button><h3 id="calendarPeriodLabel" aria-live="polite"></h3></div>
+   <div class="calendar-view-controls" role="group" aria-label="طريقة عرض التقويم"><button class="secondary-btn active" id="calendarMonthBtn" type="button" aria-pressed="true">شهري</button><button class="secondary-btn" id="calendarWeekBtn" type="button" aria-pressed="false">أسبوعي</button></div>
+  </div>
+  <div class="calendar-filter-bar"><select id="calendarTypeFilter" class="search-field" aria-label="تصفية حسب نوع الموعد"><option value="">كل الأنواع</option><option value="training">تدريب</option><option value="meeting">اجتماع</option><option value="match">مباراة</option><option value="financial_due">استحقاق مالي</option><option value="admin">إداري</option><option value="other">آخر</option></select><select id="calendarTeamFilter" class="search-field" aria-label="تصفية حسب الفريق"><option value="">كل الفرق</option></select></div>
+  <div class="calendar-scroll"><div id="calendarWeekdays" class="calendar-weekdays" aria-hidden="true"></div><div id="calendarGrid" class="calendar-grid" role="grid" aria-label="تقويم النادي"></div></div>
+ </div>
+ <div class="module-toolbar" style="margin-top:18px"><div><h3>الأجندة</h3><p class="table-sub">كل المواعيد المسجلة، مع فتح المباريات والتدريبات أو تعديل المواعيد الإدارية.</p></div></div>
+ <div id="calendarEventsList" class="calendar-agenda"></div>
 </div>
 <div id="notificationsModule" class="hidden">
  <div class="module-toolbar"><div><h3>مركز الإشعارات</h3><p class="table-sub">تنبيهات مبنية على الاستحقاقات والمخزون والمواعيد الفعلية.</p></div><button class="secondary-btn" id="markAllNotificationsRead" type="button">تحديد الكل كمقروء</button></div>
