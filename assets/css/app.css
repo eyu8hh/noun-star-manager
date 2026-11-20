@@ -209,3 +209,11 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
  .more-sheet.hidden{display:none}.more-sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:13px}.more-sheet-head button{border:0;background:transparent;color:var(--text);font-size:23px}.more-sheet-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.more-sheet-grid button{min-height:42px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#ffffff06;color:var(--text);font:inherit;font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.dashboard-panel,.bottom-nav button{transition:none}}
+
+/* Player filters and payment state */
+.player-filter-bar{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 14px;align-items:center}
+.player-filter-bar .search-field{min-width:145px;flex:1 1 145px}
+.player-filter-bar button{min-height:42px}
+.payment-state{display:inline-flex;padding:5px 9px;border-radius:99px;font-size:10px;font-weight:800;white-space:nowrap}
+.payment-paid{background:rgba(54,197,139,.14);color:#36c58b}.payment-partial{background:rgba(242,189,76,.16);color:#dcae48}.payment-unpaid{background:rgba(239,102,115,.14);color:#ef6673}.payment-none{background:#ffffff0c;color:var(--muted)}
+@media(max-width:640px){.player-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.player-filter-bar .search-field{width:100%;min-width:0}.player-filter-bar #clearPlayerFilters{grid-column:1/-1}}
