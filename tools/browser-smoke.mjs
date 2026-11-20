@@ -210,6 +210,13 @@ try {
   assert.equal(await page.locator("#financePeriodFilter").inputValue(), "all");
   await page.locator("#financeSortOrder").selectOption("amount");
   await page.locator("#financeTxnCancelEdit").waitFor({ state: "attached" });
+  await page.locator("#moreNavBtn").click();
+  await page.locator('#moreSheet [data-goto="clubResources"]').click();
+  await page.locator("#clubResourcesModule:not(.hidden)").waitFor();
+  await page.locator("#sponsorSearch").fill("test");
+  await page.locator("#equipmentSearch").fill("ball");
+  await page.locator("#equipmentStockFilter").selectOption("low");
+
   await page.locator('[data-bottom-page="dashboard"]').click();
   await page.locator("#dashboardPage:not(.hidden)").waitFor();
   const topbarWidth = await page.locator(".topbar").evaluate(el => ({scroll:el.scrollWidth,client:el.clientWidth}));

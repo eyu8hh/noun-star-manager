@@ -230,7 +230,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v42'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v43'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -309,5 +309,16 @@ assert.ok(css.includes(".finance-filter-bar") && css.includes(".finance-trend-ch
 
 assert.ok(script.includes('financeIncomeAll') && script.includes('financeExpenseAll') && script.includes('financeNetAll'), "Finance overview must show lifetime totals and net balance");
 assert.ok(script.includes('writeClubLog("إضافة استحقاق مالي"') && script.includes('writeClubLog("قبض دفعة اشتراك"'), "Finance dues and payment operations must be included in the audit log");
+
+
+assert.ok(html.includes('id="sponsorSearch"') && html.includes('id="sponsorStatusFilter"') && html.includes('id="clubSponsorLogo"'), "Sponsor management must support search, status, and logo URL");
+assert.ok(html.includes('id="equipmentSearch"') && html.includes('id="equipmentCategoryFilter"') && html.includes('id="equipmentStockFilter"'), "Equipment inventory must support search, category, and stock-level filters");
+assert.ok(script.includes('function renderSponsorResourceTable') && script.includes('function renderEquipmentResourceTable') && script.includes('logo_url:$("clubSponsorLogo").value.trim()'), "Sponsor and inventory filters must render from real Supabase rows");
+assert.ok(css.includes(".resource-filter-bar") && css.includes(".low-stock-label"), "Sponsor and inventory filters must have responsive styles");
+
+
+assert.ok(script.includes('function renderSponsorResourceTable') && script.includes('function renderEquipmentResourceTable'), "Sponsor and equipment list filters must use shared render functions");
+assert.ok(script.includes('source_key:"agreement-expiry:"') && script.includes('category:"admin"'), "Sponsor agreements nearing expiry must generate idempotent manager alerts");
+assert.ok(script.includes('logo_url:$("clubSponsorLogo").value.trim()'), "Sponsor logo URL must be stored in the existing sponsor field");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
