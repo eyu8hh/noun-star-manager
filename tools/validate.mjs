@@ -326,4 +326,8 @@ assert.ok(html.includes('id="playerKitPanel"') && html.includes('id="playerKitTa
 assert.ok(script.includes('selectRows("kit_assignments","&player_id=eq."+id+"&order=issued_at.desc")'), "Player kit history must load assignments for the selected player");
 assert.ok(script.includes('class="player-admin-notes"') && css.includes(".player-admin-notes"), "Player profile must show administrative notes safely");
 
+
+assert.ok(html.includes('data-dashboard-action="add-player"') && html.includes('data-dashboard-action="attendance"') && html.includes('data-dashboard-action="finance"'), "Dashboard quick actions must identify their actual tasks");
+assert.ok(script.includes('action==="add-player"') && script.includes('action==="attendance"') && script.includes('action==="finance"'), "Dashboard quick actions must open the corresponding create or attendance workflow");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
