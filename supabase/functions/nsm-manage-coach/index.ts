@@ -65,7 +65,7 @@ Deno.serve(async (req: Request) => {
       .delete().in("coach_user_id", ids).eq("owner_id", managerId);
     if (assignmentError) return json({ error: "Coach sign-in was disabled, but assignments could not all be detached. Retry the reset." }, 500);
     const { error: profileError } = await admin.from("profiles")
-      .update({ club_owner_id: null, coach_code: null })
+      .update({ club_owner_id: null })
       .in("id", ids).eq("role", "coach").eq("club_owner_id", managerId);
     if (profileError) return json({ error: "Coach sign-in was disabled and assignments detached, but club removal did not finish. Retry the reset." }, 500);
     return json({ success: true, action, removed_count: ids.length, preserved_accounts: true });
