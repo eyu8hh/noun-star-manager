@@ -544,10 +544,10 @@ function downloadBackupSnapshot(data,suffix=""){
 $("exportBackup").addEventListener("click",async()=>{const btn=$("exportBackup");btn.disabled=true;$("backupMessage").textContent="جارٍ تجهيز النسخة...";try{const data=await buildBackupSnapshot();downloadBackupSnapshot(data);$("backupMessage").textContent=tr("backupDone")+" · "+backupTables.length+" جدولاً."}catch(err){$("backupMessage").textContent="تعذر إنشاء النسخة كاملة: "+(err.message||tr("loadError"))}finally{btn.disabled=false}});
 $("chooseRestore").addEventListener("click",()=>$("restoreFile").click());
 $("restoreFile").addEventListener("change",async e=>{
- const file=e.target.files?.[0];if(!file)return;let restoring=false;
+ const file=e.target.files?.[0];if(!file)return;let restoring=false,validated=false;
  try{
   const data=JSON.parse(await file.text());
-  if(data.app!=="NOUN STAR MANAGER"||data.version!==1||data.user_id!==session.user.id||!data.tables||typeof data.tables!=="object"||!backupTables.every(t=>data.tables[t]===undefined||Array.isArray(data.tables[t])))throw Error("INVALID");
+  if(data.app!=="NOUN STAR MANAGER"||data.version!==1||data.user_id!==session.user.id||!data.tables||typeof data.tables!=="object"||!backupTables.every(t=>data.tables[t]===undefined||Array.isArray(data.tables[t])))throw Error("INVALID");validated=true;
   if(!confirm("سيتم دمج سجلات النسخة مع سجلات النادي الحالية. لن تُحذف السجلات الحالية. سيتم تنزيل نسخة أمان من الحالة الحالية قبل الاستعادة. هل تريد المتابعة؟"))return;
   const safety=await buildBackupSnapshot();downloadBackupSnapshot(safety,"pre-restore");restoring=true;$("backupMessage").textContent="تم تنزيل نسخة الأمان. جارٍ استعادة البيانات...";
   const movementItems=new Set((data.tables.equipment_movements||[]).map(m=>m.item_id));
@@ -559,7 +559,7 @@ $("restoreFile").addEventListener("change",async e=>{
    await api("/rest/v1/"+table+"?on_conflict="+conflict,{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},body:JSON.stringify(clean)});
   }
   $("backupMessage").textContent="تمت الاستعادة بنجاح. نسخة الأمان السابقة محفوظة على جهازك.";await loadDashboard();
- }catch(err){$("backupMessage").textContent=restoring?"توقفت الاستعادة قبل اكتمالها. احتفظ بنسخة الأمان التي تم تنزيلها للرجوع إليها.":"ملف النسخة غير صالح أو لا يخص حساب النادي الحالي."}
+ }catch(err){$("backupMessage").textContent=restoring?"توقفت الاستعادة قبل اكتمالها. احتفظ بنسخة الأمان التي تم تنزيلها للرجوع إليها.":validated?"تعذر إنشاء نسخة الأمان؛ لم يتم تنفيذ الاستعادة.":"ملف النسخة غير صالح أو لا يخص حساب النادي الحالي."}
  finally{$("restoreFile").value=""}
 });
 
