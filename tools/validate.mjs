@@ -229,7 +229,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v36'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v37'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -264,5 +264,12 @@ assert.ok(script.includes('candidateEmails.push("coach+"+code.slice(2)+"@login.n
 assert.ok(html.includes('id="managerDetachedCoachCard"') && script.includes('manageCoaches("restore"'), "Manager must be able to restore detached coach accounts");
 assert.ok(coachManagementFunction.includes('action === "restore"') && coachManagementFunction.includes('ban_duration: "none"') && coachManagementFunction.includes('club_owner_id: managerId'), "Coach restoration must reactivate sign-in and reattach the profile to the verified manager");
 assert.ok(coachCreationFunction.includes('coachCode.replace(/^c-/, "")') && coachCreationFunction.includes('coachCode.startsWith("m-")'), "New coach accounts must use a login-compatible email and reserve the manager prefix");
+
+
+assert.ok(html.includes('id="dashboardInsights"') && html.includes('id="dashboardCategoryBreakdown"') && html.includes('id="dashboardAttendanceSummary"'), "Dashboard must include live category and attendance insight panels");
+assert.ok(script.includes("async function loadDashboardInsights") && script.includes('selectRows("training_attendance"') && script.includes('selectRows("finance_transactions"') && script.includes('selectRows("club_activity_logs"'), "Dashboard insight cards must be populated from existing Supabase records");
+assert.ok(html.includes('id="bottomNav"') && html.includes('id="moreSheet"') && html.includes('data-bottom-page="training"'), "Mobile bottom navigation and More sheet must be present");
+assert.ok(script.includes('id==="moreNavBtn"') && script.includes('document.querySelectorAll("[data-bottom-page]")'), "Bottom navigation and More sheet controls must be wired");
+assert.ok(css.includes(".dashboard-insights") && css.includes(".bottom-nav") && css.includes(".more-sheet"), "Dashboard and mobile navigation must have responsive styles");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
