@@ -230,7 +230,7 @@ assert.ok(html.includes('id="disciplineSettingsCard"') && script.includes("canMa
 assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('showSkeleton("trainingTable"') && script.includes('showSkeleton("injuriesTable"'), "Core sports modules must render skeletons while loading");
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
-assert.ok(serviceWorker.includes('nsm-shell-v43'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('nsm-shell-v44'), "PWA cache must refresh after extracting the application script");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
@@ -320,5 +320,14 @@ assert.ok(css.includes(".resource-filter-bar") && css.includes(".low-stock-label
 assert.ok(script.includes('function renderSponsorResourceTable') && script.includes('function renderEquipmentResourceTable'), "Sponsor and equipment list filters must use shared render functions");
 assert.ok(script.includes('source_key:"agreement-expiry:"') && script.includes('category:"admin"'), "Sponsor agreements nearing expiry must generate idempotent manager alerts");
 assert.ok(script.includes('logo_url:$("clubSponsorLogo").value.trim()'), "Sponsor logo URL must be stored in the existing sponsor field");
+
+
+assert.ok(html.includes('id="playerKitPanel"') && html.includes('id="playerKitTable"'), "Player profile must include the kit and equipment assignment history");
+assert.ok(script.includes('selectRows("kit_assignments","&player_id=eq."+id+"&order=issued_at.desc")'), "Player kit history must load assignments for the selected player");
+assert.ok(script.includes('class="player-admin-notes"') && css.includes(".player-admin-notes"), "Player profile must show administrative notes safely");
+
+
+assert.ok(html.includes('data-dashboard-action="add-player"') && html.includes('data-dashboard-action="attendance"') && html.includes('data-dashboard-action="finance"'), "Dashboard quick actions must identify their actual tasks");
+assert.ok(script.includes('action==="add-player"') && script.includes('action==="attendance"') && script.includes('action==="finance"'), "Dashboard quick actions must open the corresponding create or attendance workflow");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");

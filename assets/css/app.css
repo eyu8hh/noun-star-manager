@@ -235,3 +235,5 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
 
 .resource-filter-bar{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}.resource-filter-bar .search-field{min-width:150px;flex:1 1 150px}.low-stock-label{color:#ef6673;font-weight:800}
 @media(max-width:640px){.resource-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.resource-filter-bar .search-field{min-width:0;width:100%}}
+
+.player-admin-notes{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#ffffff06}.player-admin-notes>b{font-size:11px}.player-admin-notes>p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.8;white-space:pre-wrap}
