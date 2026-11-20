@@ -154,7 +154,7 @@ try {
   }
   async function staffLogout() {
     await page.waitForFunction(() => { const sidebar = document.getElementById("sidebar"); if (!sidebar || sidebar.classList.contains("open")) return false; const rect = sidebar.getBoundingClientRect(); return rect.right <= 0 || rect.left >= window.innerWidth; }, null, { timeout: 2000 });
-    const logoutGeometry = await page.locator("#logoutBtn").evaluate((el) => { const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return { rect: { x: r.x, y: r.y, width: r.width, height: r.height }, hitId: hit?.id || "", hitClass: typeof hit?.className === "string" ? hit.className : "", dir: document.documentElement.dir }; });
+    const logoutGeometry = await page.locator("#logoutBtn").evaluate((el) => { const r = el.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); const hitButton = hit?.closest("button"); return { rect: { x: r.x, y: r.y, width: r.width, height: r.height }, hitId: hitButton?.id || "", hitClass: typeof hit?.className === "string" ? hit.className : "", dir: document.documentElement.dir }; });
     if (logoutGeometry.hitId !== "logoutBtn") throw new Error("Logout button is covered on mobile: " + JSON.stringify(logoutGeometry));
     await page.locator("#logoutBtn").click();
     await page.locator("#loginView:not(.hidden)").waitFor();
@@ -166,6 +166,19 @@ try {
   assert.equal(await page.locator("#nav .nav-group").count(), 4, "Navigation must be grouped by purpose, not rendered as one undifferentiated list");
   assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
   assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
+  assert.equal(await page.locator("#backBtn").isDisabled(), true, "Back must be disabled at the first page");
+  await page.locator('[data-top-page="players"]:not(.hidden)').click();
+  await page.locator("#playersModule:not(.hidden)").waitFor();
+  assert.equal(await page.locator("#backBtn").isDisabled(), false, "Back must activate after in-app navigation");
+  await page.locator("#backBtn").click();
+  await page.locator("#dashboardPage:not(.hidden)").waitFor();
+  await page.locator('[data-top-page="matches"]:not(.hidden)').click();
+  await page.locator("#matchesModule:not(.hidden)").waitFor();
+  await page.locator("#backBtn").click();
+  await page.locator("#dashboardPage:not(.hidden)").waitFor();
+  await page.locator('[data-top-page="finance"]:not(.hidden)').waitFor();
+  const topbarWidth = await page.locator(".topbar").evaluate(el => ({scroll:el.scrollWidth,client:el.clientWidth}));
+  assert.ok(topbarWidth.scroll <= topbarWidth.client + 1, "Topbar must not create horizontal overflow on mobile: " + JSON.stringify(topbarWidth));
   const managerGridColumns = await page.locator(".manager-bento-grid").evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
   assert.equal(managerGridColumns, 2, "Manager shortcuts must use a two-column mobile bento grid");
   await page.locator("#menuBtn").click();
@@ -200,6 +213,8 @@ try {
   await staffLogin("coach", "C-1234");
   await page.locator("#managerDashboardPanel").waitFor({ state: "hidden" });
   await page.locator("#financeNav").waitFor({ state: "hidden" });
+  await page.locator('[data-top-page="finance"]').waitFor({ state: "hidden" });
+  await page.locator('[data-top-page="players"]:not(.hidden)').waitFor();
   await page.locator('#nav button[data-page="clubs"]').waitFor({ state: "hidden" });
   await page.locator("#menuBtn").click();
   await page.locator("#sidebar.open").waitFor();
@@ -229,6 +244,9 @@ try {
   // Player: the player portal is the only workspace exposed to this role.
   await staffLogin("player", "P-1234");
   await page.locator("#playerPortalNav:not(.hidden)").waitFor();
+  await page.locator('[data-top-page="players"]').waitFor({ state: "hidden" });
+  await page.locator("#backBtn").waitFor();
+  assert.equal(await page.locator("#backBtn").isDisabled(), true, "Player portal must not expose cross-role back navigation");
   await page.locator('#nav button[data-page="dashboard"]').waitFor({ state: "hidden" });
   await page.locator("#playerPortalProfile").getByText("Browser Test Player").waitFor();
   await staffLogout();
