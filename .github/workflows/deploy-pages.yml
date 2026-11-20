@@ -44,6 +44,7 @@ jobs:
           mkdir -p site
           cp index.html community.html manifest.webmanifest service-worker.js site/
           cp -R assets site/assets
+          cp -R js site/js
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
