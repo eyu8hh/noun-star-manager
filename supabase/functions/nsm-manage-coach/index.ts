@@ -124,6 +124,16 @@ Deno.serve(async (req: Request) => {
     return json({ error: "This coach account is protected by the club manager and cannot be frozen or removed." }, 403);
   }
 
+  if (action === "reset_password") {
+    const protectedCoach = coach.id === "c1d40ffb-6dfa-4728-9823-48148e9d0d16" || String(coach.coach_code ?? "").trim().toLowerCase() === "c-qwerty";
+    if (!protectedCoach) return json({ error: "This recovery action is reserved for c-qwerty." }, 403);
+    const password = String((input as { password?: string }).password ?? "");
+    if (password.length < 12 || password.length > 128) return json({ error: "كلمة المرور يجب أن تكون 12 حرفاً على الأقل." }, 400);
+    const { error } = await admin.auth.admin.updateUserById(coachId, { password, ban_duration: "none" });
+    if (error) return json({ error: error.message || "Could not reset coach password" }, 500);
+    return json({ success: true, action, coach_code: coach.coach_code });
+  }
+
   if (action === "freeze" || action === "unfreeze") {
     const { error } = await admin.auth.admin.updateUserById(coachId, {
       ban_duration: action === "freeze" ? "876000h" : "none",
