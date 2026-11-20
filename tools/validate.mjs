@@ -231,6 +231,7 @@ assert.ok(script.includes('showSkeleton("matchesTable"') && script.includes('sho
 assert.ok(css.includes("@keyframes nsmShimmer") && css.includes("cubic-bezier(.2,.85,.25,1.15)") && css.includes("prefers-reduced-motion:reduce"), "Microinteractions must use restrained motion and respect reduced-motion preferences");
 assert.ok(css.includes(".workspace-navigation{flex:1 1 auto") && css.includes("overflow-y:auto") && css.includes(".sidebar-foot{flex:0 0 auto}"), "Mobile navigation must scroll independently without overlapping the account footer");
 assert.ok(serviceWorker.includes('nsm-shell-v45'), "PWA cache must refresh after extracting the application script");
+assert.ok(serviceWorker.includes('self.addEventListener("push"') && serviceWorker.includes('self.addEventListener("notificationclick"') && serviceWorker.includes("requested.origin===self.location.origin"), "PWA push notifications must display safely and keep click navigation on the app origin");
 const coachManagementFunction = readFileSync(new URL("../supabase/functions/nsm-manage-coach/index.ts", import.meta.url), "utf8");
 assert.ok(html.includes('id="coachBulkResetBtn"') && html.includes('id="coachManagementCount"'), "Manager coach settings must include the bulk reset control and live count");
 assert.ok(script.includes('action==="remove-all"') && script.includes('manageCoaches(action,coachId)'), "Coach management must wire the bulk reset action");
