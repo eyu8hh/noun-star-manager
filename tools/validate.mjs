@@ -321,4 +321,9 @@ assert.ok(script.includes('function renderSponsorResourceTable') && script.inclu
 assert.ok(script.includes('source_key:"agreement-expiry:"') && script.includes('category:"admin"'), "Sponsor agreements nearing expiry must generate idempotent manager alerts");
 assert.ok(script.includes('logo_url:$("clubSponsorLogo").value.trim()'), "Sponsor logo URL must be stored in the existing sponsor field");
 
+
+assert.ok(html.includes('id="playerKitPanel"') && html.includes('id="playerKitTable"'), "Player profile must include the kit and equipment assignment history");
+assert.ok(script.includes('selectRows("kit_assignments","&player_id=eq."+id+"&order=issued_at.desc")'), "Player kit history must load assignments for the selected player");
+assert.ok(script.includes('class="player-admin-notes"') && css.includes(".player-admin-notes"), "Player profile must show administrative notes safely");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
