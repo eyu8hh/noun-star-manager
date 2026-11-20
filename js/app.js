@@ -811,22 +811,87 @@ function reportTable(headers,rows){if(!rows.length)return '<div class="empty-sta
 function reportStat(label,value,note=""){return '<article class="stat"><div class="stat-top"><span>'+esc(label)+'</span></div><div class="stat-value">'+esc(String(value))+'</div><div class="stat-foot">'+esc(note)+'</div></article>'}
 function reportBars(items){const max=Math.max(1,...items.map(x=>Number(x.value)||0));return items.map(x=>'<div class="report-bar-row"><span>'+esc(x.label)+'</span><div class="report-bar-track"><i style="width:'+Math.max(0,Math.min(100,(Number(x.value)||0)/max*100))+'%"></i></div><b>'+esc(String(x.display??x.value))+'</b></div>').join("")||'<div class="empty-state">لا توجد مؤشرات كافية للرسم.</div>'}
 
-let calendarEventsData=[],editingCalendarEvent=null,managerNotifications=[];
+let calendarEventsData=[],editingCalendarEvent=null,managerNotifications=[],calendarView="month",calendarCursor=new Date();
 const eventTypeLabels={training:"تدريب",meeting:"اجتماع",match:"مباراة",financial_due:"استحقاق مالي",admin:"إداري",other:"آخر"};
+const calendarPad=n=>String(n).padStart(2,"0");
+function calendarDateKey(date){return date.getFullYear()+"-"+calendarPad(date.getMonth()+1)+"-"+calendarPad(date.getDate())}
+function calendarDateTimeInput(value){const d=new Date(value);return d.getFullYear()+"-"+calendarPad(d.getMonth()+1)+"-"+calendarPad(d.getDate())+"T"+calendarPad(d.getHours())+":"+calendarPad(d.getMinutes())}
+function calendarWeekStart(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
+function calendarDateLabel(date,options={weekday:"short",day:"numeric"}){return date.toLocaleDateString(lang==="ar"?"ar-MA":"fr-FR",options)}
+function calendarTimeLabel(value){return new Date(value).toLocaleTimeString(lang==="ar"?"ar-MA":"fr-FR",{hour:"2-digit",minute:"2-digit"})}
 async function loadCalendar(){
- [calendarEventsData,teamsData]=await Promise.all([selectRows("club_events","&order=starts_at.asc&limit=1000"),selectRows("teams","&order=name.asc")]);
+ const [manualEvents,matches,sessions,loadedTeams]=await Promise.all([
+  selectRows("club_events","&order=starts_at.asc&limit=1000"),
+  selectRows("matches","&order=match_date.asc&limit=1000"),
+  selectRows("training_sessions","&order=session_date.asc&limit=1000"),
+  selectRows("teams","&order=name.asc")
+ ]);
+ teamsData=loadedTeams;
+ const teamName=id=>teamsData.find(t=>t.id===id)?.name||"";
+ calendarEventsData=[
+  ...manualEvents.map(x=>({...x,source:"event"})),
+  ...matches.map(x=>({id:x.id,source:"match",title:(teamName(x.team_id)||"الفريق")+" × "+(x.opponent_name||"المنافس"),event_type:"match",starts_at:x.match_date,ends_at:null,team_id:x.team_id,location:x.venue||"",notes:x.status==="finished"?"مباراة منتهية":x.status==="postponed"?"مباراة مؤجلة":"مباراة مسجلة"})),
+  ...sessions.map(x=>({id:x.id,source:"training",title:x.title||"حصة تدريبية",event_type:"training",starts_at:x.session_date,ends_at:null,team_id:x.team_id,location:x.location||"",notes:"حصة تدريبية مسجلة"}))
+ ].filter(x=>x.starts_at&&Number.isFinite(new Date(x.starts_at).getTime()));
+ const teamOptions='<option value="">كل الفرق</option>'+teamsData.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
  $("calendarEventTeam").innerHTML='<option value="">كل النادي</option>'+teamsData.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+'</option>').join("");
+ $("calendarTeamFilter").innerHTML=teamOptions;
  renderCalendar();
 }
 function renderCalendar(){
- const type=$("calendarTypeFilter").value,rows=calendarEventsData.filter(x=>!type||x.event_type===type).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
- $("calendarEventsList").innerHTML=rows.length?'<table class="data-table"><thead><tr><th>الموعد</th><th>التصنيف</th><th>التاريخ</th><th>الفريق</th><th>المكان</th><th>إجراء</th></tr></thead><tbody>'+rows.map(x=>'<tr><td><b>'+esc(x.title)+'</b><span class="table-sub">'+esc(x.notes||"")+'</span></td><td>'+esc(eventTypeLabels[x.event_type]||x.event_type)+'</td><td>'+esc(new Date(x.starts_at).toLocaleString(lang==="ar"?"ar-MA":"fr-FR",{dateStyle:"medium",timeStyle:"short"}))+'</td><td>'+esc(teamsData.find(t=>t.id===x.team_id)?.name||"كل النادي")+'</td><td>'+esc(x.location||"—")+'</td><td><div class="row-actions"><button data-calendar-edit="'+x.id+'">تعديل</button><button class="danger" data-calendar-delete="'+x.id+'">حذف</button></div></td></tr>').join("")+'</tbody></table>':'<div class="empty-state">لا توجد مواعيد مسجلة. أضف أول موعد من النموذج أعلاه.</div>';
+ const type=$("calendarTypeFilter").value,team=$("calendarTeamFilter").value;
+ const rows=calendarEventsData.filter(x=>(!type||x.event_type===type)&&(!team||!x.team_id||x.team_id===team)).sort((a,b)=>new Date(a.starts_at)-new Date(b.starts_at));
+ const todayKey=calendarDateKey(new Date());
+ const start=calendarView==="month"?calendarWeekStart(new Date(calendarCursor.getFullYear(),calendarCursor.getMonth(),1)):calendarWeekStart(calendarCursor);
+ const count=calendarView==="month"?42:7;
+ const end=new Date(start);end.setDate(end.getDate()+count-1);
+ $("calendarPeriodLabel").textContent=calendarView==="month"
+  ?calendarCursor.toLocaleDateString(lang==="ar"?"ar-MA":"fr-FR",{month:"long",year:"numeric"})
+  :calendarDateLabel(start,{day:"numeric",month:"short"})+" — "+calendarDateLabel(end,{day:"numeric",month:"short",year:"numeric"});
+ $("calendarMonthBtn").classList.toggle("active",calendarView==="month");$("calendarWeekBtn").classList.toggle("active",calendarView==="week");
+ $("calendarMonthBtn").setAttribute("aria-pressed",String(calendarView==="month"));$("calendarWeekBtn").setAttribute("aria-pressed",String(calendarView==="week"));
+ $("calendarWeekdays").innerHTML=Array.from({length:7},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+i);return '<div>'+esc(calendarDateLabel(d,{weekday:"short"}))+'</div>'}).join("");
+ $("calendarGrid").classList.toggle("is-week-view",calendarView==="week");
+ $("calendarGrid").innerHTML=Array.from({length:count},(_,i)=>{
+  const day=new Date(start);day.setDate(day.getDate()+i);const key=calendarDateKey(day);
+  const dayEvents=rows.filter(x=>calendarDateKey(new Date(x.starts_at))===key);
+  const chips=dayEvents.slice(0,3).map(x=>'<button type="button" class="calendar-event-chip type-'+esc(x.event_type)+'" '+(x.source==="event"?'data-calendar-edit="'+esc(x.id)+'"':'data-calendar-open="'+esc(x.source)+'"')+'><span>'+esc(calendarTimeLabel(x.starts_at))+'</span><b>'+esc(x.title)+'</b></button>').join("");
+  const more=dayEvents.length>3?'<span class="calendar-more">+'+(dayEvents.length-3)+' أخرى</span>':"";
+  return '<div class="calendar-day '+(calendarView==="month"&&day.getMonth()!==calendarCursor.getMonth()?"is-outside ":"")+(key===todayKey?"is-today":"")+'" role="gridcell"><div class="calendar-day-head"><b>'+day.getDate()+'</b><span>'+dayEvents.length+'</span></div><div class="calendar-day-events">'+(chips||'<span class="calendar-no-events">—</span>')+more+'</div></div>';
+ }).join("");
+ $("calendarEventsList").innerHTML=rows.length?rows.map(x=>{
+  const teamLabel=teamsData.find(t=>t.id===x.team_id)?.name||"كل النادي";
+  const actions=x.source==="event"?'<button type="button" data-calendar-edit="'+esc(x.id)+'">تعديل</button><button type="button" class="danger" data-calendar-delete="'+esc(x.id)+'">حذف</button>':'<button type="button" data-calendar-open="'+esc(x.source)+'">فتح القسم</button>';
+  return '<article class="calendar-agenda-item"><div class="calendar-agenda-date"><b>'+esc(calendarDateLabel(new Date(x.starts_at),{day:"numeric"}))+'</b><span>'+esc(calendarDateLabel(new Date(x.starts_at),{month:"short"}))+'</span></div><div class="calendar-agenda-copy"><b>'+esc(x.title)+'</b><p>'+esc(eventTypeLabels[x.event_type]||x.event_type)+' · '+esc(teamLabel)+' · '+esc(calendarDateLabel(new Date(x.starts_at),{weekday:"short",day:"numeric",month:"short"}))+' · '+esc(calendarTimeLabel(x.starts_at))+'</p>'+(x.location?'<small>'+esc(x.location)+'</small>':"")+'</div><div class="calendar-agenda-actions">'+actions+'</div></article>';
+ }).join(""):'<div class="empty-state">لا توجد مواعيد ضمن الفلاتر الحالية.</div>';
 }
-$("calendarEventForm").addEventListener("submit",async e=>{e.preventDefault();const btn=$("calendarEventSave"),start=$("calendarEventStart").value,end=$("calendarEventEnd").value;btn.disabled=true;$("calendarEventMessage").textContent="جارٍ الحفظ...";try{if(end&&new Date(end)<new Date(start))throw Error("وقت النهاية يجب أن يكون بعد البداية.");const body={owner_id:session.user.id,created_by:session.user.id,title:$("calendarEventTitle").value.trim(),event_type:$("calendarEventType").value,starts_at:new Date(start).toISOString(),ends_at:end?new Date(end).toISOString():null,team_id:$("calendarEventTeam").value||null,location:$("calendarEventLocation").value.trim()||null,notes:$("calendarEventNotes").value.trim()||null};await saveRow("club_events",body,editingCalendarEvent);await writeClubLog(editingCalendarEvent?"تعديل موعد":"إضافة موعد","calendar_event",editingCalendarEvent,{title:body.title,event_type:body.event_type});resetCalendarForm();$("calendarEventMessage").textContent="تم حفظ الموعد.";await loadCalendar();await loadNotifications()}catch(err){$("calendarEventMessage").textContent=err.message||"تعذر حفظ الموعد."}finally{btn.disabled=false}});
+function changeCalendarPeriod(direction){if(calendarView==="month")calendarCursor=new Date(calendarCursor.getFullYear(),calendarCursor.getMonth()+direction,1);else{calendarCursor=new Date(calendarCursor);calendarCursor.setDate(calendarCursor.getDate()+direction*7)}renderCalendar()}
+$("calendarPrev").addEventListener("click",()=>changeCalendarPeriod(-1));
+$("calendarNext").addEventListener("click",()=>changeCalendarPeriod(1));
+$("calendarToday").addEventListener("click",()=>{calendarCursor=new Date();renderCalendar()});
+$("calendarMonthBtn").addEventListener("click",()=>{calendarView="month";renderCalendar()});
+$("calendarWeekBtn").addEventListener("click",()=>{calendarView="week";renderCalendar()});
+$("calendarEventForm").addEventListener("submit",async e=>{
+ e.preventDefault();const btn=$("calendarEventSave"),start=$("calendarEventStart").value,end=$("calendarEventEnd").value;btn.disabled=true;$("calendarEventMessage").textContent="جارٍ الحفظ...";
+ try{
+  if(!start||!Number.isFinite(new Date(start).getTime()))throw Error("أدخل تاريخ بداية صحيحاً.");
+  if(end&&(!Number.isFinite(new Date(end).getTime())||new Date(end)<new Date(start)))throw Error("وقت النهاية يجب أن يكون بعد البداية.");
+  const body={owner_id:session.user.id,created_by:session.user.id,title:$("calendarEventTitle").value.trim(),event_type:$("calendarEventType").value,starts_at:new Date(start).toISOString(),ends_at:end?new Date(end).toISOString():null,team_id:$("calendarEventTeam").value||null,location:$("calendarEventLocation").value.trim()||null,notes:$("calendarEventNotes").value.trim()||null};
+  await saveRow("club_events",body,editingCalendarEvent);await writeClubLog(editingCalendarEvent?"تعديل موعد":"إضافة موعد","calendar_event",editingCalendarEvent,{title:body.title,event_type:body.event_type});resetCalendarForm();$("calendarEventMessage").textContent="تم حفظ الموعد.";await loadCalendar();await loadNotifications();
+ }catch(err){$("calendarEventMessage").textContent=err.message||"تعذر حفظ الموعد."}finally{btn.disabled=false}
+});
 function resetCalendarForm(){editingCalendarEvent=null;$("calendarEventForm").reset();$("calendarFormTitle").textContent="إضافة موعد";$("calendarEventCancel").classList.add("hidden")}
 $("calendarEventCancel").addEventListener("click",resetCalendarForm);
 $("calendarTypeFilter").addEventListener("change",renderCalendar);
-$("calendarEventsList").addEventListener("click",async e=>{const edit=e.target.closest("[data-calendar-edit]"),del=e.target.closest("[data-calendar-delete]");if(edit){const x=calendarEventsData.find(v=>v.id===edit.dataset.calendarEdit);if(!x)return;editingCalendarEvent=x.id;$("calendarEventTitle").value=x.title;$("calendarEventType").value=x.event_type;$("calendarEventStart").value=new Date(x.starts_at).toISOString().slice(0,16);$("calendarEventEnd").value=x.ends_at?new Date(x.ends_at).toISOString().slice(0,16):"";$("calendarEventTeam").value=x.team_id||"";$("calendarEventLocation").value=x.location||"";$("calendarEventNotes").value=x.notes||"";$("calendarFormTitle").textContent="تعديل موعد";$("calendarEventCancel").classList.remove("hidden");$("calendarEventForm").scrollIntoView({behavior:"smooth",block:"start"})}if(del&&confirm("هل تريد حذف هذا الموعد؟")){try{await deleteRow("club_events",del.dataset.calendarDelete);await writeClubLog("حذف موعد","calendar_event",del.dataset.calendarDelete,{});await loadCalendar();await loadNotifications()}catch{toast("تعذر حذف الموعد","error")}}});
+$("calendarTeamFilter").addEventListener("change",renderCalendar);
+$("calendarEventsList").addEventListener("click",async e=>{
+ const edit=e.target.closest("[data-calendar-edit]"),del=e.target.closest("[data-calendar-delete]"),open=e.target.closest("[data-calendar-open]");
+ if(edit){const x=calendarEventsData.find(v=>v.id===edit.dataset.calendarEdit&&v.source==="event");if(!x)return;editingCalendarEvent=x.id;$("calendarEventTitle").value=x.title;$("calendarEventType").value=x.event_type;$("calendarEventStart").value=calendarDateTimeInput(x.starts_at);$("calendarEventEnd").value=x.ends_at?calendarDateTimeInput(x.ends_at):"";$("calendarEventTeam").value=x.team_id||"";$("calendarEventLocation").value=x.location||"";$("calendarEventNotes").value=x.notes||"";$("calendarFormTitle").textContent="تعديل موعد";$("calendarEventCancel").classList.remove("hidden");$("calendarEventForm").scrollIntoView({behavior:"smooth",block:"start"});return}
+ if(del&&confirm("هل تريد حذف هذا الموعد؟")){try{await deleteRow("club_events",del.dataset.calendarDelete);await writeClubLog("حذف موعد","calendar_event",del.dataset.calendarDelete,{});await loadCalendar();await loadNotifications()}catch{toast("تعذر حذف الموعد","error")}return}
+ if(open){setPage(open.dataset.calendarOpen==="match"?"matches":"training")}
+});
+$("calendarGrid").addEventListener("click",e=>{const edit=e.target.closest("[data-calendar-edit]"),open=e.target.closest("[data-calendar-open]");if(edit){$("calendarEventsList").querySelector('[data-calendar-edit="'+CSS.escape(edit.dataset.calendarEdit)+'"]')?.click()}else if(open){setPage(open.dataset.calendarOpen==="match"?"matches":"training")}});
+$("calendarEventCancel").classList.add("hidden");
 async function syncManagerNotifications(dues=null,items=null,events=null,sessions=null,agreements=null){
  if(currentProfile?.role!=="manager")return;
  const [d,i,e,t,a]=await Promise.all([dues?Promise.resolve(dues):selectRows("finance_dues","&limit=1000"),items?Promise.resolve(items):selectRows("equipment_items","&limit=1000"),events?Promise.resolve(events):selectRows("club_events","&order=starts_at.asc&limit=500"),sessions?Promise.resolve(sessions):selectRows("training_sessions","&order=session_date.asc&limit=500"),agreements?Promise.resolve(agreements):selectRows("sponsor_agreements","&limit=1000")]);
