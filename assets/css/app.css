@@ -237,3 +237,59 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
 @media(max-width:640px){.resource-filter-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.resource-filter-bar .search-field{min-width:0;width:100%}}
 
 .player-admin-notes{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#ffffff06}.player-admin-notes>b{font-size:11px}.player-admin-notes>p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.8;white-space:pre-wrap}
+
+/* Monthly and weekly club calendar */
+.calendar-card{padding:16px}
+.calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.calendar-nav-controls,.calendar-view-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.calendar-nav-controls h3{margin:0 8px;min-width:150px;font-size:16px}
+.calendar-nav-controls button,.calendar-view-controls button{min-height:38px}
+.calendar-view-controls button.active{background:#172d9b;color:#fff;border-color:#172d9b}
+.calendar-filter-bar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}
+.calendar-filter-bar select{min-width:150px;max-width:240px}
+.calendar-scroll{overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:5px}
+.calendar-weekdays,.calendar-grid{min-width:680px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.calendar-weekdays{margin-bottom:7px;text-align:center;color:var(--muted);font-size:11px;font-weight:800}
+.calendar-weekdays>div{padding:7px 3px}
+.calendar-day{min-width:0;min-height:116px;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:7px}
+.calendar-day.is-outside{opacity:.48}
+.calendar-day.is-today{border-color:#526bd0;box-shadow:inset 0 0 0 1px #526bd044;background:linear-gradient(145deg,#2947c710,var(--surface))}
+.calendar-day-head{display:flex;align-items:center;justify-content:space-between;gap:5px}
+.calendar-day-head>b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:12px}
+.calendar-day.is-today .calendar-day-head>b{background:#172d9b;color:#fff}
+.calendar-day-head>span{font-size:9px;color:var(--muted)}
+.calendar-day-events{display:grid;align-content:start;gap:4px;min-width:0}
+.calendar-event-chip{display:flex;align-items:flex-start;gap:5px;width:100%;min-width:0;padding:5px 6px;border:0;border-inline-start:3px solid #64748b;border-radius:6px;background:#64748b18;color:var(--text);text-align:start;font:inherit;cursor:pointer}
+.calendar-event-chip span{flex:0 0 auto;font-size:9px;color:var(--muted);font-weight:800}
+.calendar-event-chip b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px;font-weight:700}
+.calendar-event-chip.type-match{border-inline-start-color:#2563eb;background:#2563eb12}
+.calendar-event-chip.type-training{border-inline-start-color:#16a36a;background:#16a36a12}
+.calendar-event-chip.type-meeting,.calendar-event-chip.type-admin{border-inline-start-color:#8b5cf6;background:#8b5cf612}
+.calendar-event-chip.type-financial_due{border-inline-start-color:#d97706;background:#d9770612}
+.calendar-more,.calendar-no-events{font-size:9px;color:var(--muted);padding-inline:5px}
+.calendar-grid.is-week-view .calendar-day{min-height:190px}
+.calendar-agenda{display:grid;gap:8px}
+.calendar-agenda-item{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.calendar-agenda-date{flex:0 0 44px;display:grid;justify-items:center;gap:1px;padding:5px;border-radius:9px;background:#172d9b12}
+.calendar-agenda-date b{font-size:18px;line-height:1.2}
+.calendar-agenda-date span{font-size:10px;color:var(--muted)}
+.calendar-agenda-copy{flex:1;min-width:0}
+.calendar-agenda-copy>b{font-size:12px}
+.calendar-agenda-copy>p,.calendar-agenda-copy>small{display:block;margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.6}
+.calendar-agenda-actions{display:flex;gap:6px;flex-wrap:wrap}
+.calendar-agenda-actions button{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);font:inherit;font-size:10px}
+@media(max-width:640px){
+ .calendar-card{padding:11px}
+ .calendar-toolbar{align-items:flex-start}
+ .calendar-nav-controls{width:100%;justify-content:space-between}
+ .calendar-nav-controls h3{flex:1;text-align:center;min-width:0;font-size:14px}
+ .calendar-view-controls{width:100%}
+ .calendar-view-controls button{flex:1}
+ .calendar-filter-bar select{flex:1;min-width:0;max-width:none}
+ .calendar-day{min-height:104px;padding:6px}
+ .calendar-grid.is-week-view .calendar-day{min-height:160px}
+ .calendar-agenda-item{align-items:flex-start;flex-wrap:wrap}
+ .calendar-agenda-copy{flex-basis:calc(100% - 60px)}
+ .calendar-agenda-actions{width:100%;padding-inline-start:56px}
+ .calendar-agenda-actions button{flex:1}
+}
