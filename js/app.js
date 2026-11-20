@@ -463,6 +463,7 @@ async function loadManagerCoachAssignments(){
  $("managerAssignCoach").innerHTML='<option value="">اختر المدرب</option>'+staff.map(c=>'<option value="'+esc(c.id)+'" '+(c.is_frozen?"disabled":"")+' >'+esc(c.role==="manager"?"المدير · مدرب الفريق الأول":(c.display_name||c.coach_code||"مدرب"))+(c.is_frozen?" · مجمد":"")+'</option>').join("");
  $("managerAssignTeam").innerHTML='<option value="">اختر الفئة</option>'+teams.map(t=>'<option value="'+esc(t.id)+'">'+esc(t.name)+(t.age_category?" · "+esc(t.age_category):"")+'</option>').join("");
 
+ $("coachManagementCount").textContent=coaches.length+" مدربين مسجلين";$("coachBulkResetBtn").disabled=!coaches.length;$("coachBulkResetBtn").textContent=coaches.length?"إزالة جميع المدربين ("+coaches.length+")":"لا يوجد مدربون لإزالتهم";
  $("managerCoachManagementList").innerHTML=coaches.length?coaches.map(c=>{
   const status=c.is_frozen?'<span class="coach-state is-frozen">مجمد</span>':'<span class="coach-state is-active">نشط</span>';
   const action=c.is_frozen
@@ -483,6 +484,7 @@ $("managerCoachManagementList").addEventListener("click",async e=>{
  const b=e.target.closest("[data-coach-action]");if(!b||currentProfile?.role!=="manager")return;
  const action=b.dataset.coachAction,coachId=b.dataset.coachId;
  const prompts={
+  "remove-all":"سيتم إيقاف جميع حسابات المدربين الحالية وفصلها عن النادي، مع الاحتفاظ بسجلاتهم التاريخية. لن يتأثر حساب المدير أو اللاعبون. هل تريد المتابعة؟",
   freeze:"سيتم إيقاف دخول هذا المدرب مؤقتاً مع الاحتفاظ ببياناته وتكليفاته. هل تريد المتابعة؟",
   unfreeze:"سيتم إعادة تفعيل دخول هذا المدرب. هل تريد المتابعة؟",
   remove:"سيتم حذف المدرب من النادي وإيقاف حسابه وفصل تكليفاته. ستبقى سجلاته التاريخية محفوظة، ولن يُحذف حسابه نهائياً. هل تريد المتابعة؟"
@@ -491,7 +493,7 @@ $("managerCoachManagementList").addEventListener("click",async e=>{
  b.disabled=true;
  try{
   await manageCoaches(action,coachId);
-  toast(action==="freeze"?"تم تجميد حساب المدرب":action==="unfreeze"?"تم إلغاء تجميد المدرب":"تم حذف المدرب من النادي","success");
+  toast(action==="freeze"?"تم تجميد حساب المدرب":action==="unfreeze"?"تم إلغاء تجميد المدرب":action==="remove-all"?"تمت إزالة جميع المدربين من النادي":"تم حذف المدرب من النادي","success");
   await loadManagerCoachAssignments();
  }catch(err){toast(err.message||"تعذر تنفيذ الإجراء","error");b.disabled=false}
 });
