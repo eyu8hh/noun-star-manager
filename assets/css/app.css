@@ -299,3 +299,10 @@ button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
 .nav-ico svg{display:block;width:18px;height:18px;overflow:visible}
 #moduleIcon{display:grid;place-items:center}
 #moduleIcon svg{display:block;stroke:currentColor;fill:none}
+
+/* Consistent quick filters for the remaining management lists */
+.module-filter-row{display:flex;gap:8px;align-items:center;margin:8px 0 12px}
+.module-filter-row .search-field{width:min(100%,360px);min-width:0}
+.match-filter-row .search-field{flex:1;max-width:280px}
+.filter-empty{margin-top:8px}
+@media(max-width:640px){.module-filter-row{display:grid;grid-template-columns:1fr}.module-filter-row .search-field,.match-filter-row .search-field{width:100%;max-width:none}.match-filter-row{grid-template-columns:1fr}}
