@@ -272,4 +272,10 @@ assert.ok(html.includes('id="bottomNav"') && html.includes('id="moreSheet"') && 
 assert.ok(script.includes('id==="moreNavBtn"') && script.includes('document.querySelectorAll("[data-bottom-page]")'), "Bottom navigation and More sheet controls must be wired");
 assert.ok(css.includes(".dashboard-insights") && css.includes(".bottom-nav") && css.includes(".more-sheet"), "Dashboard and mobile navigation must have responsive styles");
 
+
+assert.ok(html.includes('id="playerFilterAvailability"') && html.includes('id="playerFilterPayment"') && html.includes('id="playerSortOrder"') && html.includes('id="clearPlayerFilters"'), "Player list must include administrative/payment filters, sorting, and clear controls");
+assert.ok(script.includes('selectRows("finance_dues","&limit=2000")') && script.includes('function paymentState(id)') && script.includes('$("playerFilterPayment").classList.toggle("hidden",!canManage)'), "Payment state must be derived from real dues and restricted to managers");
+assert.ok(script.includes('sort==="date"') && script.includes('sort==="shirt"') && script.includes('clearPlayerFilters'), "Player sorting and filter reset must be wired");
+assert.ok(css.includes(".player-filter-bar") && css.includes(".payment-state"), "Player filters must have responsive visual states");
+
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
