@@ -164,6 +164,20 @@ try {
   // Manager: dashboard, drawer, sidebar navigation, quick actions, and language.
   await staffLogin("manager", "M-1234");
   await page.locator("#managerDashboardPanel:not(.hidden)").waitFor();
+  await page.locator("#dashboardInsights").waitFor();
+  await page.locator("#dashboardFinancePanel:not(.hidden)").waitFor();
+  await page.locator("#bottomNav").waitFor();
+  await page.locator("#bottomFinanceNav:not(.hidden)").waitFor();
+  await page.locator("#moreNavBtn").click();
+  await page.locator("#moreSheet:not(.hidden)").waitFor();
+  await page.locator('#moreSheet [data-goto="statistics"]').click();
+  await page.locator("#statisticsModule:not(.hidden)").waitFor();
+  assert.equal(await page.locator('[data-bottom-page="training"]').getAttribute("aria-current"), null);
+  await page.locator('[data-bottom-page="players"]').click();
+  await page.locator("#playersModule:not(.hidden)").waitFor();
+  assert.equal(await page.locator('[data-bottom-page="players"]').getAttribute("aria-current"), "page");
+  await page.locator('[data-bottom-page="dashboard"]').click();
+  await page.locator("#dashboardPage:not(.hidden)").waitFor();
   assert.equal(await page.locator("#nav .nav-group").count(), 4, "Navigation must be grouped by purpose, not rendered as one undifferentiated list");
   assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
   assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
@@ -213,6 +227,8 @@ try {
   // Coach: manager-only workspaces must remain hidden; training remains usable.
   await staffLogin("coach", "C-1234");
   await page.locator("#managerDashboardPanel").waitFor({ state: "hidden" });
+  await page.locator("#dashboardFinancePanel").waitFor({ state: "hidden" });
+  await page.locator("#bottomFinanceNav").waitFor({ state: "hidden" });
   await page.locator("#financeNav").waitFor({ state: "hidden" });
   await page.locator('[data-top-page="finance"]').waitFor({ state: "hidden" });
   await page.locator('[data-top-page="players"]:not(.hidden)').waitFor();
