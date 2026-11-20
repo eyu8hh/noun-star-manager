@@ -168,6 +168,10 @@ try {
   await page.locator("#dashboardFinancePanel:not(.hidden)").waitFor();
   await page.locator("#bottomNav").waitFor();
   await page.locator("#bottomFinanceNav:not(.hidden)").waitFor();
+  assert.equal(await page.locator("#nav .nav-group").count(), 4, "Navigation must be grouped by purpose, not rendered as one undifferentiated list");
+  assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
+  assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
+  assert.equal(await page.locator("#backBtn").isDisabled(), true, "Back must be disabled at the first page");
   await page.locator("#moreNavBtn").click();
   await page.locator("#moreSheet:not(.hidden)").waitFor();
   await page.locator('#moreSheet [data-goto="statistics"]').click();
@@ -178,10 +182,6 @@ try {
   assert.equal(await page.locator('[data-bottom-page="players"]').getAttribute("aria-current"), "page");
   await page.locator('[data-bottom-page="dashboard"]').click();
   await page.locator("#dashboardPage:not(.hidden)").waitFor();
-  assert.equal(await page.locator("#nav .nav-group").count(), 4, "Navigation must be grouped by purpose, not rendered as one undifferentiated list");
-  assert.equal(await page.locator("#nav .nav-group button").count(), 14, "All role destinations must remain present inside the grouped navigation");
-  assert.equal(await page.locator('#nav button[data-page="dashboard"]').getAttribute("aria-current"), "page");
-  assert.equal(await page.locator("#backBtn").isDisabled(), true, "Back must be disabled at the first page");
   await page.locator('[data-top-page="players"]:not(.hidden)').click();
   await page.locator("#playersModule:not(.hidden)").waitFor();
   assert.equal(await page.locator("#backBtn").isDisabled(), false, "Back must activate after in-app navigation");
