@@ -12,7 +12,8 @@ where t.table_schema = 'public'
     'profiles','clubs','teams','players','team_players','player_team_history',
     'competitions','competition_teams','matches','match_lineups','match_events',
     'training_sessions','training_drills','training_session_drills','training_attendance',
-    'injuries','absences','suspensions','suspension_match_log','settings'
+    'injuries','absences','suspensions','suspension_match_log','settings',
+    'audience_signup_attempts','nsm_manager_bootstrap_tokens'
   )
 order by t.table_name;
 
@@ -45,7 +46,9 @@ join pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public'
   and p.proname in (
     'nsm_on_auth_user_created','nsm_assert_related_owner',
-    'nsm_touch_updated_at','nsm_account_suspensions_for_match'
+    'nsm_touch_updated_at','nsm_account_suspensions_for_match',
+    'nsm_set_profile_role','nsm_player_vote_candidates',
+    'nsm_public_match_feed','nsm_public_poll_results'
   )
 order by p.proname;
 
