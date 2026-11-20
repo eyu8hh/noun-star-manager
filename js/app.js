@@ -1237,6 +1237,13 @@ window.addEventListener("click",event=>{
  const path=typeof event.composedPath==="function"?event.composedPath():[event.target];
  const b=path.find(node=>node instanceof HTMLButtonElement)||null;
  if(!b||!$("appView")||$("appView").classList.contains("hidden"))return;
+ if(b.dataset.dashboardAction){
+  event.preventDefault();event.stopImmediatePropagation();
+  const action=b.dataset.dashboardAction;
+  if(action==="add-player"){setPage("players");$("addPlayerBtn").click();return;}
+  if(action==="finance"){setPage("finance");$("financeTransactionForm").scrollIntoView({behavior:"smooth",block:"start"});$("financeTxnTitle").focus();return;}
+  if(action==="attendance"){setPage("training");loadTraining().then(()=>{const row=[...document.querySelectorAll("#trainingTable [data-attendance]")][0];if(row)row.click();else toast("لا توجد حصة مسجلة. أنشئ حصة تدريبية أولاً.","info")}).catch(()=>toast("تعذر تحميل حصص التدريب","error"));return;}
+ }
  const id=b.id;
  if(id==="backBtn"){event.preventDefault();event.stopImmediatePropagation();goBack();return;}
  const topShortcut=b.matches("[data-top-page]")?b:null;
