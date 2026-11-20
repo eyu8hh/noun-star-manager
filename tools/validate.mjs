@@ -338,3 +338,5 @@ assert.ok(html.includes('data-dashboard-action="add-player"') && html.includes('
 assert.ok(script.includes('action==="add-player"') && script.includes('action==="attendance"') && script.includes('action==="finance"'), "Dashboard quick actions must open the corresponding create or attendance workflow");
 
 console.log("NOUN STAR MANAGER: JavaScript, HTML IDs, Arabic/French translations, and referenced schema tables passed.");
+
+assert.ok(script.includes("is_protected") && script.includes("حساب محفوظ"), "Protected coach account must remain visible and marked as preserved");
