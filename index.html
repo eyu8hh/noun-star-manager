@@ -306,7 +306,7 @@
       <article class="stat"><div class="stat-top"><span>مداخيل هذا الشهر</span><span class="stat-icon">↗</span></div><div class="stat-value" id="financeIncomeMonth">0</div><div class="stat-foot">المبالغ المسجلة كمداخيل</div></article>
       <article class="stat"><div class="stat-top"><span>مصاريف هذا الشهر</span><span class="stat-icon">↘</span></div><div class="stat-value" id="financeExpenseMonth">0</div><div class="stat-foot">المبالغ المسجلة كمصاريف</div></article>
       <article class="stat"><div class="stat-top"><span>الصافي الشهري</span><span class="stat-icon">◈</span></div><div class="stat-value" id="financeNetMonth">0</div><div class="stat-foot">المداخيل ناقص المصاريف</div></article>
-      <article class="stat"><div class="stat-top"><span>الديون المتبقية</span><span class="stat-icon">!</span></div><div class="stat-value" id="financeOutstanding">0</div><div class="stat-foot">اشتراكات لم تسدد بالكامل</div></article>
+      <article class="stat"><div class="stat-top"><span>الديون المتبقية</span><span class="stat-icon">!</span></div><div class="stat-value" id="financeOutstanding">0</div><div class="stat-foot">اشتراكات لم تسدد بالكامل</div></article><article class="stat"><div class="stat-top"><span>إجمالي المداخيل</span></div><div class="stat-value" id="financeIncomeAll">0</div><div class="stat-foot">منذ بداية السجل</div></article><article class="stat"><div class="stat-top"><span>إجمالي المصاريف</span></div><div class="stat-value" id="financeExpenseAll">0</div><div class="stat-foot">منذ بداية السجل</div></article><article class="stat"><div class="stat-top"><span>صافي الرصيد</span></div><div class="stat-value" id="financeNetAll">0</div><div class="stat-foot">المداخيل ناقص المصاريف</div></article>
     </div>
     <div class="card" style="margin-top:14px"><div class="section-head" style="margin-top:0"><div><h3>تسجيل حركة مالية</h3><p class="table-sub">سجل المداخيل والمصاريف الفعلية. لا تسجل الاشتراك كدخل إلا عند قبض المبلغ.</p></div></div>
       <form id="financeTransactionForm"><div class="form-grid">
@@ -318,7 +318,7 @@
         <div class="form-field"><label for="financeTxnMethod">طريقة الأداء</label><select id="financeTxnMethod"><option value="cash">نقداً</option><option value="bank">إيداع بنكي</option><option value="transfer">تحويل</option><option value="other">أخرى</option></select></div>
         <div class="form-field"><label for="financeTxnPlayer">اللاعب (اختياري)</label><select id="financeTxnPlayer"><option value="">بدون ربط بلاعب</option></select></div>
         <div class="form-field full"><label for="financeTxnNotes">ملاحظات</label><textarea id="financeTxnNotes" rows="2" maxlength="1000"></textarea></div>
-      </div><div class="editor-footer"><button class="primary-btn" type="submit">حفظ الحركة المالية</button></div><p id="financeTxnMessage" class="table-sub" aria-live="polite"></p></form>
+      </div><div class="editor-footer"><button class="primary-btn" id="financeTxnSave" type="submit">حفظ الحركة المالية</button><button class="secondary-btn hidden" id="financeTxnCancelEdit" type="button">إلغاء التعديل</button></div><p id="financeTxnMessage" class="table-sub" aria-live="polite"></p></form>
     </div>
     <div class="content-grid" style="margin-top:14px">
       <div class="card"><h3>إضافة اشتراك مستحق</h3><p class="table-sub">أنشئ مبلغاً مستحقاً على لاعب، ثم سجّل الأداء كلياً أو على دفعات.</p>
@@ -342,7 +342,7 @@
       </div>
     </div>
     <div class="section-head"><h3>متابعة الاشتراكات والديون</h3><span id="financeDuesCount">0</span></div><div id="financeDuesTable" class="data-table-wrap"></div>
-    <div class="section-head"><h3>سجل الحركات المالية</h3><span id="financeTransactionsCount">0</span></div><div id="financeTransactionsTable" class="data-table-wrap"></div>
+    <div class="section-head"><h3>سجل الحركات المالية</h3><span id="financeTransactionsCount">0</span></div><div class="finance-filter-bar"><input id="financeSearch" class="search-field" type="search" placeholder="ابحث في البيان أو التصنيف..."><select id="financeTypeFilter" class="search-field"><option value="">كل الحركات</option><option value="income">المداخيل</option><option value="expense">المصاريف</option></select><select id="financePlayerFilter" class="search-field"><option value="">كل اللاعبين</option></select><select id="financePeriodFilter" class="search-field"><option value="all">كل الفترات</option><option value="month">هذا الشهر</option><option value="year">هذه السنة</option><option value="custom">فترة مخصصة</option></select><input id="financeDateFrom" class="search-field" type="date" aria-label="من تاريخ"><input id="financeDateTo" class="search-field" type="date" aria-label="إلى تاريخ"><select id="financeSortOrder" class="search-field"><option value="newest">الأحدث أولاً</option><option value="oldest">الأقدم أولاً</option><option value="amount">الأعلى مبلغاً</option></select><button id="financeClearFilters" class="secondary-btn" type="button">مسح الفلاتر</button></div><div class="card finance-chart-card"><div class="section-head" style="margin-top:0"><h3>تطور المداخيل والمصاريف</h3><span class="table-sub">آخر ستة أشهر · درهم</span></div><div id="financeTrendChart" class="finance-trend-chart"></div></div><div id="financeTransactionsTable" class="data-table-wrap"></div>
   </div>
   
 
