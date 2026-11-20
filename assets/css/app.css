@@ -153,3 +153,25 @@ html[dir="ltr"] .nav button:hover{transform:translateX(2px)}
 .coach-state.is-active{color:#16845b;background:rgba(54,197,139,.13)}
 .coach-state.is-frozen{color:#a56c12;background:rgba(242,189,76,.18)}
 @media(max-width:640px){.coach-manage-row{align-items:flex-start;flex-direction:column}.coach-manage-row .row-actions{width:100%;display:flex;flex-wrap:wrap}.coach-manage-row .row-actions button{flex:1}}
+
+/* Coach management: clearer hierarchy and mobile-first controls */
+.coach-management-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:4px 0 12px}
+.coach-management-head>div{display:grid;gap:4px}
+.coach-management-head strong{font-size:15px;font-weight:850}
+.coach-management-head span{font-size:12px;color:var(--muted)}
+.coach-reset-note{padding:12px 14px;margin-bottom:14px;border:1px solid rgba(242,189,76,.22);border-radius:12px;background:rgba(242,189,76,.07);color:var(--muted);font-size:12px;line-height:1.8}
+.coach-management-head .danger{min-height:42px;white-space:nowrap}
+.coach-manage-row{transition:border-color .18s ease,transform .18s ease}
+.coach-manage-row:hover{border-color:rgba(90,120,230,.45);transform:translateY(-1px)}
+.coach-manage-info>b{font-size:14px}
+.coach-manage-row .row-actions button{min-height:38px}
+select,input,textarea{accent-color:var(--primary)}
+select{min-height:46px;border-radius:12px;padding-inline:14px;font:inherit}
+button,.primary-btn,.secondary-btn,.danger,.ghost-btn{font-family:inherit}
+@media(max-width:640px){
+ .coach-management-head{align-items:stretch;flex-direction:column}
+ .coach-management-head .danger{width:100%}
+ .coach-manage-row{padding:14px}
+ .coach-manage-row .row-actions{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.coach-manage-row{transition:none}}
