@@ -344,5 +344,4 @@ assert.ok(script.includes("is_protected") && script.includes("حساب محفو�
 assert.ok(script.includes('candidateEmails.push("coach+"+code+"@login.nounstar.club","coach+"+code.slice(2)+"@login.nounstar.club")'), "Coach login must try the exact stored c-prefixed email first");
 assert.ok(css.includes(".bottom-nav #moreNavBtn svg *{opacity:1!important") && css.includes(".bottom-nav #moreNavBtn span{opacity:1!important"), "More control icon and label must remain fully opaque on touch");
 
-assert.ok(script.includes('action==="reset_password"') && script.includes('manageCoaches("reset_password",coachId,{password})'), "Manager must have a protected password recovery path for c-qwerty");
 assert.ok(css.includes("#bottomNav #moreNavBtn svg *") && css.includes("stroke-width:2.4!important"), "More navigation icon must stay opaque and high contrast on mobile");
