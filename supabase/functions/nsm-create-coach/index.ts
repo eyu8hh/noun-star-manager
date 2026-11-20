@@ -48,13 +48,15 @@ Deno.serve(async (req: Request) => {
   try { input = await req.json(); } catch { return json({ error: "Invalid JSON body" }, 400); }
 
   const coachCode = String(input.coach_code ?? "").trim().toLowerCase();
-  const email = String(input.email ?? (coachCode ? `coach+${coachCode}@login.nounstar.club` : "")).trim().toLowerCase();
+  const coachLoginCode = coachCode.replace(/^c-/, "");
+  const email = String(input.email ?? (coachCode ? `coach+${coachLoginCode}@login.nounstar.club` : "")).trim().toLowerCase();
   const password = String(input.password ?? "");
   const displayName = String(input.display_name ?? "").trim();
   const teamId = String(input.team_id ?? "").trim();
   const assignmentType = String(input.assignment_type ?? "head");
 
   if (coachCode && !/^[a-z0-9_-]{4,20}$/.test(coachCode)) return json({ error: "Coach code must be 4–20 letters, numbers, _ or -" }, 400);
+  if (coachCode.startsWith("m-")) return json({ error: "Coach codes cannot start with M-; that prefix is reserved for the manager" }, 400);
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "A valid coach code or email is required" }, 400);
   if (!["head", "assistant"].includes(assignmentType)) return json({ error: "Invalid assignment type" }, 400);
   if (password.length < 10) return json({ error: "Password must contain at least 10 characters" }, 400);
