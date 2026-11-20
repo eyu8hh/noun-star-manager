@@ -52,7 +52,8 @@
 - [x] Add manager calendar events in PostgreSQL with manager-only RLS, date indexes, and CRUD UI.
 - [x] Add monthly and weekly calendar views combining club events, scheduled matches, and training sessions, with team/type filters and local-time-safe editing.
 - [x] Add idempotent in-app manager notifications for due payments, low inventory, calendar events, and upcoming training; support unread count, mark read, dismiss, and opening the linked section.
-- [ ] Add real Web Push delivery to mobile devices, including subscription storage, VAPID secrets, and a server-side event/reminder trigger. Browser notification permission alone is not background push.
+- [x] Prepare the service worker to display incoming push notifications and route notification taps safely within the app origin.
+- [ ] Complete real Web Push delivery to mobile devices: subscription storage, VAPID secrets, and server-side event/reminder triggers. The receiver alone does not send notifications.
 - [x] Unify sidebar and module navigation icons with a consistent SVG stroke system.
 - [x] Add quick search filters to clubs, teams, matches, competitions, training sessions, injuries, absences, card summaries, and suspensions.
 
