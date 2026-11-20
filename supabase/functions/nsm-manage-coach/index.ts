@@ -96,7 +96,7 @@ Deno.serve(async (req: Request) => {
       .delete().eq("coach_user_id", coachId).eq("owner_id", managerId);
     if (assignmentError) return json({ error: "Account disabled, but assignments could not be detached. Retry the removal." }, 500);
     const { error: profileError } = await admin.from("profiles")
-      .update({ club_owner_id: null, coach_code: null }).eq("id", coachId).eq("role", "coach").eq("club_owner_id", managerId);
+      .update({ club_owner_id: null }).eq("id", coachId).eq("role", "coach").eq("club_owner_id", managerId);
     if (profileError) return json({ error: "Account disabled and assignments detached, but club removal did not finish. Retry the removal." }, 500);
     return json({ success: true, action, preserved_account: true });
   }
