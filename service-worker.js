@@ -20,10 +20,12 @@ self.addEventListener("push",event=>{
 });
 self.addEventListener("notificationclick",event=>{
  event.notification.close();
- const target=new URL(event.notification.data?.url||"./",self.location.origin).href;
- event.waitUntil(clients.matchAll({type:"window",includeUncontrolled:true}).then(windows=>{
-  const existing=windows.find(client=>client.url.startsWith(self.location.origin));
-  if(existing){existing.focus();if("navigate" in existing)existing.navigate(target);return}
-  return clients.openWindow(target);
- }));
+ const requested=new URL(event.notification.data?.url||"./",self.registration.scope);
+ const target=requested.origin===self.location.origin?requested.href:self.registration.scope;
+ event.waitUntil((async()=>{
+  const windows=await clients.matchAll({type:"window",includeUncontrolled:true});
+  const existing=windows.find(client=>client.url.startsWith(self.registration.scope));
+  if(existing){if("navigate" in existing)await existing.navigate(target);await existing.focus();return}
+  await clients.openWindow(target);
+ })());
 });
