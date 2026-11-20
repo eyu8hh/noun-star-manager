@@ -21,7 +21,7 @@ Deno.serve(async (req: Request) => {
   const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
   if (!token) return json({ error: "Authentication required" }, 401);
   const caller = createClient(url, anonKey, {
-    global: { headers: { Authorization: \`Bearer \${token}\` } },
+    global: { headers: { Authorization: "Bearer " + token } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
